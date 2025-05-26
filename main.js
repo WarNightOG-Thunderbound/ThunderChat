@@ -1,78 +1,123 @@
-// main.js
-import { auth, database } from './firebase.js';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import {
-  ref, push, onChildAdded
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+// Import Firebase functions
+import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, serverTimestamp } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
-// UI Elements
-const email = document.getElementById('email');
-const password = document.getElementById('password');
-const register = document.getElementById('register');
-const login = document.getElementById('login');
-const logout = document.getElementById('logout');
+// Initialize Firebase app in your firebase.js and import it here if needed
+// Assuming firebase app already initialized and imported as 'app'
+
+const db = getDatabase();
+const auth = getAuth();
+
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const chatContainer = document.getElementById('chatContainer');
+const messageList = document.getElementById('messageList');
 const messageInput = document.getElementById('messageInput');
-const send = document.getElementById('send');
-const messages = document.getElementById('messages');
-const authBox = document.getElementById('auth');
-const chatBox = document.getElementById('chat');
+const sendBtn = document.getElementById('sendBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 
-// Register
-register.onclick = () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then(() => alert("Registered"))
-    .catch(e => alert(e.message));
-};
+let joinTime = Date.now();  // Timestamp when user joins (page loads or connects)
 
-// Login
-login.onclick = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .then(() => alert("Logged in"))
-    .catch(e => alert(e.message));
-};
-
-// Logout
-logout.onclick = () => {
-  signOut(auth);
-};
-
-// Auth State
+// Listen for auth state changes
 onAuthStateChanged(auth, user => {
   if (user) {
-    authBox.style.display = 'none';
-    chatBox.style.display = 'block';
-    startChat();
+    // User logged in
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'none';
+    chatContainer.style.display = 'block';
+
+    joinTime = Date.now(); // Reset join time on login
+
+    startListeningForMessages();
   } else {
-    authBox.style.display = 'block';
-    chatBox.style.display = 'none';
-    messages.innerHTML = '';
+    // User logged out
+    loginForm.style.display = 'block';
+    registerForm.style.display = 'block';
+    chatContainer.style.display = 'none';
+
+    clearMessages();
   }
 });
 
-// Send Message
-send.onclick = () => {
-  if (messageInput.value.trim() === '') return;
-  const chatRef = ref(database, 'chats/');
-  push(chatRef, {
-    name: auth.currentUser.email,
-    text: messageInput.value
+// Register new user
+registerForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const email = registerForm.email.value;
+  const password = registerForm.password.value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      registerForm.reset();
+    })
+    .catch(error => alert(error.message));
+});
+
+// Login existing user
+loginForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const email = loginForm.email.value;
+  const password = loginForm.password.value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      loginForm.reset();
+    })
+    .catch(error => alert(error.message));
+});
+
+// Logout user
+logoutBtn.addEventListener('click', () => {
+  signOut(auth);
+  clearMessages();
+});
+
+// Send new message
+sendBtn.addEventListener('click', () => {
+  sendMessage();
+});
+
+messageInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function sendMessage() {
+  const messageText = messageInput.value.trim();
+  const user = auth.currentUser;
+  if (messageText === '' || !user) return;
+
+  const messagesRef = ref(db, 'messages');
+  push(messagesRef, {
+    uid: user.uid,
+    email: user.email,
+    text: messageText,
+    timestamp: serverTimestamp()
   });
   messageInput.value = '';
-};
+}
 
-// Real-time Chat Listener
-function startChat() {
-  const chatRef = ref(database, 'chats/');
-  onChildAdded(chatRef, snapshot => {
-    const msg = snapshot.val();
-    const div = document.createElement('div');
-    div.textContent = `[${msg.name}]: ${msg.text}`;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+// Clear message list UI
+function clearMessages() {
+  messageList.innerHTML = '';
+}
+
+// Listen only for messages sent after user joined (joinTime)
+function startListeningForMessages() {
+  clearMessages();
+
+  const messagesRef = ref(db, 'messages');
+  // Query messages ordered by timestamp starting from joinTime
+  const messagesQuery = query(messagesRef, orderByChild('timestamp'), startAt(joinTime));
+
+  onChildAdded(messagesQuery, snapshot => {
+    const message = snapshot.val();
+    if (!message) return;
+
+    const messageElement = document.createElement('li');
+    messageElement.textContent = `${message.email}: ${message.text}`;
+    messageList.appendChild(messageElement);
+    messageList.scrollTop = messageList.scrollHeight; // Auto-scroll to bottom
   });
 }
