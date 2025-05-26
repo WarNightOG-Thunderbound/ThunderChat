@@ -206,23 +206,18 @@ h2, h3 {
     font-size: 1.25rem;
   }
 }
-    /* Clear History Button Styling */
-.button.danger {
-  background-color: #f59e0b; /* Amber-500 */
-  color: white;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 10px;
+   .button.bg-yellow-400 {
+  background-color: #facc15;
+  color: #1f2937;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.button.danger:hover {
-  background-color: #d97706; /* Amber-600 */
+.button.bg-yellow-400:hover {
+  background-color: #fbbf24;
   transform: scale(1.05);
 }
 
-.button.danger:active {
-  background-color: #b45309; /* Amber-700 */
-  transform: scale(0.97);
-}
 
  
    </style>
@@ -245,7 +240,8 @@ h2, h3 {
     
     <div id="chat-box" class="chat-box bg-gray-800 p-2 rounded overflow-y-auto h-80 mb-2"></div>
     <div class="flex gap-2">
-      <button id="clearHistory" class="button danger">🗑️ Clear History</button>
+      <button id="clearHistory" class="button bg-yellow-400 hover:bg-yellow-500 text-black mt-2">🧹 Clear History</button>
+
 
       <input id="messageInput" class="flex-1 p-2 rounded bg-gray-700 text-white" type="text" placeholder="Type a message...">
       <button id="sendBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Send</button>
@@ -327,13 +323,15 @@ h2, h3 {
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     });
+    
+    document.getElementById("clearHistory").addEventListener("click", () => {
+  const messagesDiv = document.getElementById("messages");
+  messagesDiv.innerHTML = ""; // Just clears the visible messages
+});
+
   </script>
-  <script>
-  document.getElementById("clearHistory").addEventListener("click", function () {
-    const messages = document.getElementById("messages");
-    messages.innerHTML = ""; // Clears all chat bubbles
-  });
-</script>
+
+
 
 </body>
 
