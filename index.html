@@ -8,24 +8,18 @@
 </head>
 <body class="bg-gray-900 text-white font-sans">
 
-  <!-- Login Form -->
-  <div id="loginForm" class="p-6 max-w-md mx-auto my-10 bg-gray-800 rounded-lg shadow-lg">
-    <h2 class="text-xl font-bold mb-4 text-center">Login</h2>
-    <form class="space-y-4">
-      <input type="email" name="email" placeholder="Email" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <input type="password" name="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Login</button>
+  <!-- Auth Section -->
+  <div id="authSection" class="p-6 max-w-md mx-auto my-10 bg-gray-800 rounded-lg shadow-lg">
+    <h2 id="formTitle" class="text-xl font-bold mb-4 text-center">Login</h2>
+    <form id="authForm" class="space-y-4">
+      <input type="email" id="email" placeholder="Email" class="w-full p-2 rounded bg-gray-700 text-white" required />
+      <input type="password" id="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 text-white" required />
+      <button id="authButton" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Login</button>
     </form>
-  </div>
-
-  <!-- Register Form -->
-  <div id="registerForm" class="p-6 max-w-md mx-auto my-4 bg-gray-800 rounded-lg shadow-lg">
-    <h2 class="text-xl font-bold mb-4 text-center">Register</h2>
-    <form class="space-y-4">
-      <input type="email" name="email" placeholder="Email" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <input type="password" name="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded">Register</button>
-    </form>
+    <p class="mt-4 text-center text-sm">
+      <span id="switchText">Don't have an account?</span>
+      <button id="switchMode" class="text-blue-400 underline">Register</button>
+    </p>
   </div>
 
   <!-- Chat Container -->
@@ -46,5 +40,21 @@
   </div>
 
   <script type="module" src="./main.js"></script>
+  <script>
+    // Handle switch between login/register
+    let isLogin = true;
+    const formTitle = document.getElementById('formTitle');
+    const authButton = document.getElementById('authButton');
+    const switchText = document.getElementById('switchText');
+    const switchMode = document.getElementById('switchMode');
+
+    switchMode.addEventListener('click', () => {
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login" : "Register";
+      authButton.textContent = isLogin ? "Login" : "Register";
+      switchText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+      switchMode.textContent = isLogin ? "Register" : "Login";
+    });
+  </script>
 </body>
 </html>
