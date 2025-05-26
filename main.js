@@ -1,4 +1,4 @@
-import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, serverTimestamp, set } from "firebase/database";
+import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, set, serverTimestamp } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 const db = getDatabase();
@@ -14,16 +14,14 @@ const logoutBtn = document.getElementById('logoutBtn');
 
 let serverJoinTime = null;
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     loginForm.style.display = 'none';
     registerForm.style.display = 'none';
     chatContainer.style.display = 'block';
 
-    getAccurateServerTime().then((time) => {
-      serverJoinTime = time;
-      startListeningForMessages(serverJoinTime);
-    });
+    serverJoinTime = await getAccurateServerTime();
+    startListeningForMessages(serverJoinTime);
   } else {
     loginForm.style.display = 'block';
     registerForm.style.display = 'block';
@@ -57,7 +55,7 @@ logoutBtn.addEventListener('click', () => {
   clearMessages();
 });
 
-sendBtn.addEventListener('click', () => sendMessage());
+sendBtn.addEventListener('click', sendMessage);
 messageInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -66,17 +64,17 @@ messageInput.addEventListener('keydown', e => {
 });
 
 function sendMessage() {
-  const messageText = messageInput.value.trim();
+  const text = messageInput.value.trim();
   const user = auth.currentUser;
-  if (messageText === '' || !user) return;
+  if (!text || !user) return;
 
-  const messagesRef = ref(db, 'messages');
-  push(messagesRef, {
+  push(ref(db, 'messages'), {
     uid: user.uid,
     email: user.email,
-    text: messageText,
-    timestamp: Date.now()
+    text: text,
+    timestamp: Date.now() // always send local timestamp
   });
+
   messageInput.value = '';
 }
 
@@ -84,36 +82,27 @@ function clearMessages() {
   messageList.innerHTML = '';
 }
 
-// ✅ Accurate server time using Firebase
-function getAccurateServerTime() {
-  return new Promise((resolve) => {
-    const timeRef = ref(db, 'serverTime');
-    const dummyRef = ref(db, 'temp/' + Math.random().toString(36).substring(2));
+// ✅ Better & fast way to get Firebase server time
+async function getAccurateServerTime() {
+  const tempRef = push(ref(db, 'timestamps'));
+  await set(tempRef, { createdAt: serverTimestamp() });
 
-    set(dummyRef, { t: serverTimestamp() }).then(() => {
-      onChildAdded(ref(db, 'temp'), (snapshot) => {
-        const val = snapshot.val();
-        if (val.t) {
-          resolve(val.t);
-        }
-      });
-    });
-  });
+  const snap = await new Promise(resolve =>
+    onChildAdded(ref(db, 'timestamps'), snapshot => resolve(snapshot))
+  );
+
+  return snap.val().createdAt || Date.now();
 }
 
-function startListeningForMessages(startTime) {
-  clearMessages();
+function startListeningForMessages(time) {
+  const q = query(ref(db, 'messages'), orderByChild('timestamp'), startAt(time));
+  onChildAdded(q, snap => {
+    const msg = snap.val();
+    if (!msg) return;
 
-  const messagesRef = ref(db, 'messages');
-  const messagesQuery = query(messagesRef, orderByChild('timestamp'), startAt(startTime));
-
-  onChildAdded(messagesQuery, snapshot => {
-    const message = snapshot.val();
-    if (!message) return;
-
-    const messageElement = document.createElement('li');
-    messageElement.textContent = `${message.email}: ${message.text}`;
-    messageList.appendChild(messageElement);
+    const li = document.createElement('li');
+    li.textContent = `${msg.email}: ${msg.text}`;
+    messageList.appendChild(li);
     messageList.scrollTop = messageList.scrollHeight;
   });
 }
