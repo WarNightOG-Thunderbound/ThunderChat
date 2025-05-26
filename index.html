@@ -1,88 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ThunderChat</title>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: sans-serif; background: #111; color: white; text-align: center; padding: 20px; }
-    input, button { padding: 10px; margin: 5px; }
-    #messages { max-height: 300px; overflow-y: auto; border: 1px solid white; padding: 10px; margin: 10px; }
-  </style>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js"></script>
+  <title>ThunderChat - Login</title>
 </head>
 <body>
+  <h2>ThunderChat</h2>
 
-  <h1>⚡ ThunderChat ⚡</h1>
+  <input type="email" id="email" placeholder="Enter email" /><br>
+  <input type="password" id="password" placeholder="Enter password" /><br><br>
 
-  <div id="auth">
-    <input type="email" id="email" placeholder="Enter Email"><br>
-    <input type="password" id="password" placeholder="Enter Password"><br>
-    <button onclick="register()">Register</button>
-    <button onclick="login()">Login</button>
-  </div>
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
 
-  <div id="chat" style="display: none;">
-    <h2>🔥 Group Chat</h2>
-    <div id="messages"></div>
-    <input type="text" id="message" placeholder="Type your message">
-    <button onclick="sendMessage()">Send</button>
-  </div>
+  <p id="message"></p>
 
-  <script>
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBU2zSeAsRdIOXFQNLz5AqFCgggFcPsoSw",
-      authDomain: "thuchat-f5649.firebaseapp.com",
-      databaseURL: "https://thuchat-f5649-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "thuchat-f5649",
-      storageBucket: "thuchat-f5649.firebasestorage.app",
-      messagingSenderId: "191671896471",
-      appId: "1:191671896471:web:bd3b3075440e3ac41cdcd2"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function register() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("✅ Registered! Now login."))
-        .catch(e => alert("⚠️ " + e.message));
-    }
-
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("auth").style.display = "none";
-          document.getElementById("chat").style.display = "block";
-          listenForMessages();
-        })
-        .catch(e => alert("⚠️ " + e.message));
-    }
-
-    function sendMessage() {
-      const msg = document.getElementById("message").value;
-      const user = auth.currentUser.email;
-      db.ref("messages").push({ text: msg, sender: user });
-      document.getElementById("message").value = "";
-    }
-
-    function listenForMessages() {
-      db.ref("messages").on("child_added", snap => {
-        const data = snap.val();
-        const msgDiv = document.createElement("div");
-        msgDiv.innerText = `${data.sender}: ${data.text}`;
-        document.getElementById("messages").appendChild(msgDiv);
-      });
-    }
-  </script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
