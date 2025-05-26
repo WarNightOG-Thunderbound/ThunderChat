@@ -1,14 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThunderChat</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .chat-box {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .msg {
+      background-color: #1e293b;
+      padding: 8px;
+      margin: 6px;
+      border-radius: 8px;
+      max-width: 75%;
+      word-wrap: break-word;
+    }
+    .sender {
+      font-size: 12px;
+      color: #38bdf8;
+    }
+    @media screen and (max-width: 600px) {
+      .auth-form, .chat-section {
+        padding: 10px;
+      }
+      .chat-box {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+  <div id="auth-section" class="w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-4 text-center">ThunderChat</h2>
+    <input id="email" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" type="email" placeholder="Email">
+    <input id="password" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" type="password" placeholder="Password">
+    <button id="loginBtn" class="w-full p-2 mb-2 bg-blue-600 hover:bg-blue-700 rounded">Login</button>
+    <button id="registerBtn" class="w-full p-2 mb-4 bg-green-600 hover:bg-green-700 rounded">Register</button>
+  </div>
+
+  <div id="chat-section" class="hidden w-full max-w-md">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-xl font-semibold">Group Chat</h3>
+      <button id="logoutBtn" class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
+    </div>
+    <div id="chat-box" class="chat-box bg-gray-800 p-2 rounded overflow-y-auto h-80 mb-2"></div>
+    <div class="flex gap-2">
+      <input id="messageInput" class="flex-1 p-2 rounded bg-gray-700 text-white" type="text" placeholder="Type a message...">
+      <button id="sendBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Send</button>
+    </div>
+  </div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
@@ -24,107 +82,63 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const authSection = document.getElementById('authSection');
-    const chatContainer = document.getElementById('chatContainer');
-    const authForm = document.getElementById('authForm');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const authButton = document.getElementById('authButton');
-    const switchMode = document.getElementById('switchMode');
-    const formTitle = document.getElementById('formTitle');
-    const switchText = document.getElementById('switchText');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const messageList = document.getElementById('messageList');
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const chatSection = document.getElementById("chat-section");
+    const authSection = document.getElementById("auth-section");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatBox = document.getElementById("chat-box");
 
-    let isLogin = true;
+    loginBtn.onclick = () => {
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => console.log("Logged in"))
+        .catch(err => alert(err.message));
+    };
 
-    switchMode.addEventListener('click', () => {
-      isLogin = !isLogin;
-      formTitle.textContent = isLogin ? "Login" : "Register";
-      authButton.textContent = isLogin ? "Login" : "Register";
-      switchText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
-      switchMode.textContent = isLogin ? "Register" : "Login";
-    });
+    registerBtn.onclick = () => {
+      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => console.log("Registered"))
+        .catch(err => alert(err.message));
+    };
 
-    authForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const userEmail = email.value;
-      const userPass = password.value;
+    logoutBtn.onclick = () => {
+      signOut(auth);
+    };
 
-      try {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, userEmail, userPass);
-        } else {
-          await createUserWithEmailAndPassword(auth, userEmail, userPass);
-        }
-      } catch (err) {
-        alert(err.message);
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, user => {
       if (user) {
-        authSection.classList.add('hidden');
-        chatContainer.classList.remove('hidden');
+        authSection.classList.add("hidden");
+        chatSection.classList.remove("hidden");
       } else {
-        authSection.classList.remove('hidden');
-        chatContainer.classList.add('hidden');
+        authSection.classList.remove("hidden");
+        chatSection.classList.add("hidden");
       }
     });
 
-    logoutBtn.addEventListener('click', () => signOut(auth));
-
-    sendBtn.addEventListener('click', () => {
-      const message = messageInput.value.trim();
-      if (message !== '') {
-        push(ref(db, 'messages'), {
-          text: message,
-          timestamp: Date.now(),
+    sendBtn.onclick = () => {
+      const msg = messageInput.value.trim();
+      if (msg) {
+        push(ref(db, "messages"), {
+          sender: auth.currentUser.email,
+          text: msg
         });
-        messageInput.value = '';
+        messageInput.value = "";
       }
-    });
+    };
 
-    onChildAdded(ref(db, 'messages'), (snapshot) => {
-      const li = document.createElement('li');
-      li.textContent = snapshot.val().text;
-      messageList.appendChild(li);
-      messageList.scrollTop = messageList.scrollHeight;
+    onChildAdded(ref(db, "messages"), snapshot => {
+      const { sender, text } = snapshot.val();
+      const div = document.createElement("div");
+      div.className = "msg";
+      div.innerHTML = `<div class="sender">${sender}</div><div>${text}</div>`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
     });
   </script>
-</head>
-<body class="bg-gray-900 text-white font-sans">
-  <!-- Auth Section -->
-  <div id="authSection" class="p-6 max-w-md mx-auto my-10 bg-gray-800 rounded-lg shadow-lg">
-    <h2 id="formTitle" class="text-xl font-bold mb-4 text-center">Login</h2>
-    <form id="authForm" class="space-y-4">
-      <input type="email" id="email" placeholder="Email" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <input type="password" id="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 text-white" required />
-      <button id="authButton" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Login</button>
-    </form>
-    <p class="mt-4 text-center text-sm">
-      <span id="switchText">Don't have an account?</span>
-      <button id="switchMode" class="text-blue-400 underline">Register</button>
-    </p>
-  </div>
-
-  <!-- Chat Container -->
-  <div id="chatContainer" class="hidden max-w-xl mx-auto my-8 bg-gray-800 rounded-lg shadow-lg p-4">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">ThunderChat Room 🌩️</h2>
-      <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
-    </div>
-
-    <ul id="messageList" class="bg-gray-900 h-64 overflow-y-scroll p-4 rounded mb-4 space-y-2 text-sm">
-      <!-- Messages appear here -->
-    </ul>
-
-    <div class="flex space-x-2">
-      <textarea id="messageInput" placeholder="Type a message..." class="flex-grow p-2 bg-gray-700 rounded resize-none h-12 text-white"></textarea>
-      <button id="sendBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Send</button>
-    </div>
-  </div>
 </body>
+
 </html>
