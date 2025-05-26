@@ -11,35 +11,69 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #0f172a;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .chat-box {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    .msg {
-      background-color: #1e293b;
-      padding: 8px;
-      margin: 6px;
-      border-radius: 8px;
-      max-width: 75%;
-      word-wrap: break-word;
-    }
-    .sender {
-      font-size: 12px;
-      color: #38bdf8;
-    }
-    @media screen and (max-width: 600px) {
-      .auth-form, .chat-section {
-        padding: 10px;
-      }
-      .chat-box {
-        max-height: 300px;
-      }
-    }
-  </style>
+  background: linear-gradient(to bottom right, #0f172a, #0ea5e9);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 1.5s ease-in;
+  transition: background 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input {
+  @apply w-full p-3 rounded-lg border border-cyan-400 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  @apply w-full py-3 rounded-lg text-white bg-cyan-600 hover:bg-blue-700 transition duration-300 shadow-lg;
+  font-weight: 600;
+}
+
+.chat-bubble {
+  @apply bg-cyan-700 text-white p-3 rounded-xl shadow-lg mb-2 max-w-xs;
+  animation: bubbleIn 0.3s ease-out;
+}
+
+@keyframes bubbleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.chat-bubble.self {
+  @apply bg-blue-500 text-white ml-auto;
+}
+
+#app {
+  animation: fadeIn 1s ease;
+  background: linear-gradient(to bottom, #f0f9ff, #dbeafe);
+  border: 2px solid #0ea5e9;
+}
+
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background-color: #0ea5e9;
+  border-radius: 10px;
+}
+
+   </style>
 </head>
 
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
