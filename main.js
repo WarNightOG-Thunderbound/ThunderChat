@@ -1,9 +1,5 @@
-// Import Firebase functions
-import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, serverTimestamp } from "firebase/database";
+import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, serverTimestamp, set } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-
-// Initialize Firebase app in your firebase.js and import it here if needed
-// Assuming firebase app already initialized and imported as 'app'
 
 const db = getDatabase();
 const auth = getAuth();
@@ -16,66 +12,52 @@ const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
-let joinTime = Date.now();  // Timestamp when user joins (page loads or connects)
+let serverJoinTime = null;
 
-// Listen for auth state changes
 onAuthStateChanged(auth, user => {
   if (user) {
-    // User logged in
     loginForm.style.display = 'none';
     registerForm.style.display = 'none';
     chatContainer.style.display = 'block';
 
-    joinTime = Date.now(); // Reset join time on login
-
-    startListeningForMessages();
+    getAccurateServerTime().then((time) => {
+      serverJoinTime = time;
+      startListeningForMessages(serverJoinTime);
+    });
   } else {
-    // User logged out
     loginForm.style.display = 'block';
     registerForm.style.display = 'block';
     chatContainer.style.display = 'none';
-
     clearMessages();
   }
 });
 
-// Register new user
 registerForm.addEventListener('submit', e => {
   e.preventDefault();
   const email = registerForm.email.value;
   const password = registerForm.password.value;
 
   createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      registerForm.reset();
-    })
+    .then(() => registerForm.reset())
     .catch(error => alert(error.message));
 });
 
-// Login existing user
 loginForm.addEventListener('submit', e => {
   e.preventDefault();
   const email = loginForm.email.value;
   const password = loginForm.password.value;
 
   signInWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      loginForm.reset();
-    })
+    .then(() => loginForm.reset())
     .catch(error => alert(error.message));
 });
 
-// Logout user
 logoutBtn.addEventListener('click', () => {
   signOut(auth);
   clearMessages();
 });
 
-// Send new message
-sendBtn.addEventListener('click', () => {
-  sendMessage();
-});
-
+sendBtn.addEventListener('click', () => sendMessage());
 messageInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -93,23 +75,37 @@ function sendMessage() {
     uid: user.uid,
     email: user.email,
     text: messageText,
-    timestamp: serverTimestamp()
+    timestamp: Date.now()
   });
   messageInput.value = '';
 }
 
-// Clear message list UI
 function clearMessages() {
   messageList.innerHTML = '';
 }
 
-// Listen only for messages sent after user joined (joinTime)
-function startListeningForMessages() {
+// ✅ Accurate server time using Firebase
+function getAccurateServerTime() {
+  return new Promise((resolve) => {
+    const timeRef = ref(db, 'serverTime');
+    const dummyRef = ref(db, 'temp/' + Math.random().toString(36).substring(2));
+
+    set(dummyRef, { t: serverTimestamp() }).then(() => {
+      onChildAdded(ref(db, 'temp'), (snapshot) => {
+        const val = snapshot.val();
+        if (val.t) {
+          resolve(val.t);
+        }
+      });
+    });
+  });
+}
+
+function startListeningForMessages(startTime) {
   clearMessages();
 
   const messagesRef = ref(db, 'messages');
-  // Query messages ordered by timestamp starting from joinTime
-  const messagesQuery = query(messagesRef, orderByChild('timestamp'), startAt(joinTime));
+  const messagesQuery = query(messagesRef, orderByChild('timestamp'), startAt(startTime));
 
   onChildAdded(messagesQuery, snapshot => {
     const message = snapshot.val();
@@ -118,6 +114,6 @@ function startListeningForMessages() {
     const messageElement = document.createElement('li');
     messageElement.textContent = `${message.email}: ${message.text}`;
     messageList.appendChild(messageElement);
-    messageList.scrollTop = messageList.scrollHeight; // Auto-scroll to bottom
+    messageList.scrollTop = messageList.scrollHeight;
   });
 }
