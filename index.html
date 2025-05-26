@@ -327,6 +327,13 @@ h2, h3 {
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     });
+    <script>
+  document.getElementById("clearHistory").addEventListener("click", function () {
+    const messages = document.getElementById("messages");
+    messages.innerHTML = ""; // Clears all chat bubbles
+  });
+</script>
+
   </script>
 </body>
 
