@@ -10,254 +10,203 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-   /* ===== Body & General ===== */
+:root {
+  --primary: #2563eb;
+  --secondary: #059669;
+  --accent: #3b82f6;
+  --light: #ffffff;
+  --dark: #1e293b;
+  --gray: #e2e8f0;
+  --text: #334155;
+}
+
 body {
-  background: linear-gradient(135deg, #e6f0ff 0%, #ffffff 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1f2937;
-  margin: 0;
-  padding: 0;
+  background-color: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeInSlide 1s ease forwards;
+  color: var(--text);
+  line-height: 1.5;
+  padding: 0;
+  margin: 0;
 }
 
-/* ===== Animations ===== */
-@keyframes fadeInSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes popIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ===== Container ===== */
-#app {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(3, 102, 214, 0.15);
+/* Mobile-first container */
+#auth-section, #chat-section {
   width: 100%;
-  max-width: 420px;
-  padding: 32px;
-  box-sizing: border-box;
-  animation: popIn 0.6s ease forwards;
+  max-width: 100%;
+  padding: 1.5rem;
+  background-color: var(--light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  margin: 0;
 }
 
-/* ===== Heading ===== */
-h1 {
-  font-weight: 800;
-  font-size: 2.75rem;
-  color: #2563eb; /* Tailwind Blue-600 */
+/* Header styles */
+h2, h3 {
+  color: var(--dark);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
   text-align: center;
-  margin-bottom: 28px;
-  user-select: none;
-  letter-spacing: 0.05em;
 }
 
-/* ===== Input fields ===== */
+/* Input fields */
 .input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--gray);
+  border-radius: 0.75rem;
   font-size: 1rem;
-  border-radius: 16px;
-  border: 2px solid #cbd5e1; /* Tailwind Gray-300 */
-  background-color: #f9fafb; /* Tailwind Gray-50 */
-  color: #374151; /* Gray-700 */
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.05);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 20px;
-  outline: none;
-}
-
-.input::placeholder {
-  color: #9ca3af; /* Gray-400 */
-  font-style: italic;
+  background-color: var(--light);
+  transition: all 0.2s ease;
 }
 
 .input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 8px #2563ebaa;
-  background-color: #ffffff;
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* ===== Buttons ===== */
+/* Buttons */
 .button {
   width: 100%;
-  padding: 14px 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border-radius: 16px;
-  cursor: pointer;
+  padding: 0.875rem;
+  margin-bottom: 0.75rem;
   border: none;
-  transition: background-color 0.3s ease, transform 0.15s ease;
-  box-shadow: 0 6px 12px rgb(37 99 235 / 0.4);
-  user-select: none;
-  margin-bottom: 14px;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 18px rgb(37 99 235 / 0.6);
-}
-
-.button:active {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgb(37 99 235 / 0.5);
-}
-
-/* Register Button */
-#register.button {
-  background-color: #2563eb;
+#loginBtn {
+  background-color: var(--primary);
   color: white;
 }
 
-#register.button:hover {
-  background-color: #1d4ed8;
-}
-
-/* Login Button */
-#login.button {
-  background-color: #3b82f6;
+#registerBtn {
+  background-color: var(--secondary);
   color: white;
 }
 
-#login.button:hover {
-  background-color: #2563eb;
-}
-
-/* Logout Button */
-#logout.button {
+#logoutBtn {
   background-color: #ef4444;
   color: white;
-  margin-top: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
-#logout.button:hover {
-  background-color: #dc2626;
-}
-
-/* ===== Chat Section ===== */
-#chat {
-  margin-top: 24px;
-}
-
-#messages {
-  height: 320px;
-  overflow-y: auto;
-  background-color: #f3f4f6; /* Gray-100 */
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: inset 0 6px 10px rgb(0 0 0 / 0.05);
-  scroll-behavior: smooth;
-}
-
-/* Custom scrollbar for modern browsers */
-#messages::-webkit-scrollbar {
-  width: 8px;
-}
-#messages::-webkit-scrollbar-thumb {
-  background-color: #93c5fd; /* Blue-300 */
-  border-radius: 10px;
-}
-#messages::-webkit-scrollbar-track {
-  background-color: #e0e7ff; /* Indigo-100 */
-  border-radius: 10px;
-}
-
-/* ===== Chat bubbles ===== */
-.chat-bubble {
-  max-width: 75%;
-  background-color: #bae6fd; /* Light Blue-200 */
-  color: #1e40af; /* Blue-900 */
-  padding: 14px 20px;
-  border-radius: 22px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 8px rgb(59 130 246 / 0.3);
-  animation: popIn 0.25s ease forwards;
-  word-wrap: break-word;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-.chat-bubble.self {
-  background-color: #3b82f6; /* Blue-500 */
+#sendBtn {
+  background-color: var(--primary);
   color: white;
-  margin-left: auto;
-  box-shadow: 0 6px 12px rgb(29 78 216 / 0.8);
+  padding: 0.75rem 1rem;
 }
 
-/* ===== Message Input ===== */
+/* Chat box */
+#chat-box {
+  height: 60vh;
+  max-height: 500px;
+  background-color: var(--light);
+  border: 1px solid var(--gray);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Message bubbles */
+.msg {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  background-color: #f1f5f9;
+  border-radius: 0.75rem;
+  max-width: 80%;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.sender {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Message input area */
+#message-input-area {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 #messageInput {
-  margin-top: 14px;
-  border-radius: 18px;
-  border: 2px solid #cbd5e1;
-  padding: 12px 18px;
-  font-size: 1rem;
-  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.06);
-  transition: border-color 0.3s ease;
+  flex: 1;
 }
 
-#messageInput:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 10px #2563ebaa;
-  outline: none;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Responsive & Mobile ===== */
-@media (max-width: 480px) {
-  #app {
-    max-width: 95vw;
-    padding: 24px 16px;
-    border-radius: 20px;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-  
-  #messages {
-    height: 280px;
-    padding: 16px;
-  }
-  
-  .chat-bubble {
-    font-size: 0.95rem;
-    padding: 12px 16px;
-  }
-  
-  #messageInput {
-    font-size: 0.95rem;
-    padding: 10px 14px;
-  }
-  
-  .button {
-    font-size: 1rem;
-    padding: 12px 0;
-    border-radius: 14px;
+/* Safe area for notches */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 }
 
-/* ===== Utility ===== */
-.text-center {
-  text-align: center;
+/* Responsive adjustments */
+@media (min-width: 400px) {
+  #auth-section, #chat-section {
+    max-width: 400px;
+    margin: 1rem auto;
+    border-radius: 1rem;
+  }
 }
 
+/* iPhone X/11/12/13/14/15 specific optimizations */
+@media only screen 
+  and (device-width: 375px) 
+  and (device-height: 812px) 
+  and (-webkit-device-pixel-ratio: 3),
+  only screen 
+  and (device-width: 414px) 
+  and (device-height: 896px) 
+  and (-webkit-device-pixel-ratio: 2),
+  only screen 
+  and (device-width: 414px) 
+  and (device-height: 896px) 
+  and (-webkit-device-pixel-ratio: 3),
+  only screen 
+  and (device-width: 390px) 
+  and (device-height: 844px) 
+  and (-webkit-device-pixel-ratio: 3),
+  only screen 
+  and (device-width: 428px) 
+  and (device-height: 926px) 
+  and (-webkit-device-pixel-ratio: 3) {
+  #chat-box {
+    height: 55vh;
+  }
+}
+
+/* Redmi/Oppo specific optimizations */
+@media (max-width: 360px) {
+  .input, .button {
+    padding: 0.75rem;
+    font-size: 0.9375rem;
+  }
+  
+  h2, h3 {
+    font-size: 1.25rem;
+  }
+}
+ 
    </style>
 </head>
 
