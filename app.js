@@ -1,12 +1,8 @@
-// Firebase imports
+// Import Firebase from CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// 🔥 Your ThunderChat Firebase config
+// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBU2zSeAsRdIOXFQNLz5AqFCgggFcPsoSw",
   authDomain: "thuchat-f5649.firebaseapp.com",
@@ -17,32 +13,32 @@ const firebaseConfig = {
   appId: "1:191671896471:web:bd3b3075440e3ac41cdcd2"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const db = getDatabase(app);
 
-function register() {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+// Generate user name like User0, User1, etc.
+let userName = "User" + Math.floor(Math.random() * 10000);
 
-  createUserWithEmailAndPassword(auth, email, pass)
-    .then((userCredential) => {
-      document.getElementById("message").innerText = "✅ Registered Successfully!";
-    })
-    .catch((error) => {
-      document.getElementById("message").innerText = "❌ " + error.message;
+// Send message
+document.getElementById("sendBtn").onclick = () => {
+  const msg = document.getElementById("msgInput").value;
+  if (msg.trim() !== "") {
+    push(ref(db, "messages"), {
+      user: userName,
+      text: msg,
+      time: Date.now()
     });
-}
+    document.getElementById("msgInput").value = "";
+  }
+};
 
-function login() {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, pass)
-    .then((userCredential) => {
-      document.getElementById("message").innerText = "✅ Logged in!";
-      // Redirect to chat page here if needed
-    })
-    .catch((error) => {
-      document.getElementById("message").innerText = "❌ " + error.message;
-    });
-}
+// Show messages live
+const chat = document.getElementById("chat");
+onChildAdded(ref(db, "messages"), (snapshot) => {
+  const data = snapshot.val();
+  const line = document.createElement("div");
+  line.innerHTML = `<strong>${data.user}:</strong> ${data.text}`;
+  chat.appendChild(line);
+  chat.scrollTop = chat.scrollHeight;
+});
