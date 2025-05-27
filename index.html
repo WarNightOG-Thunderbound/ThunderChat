@@ -1062,12 +1062,6 @@
             signOut
         } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         // No longer need getStorage, ref as storageRef, uploadBytes, getDownloadURL
-        // import { 
-        //     getStorage,
-        //     ref as storageRef,
-        //     uploadBytes,
-        //     getDownloadURL
-        // } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
@@ -1082,7 +1076,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        // const storage = getStorage(app); // No longer needed
 
         // DOM Elements
         const loadingScreen = document.getElementById('loading-screen');
@@ -1674,6 +1667,7 @@
                 privateMessagesDiv.appendChild(msg);
                 privateMessagesDiv.scrollTop = privateMessagesDiv.scrollHeight;
             });
+            console.log("Entered private chat with:", contact.username, "Private chat section display:", privateChatSection.style.display);
         }
 
         // Back button for private chat
