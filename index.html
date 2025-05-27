@@ -76,7 +76,7 @@
             background: linear-gradient(90deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
             color: white;
             text-align: center;
-            box-shadow: 0 8px 20px var(--shadow-strong); /* Use CSS variable */
+            box-shadow: 0 8px 20px var(--shadow-strong); /* Strong, vibrant shadow */
             border-bottom-left-radius: 30px; /* Very rounded bottom corners */
             border-bottom-right-radius: 30px;
             position: relative;
@@ -140,7 +140,7 @@
 
         .tab-btn.active {
             background: rgba(255,255,255,0.4); /* More opaque when active */
-            box-shadow: 0 6px 15px var(--shadow-strong); /* Use CSS variable */
+            box-shadow: 0 6px 15px var(--shadow-strong); /* Stronger shadow for active */
             transform: translateY(-4px); /* More pronounced lift */
             border-color: white; /* Solid white border for active */
         }
@@ -169,7 +169,7 @@
             border-top: 3px solid var(--color-border-light); /* Use CSS variable */
             border-top-left-radius: 25px; /* More rounded corners */
             border-top-right-radius: 25px;
-            box-shadow: 0 -8px 20px var(--shadow-light); /* Use CSS variable */
+            box-shadow: 0 -8px 20px var(--shadow-light); /* Stronger shadow */
             display: flex;
             gap: 0.8em; /* More space between input and button */
             align-items: center;
@@ -185,7 +185,7 @@
             padding: 1.2em 1.5em; /* Generous padding */
             background: var(--color-white); /* Use CSS variable */
             border-radius: 22px; /* Super rounded */
-            box-shadow: 0 4px 12px var(--shadow-light); /* Use CSS variable */
+            box-shadow: 0 4px 12px var(--shadow-light); /* Deeper shadow */
             max-width: 90%; /* Wider messages */
             word-wrap: break-word;
             transform: translateY(30px); /* Start further down */
@@ -211,7 +211,7 @@
 
         .message.sent {
             align-self: flex-end;
-            background: linear-gradient(to right, var(--color-cyan-light), var(--color-cyan-primary)); /* Use CSS variables */
+            background: linear-gradient(to right, var(--color-cyan-light), var(--color-cyan-primary)); /* Vibrant light cyan gradient */
             color: var(--color-text-primary); /* Ensure text is readable */
             border-bottom-right-radius: 8px; /* Pointed corner */
             margin-right: 10px; /* Space from edge */
@@ -227,7 +227,7 @@
         .message.received {
             align-self: flex-start;
             background: var(--color-white); /* Use CSS variable */
-            border: 1px solid var(--color-border-light); /* Use CSS variable */
+            border: 1px solid var(--color-border-light); /* Subtle border for received messages */
             color: var(--color-text-primary); /* Ensure text is readable */
             border-bottom-left-radius: 8px; /* Pointed corner */
             margin-left: 10px; /* Space from edge */
@@ -242,7 +242,7 @@
 
         .message .sender {
             font-weight: 700; /* Bolder sender name */
-            color: var(--color-cyan-dark); /* Use CSS variable */
+            color: var(--color-cyan-dark); /* Darker cyan */
             margin-bottom: 0.5em;
             font-size: 0.95em; /* Slightly larger sender name */
         }
@@ -253,7 +253,7 @@
 
         .timestamp {
             font-size: 0.7em;
-            color: var(--color-text-secondary); /* Use CSS variable */
+            color: var(--color-text-secondary); /* Softer grey */
             text-align: right;
             margin-top: 0.5em;
         }
@@ -261,7 +261,7 @@
         /* Input, Button, Textarea General Styles */
         input, button, textarea {
             padding: 1em; /* Generous padding */
-            border: 1px solid var(--color-input-border); /* Use CSS variable */
+            border: 1px solid var(--color-input-border); /* Softer border color */
             border-radius: 15px; /* More rounded */
             width: 100%;
             font-size: 1.05em; /* Slightly larger font */
@@ -273,20 +273,20 @@
 
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--color-cyan-primary); /* Use CSS variable */
-            box-shadow: 0 0 0 5px var(--shadow-strong); /* Use CSS variable */
-            background-color: var(--color-input-focus-bg); /* Use CSS variable */
+            border-color: var(--color-cyan-primary); /* Vibrant cyan focus */
+            box-shadow: 0 0 0 5px var(--shadow-strong); /* Stronger, wider focus glow */
+            background-color: var(--color-input-focus-bg); /* Very light cyan on focus */
         }
 
         /* Primary Button Styles */
         button {
-            background: linear-gradient(45deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
+            background: linear-gradient(45deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Bold cyan gradient */
             color: white;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
             font-weight: 700; /* Bolder text */
-            box-shadow: 0 5px 15px var(--shadow-strong); /* Use CSS variable */
+            box-shadow: 0 5px 15px var(--shadow-strong); /* Vibrant shadow */
             flex-shrink: 0;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -295,7 +295,7 @@
         button:hover {
             background: linear-gradient(45deg, var(--color-cyan-gradient-end) 0%, var(--color-cyan-gradient-start) 100%); /* Reverse gradient on hover */
             transform: translateY(-3px); /* More pronounced lift */
-            box-shadow: 0 8px 20px var(--shadow-strong); /* Use CSS variable */
+            box-shadow: 0 8px 20px var(--shadow-strong); /* Stronger shadow */
         }
 
         button:active {
@@ -305,14 +305,14 @@
 
         /* Secondary Button Styles */
         button.secondary {
-            background: var(--color-border-light); /* Use CSS variable */
-            color: var(--color-text-primary); /* Use CSS variable */
+            background: var(--color-border-light); /* Light grey/cyan */
+            color: var(--color-text-primary); /* Darker text */
             border: 1px solid var(--color-input-border); /* Use CSS variable */
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         button.secondary:hover {
-            background: var(--color-cyan-light); /* Use CSS variable */
+            background: var(--color-cyan-light); /* Slightly darker light cyan on hover */
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
@@ -328,8 +328,8 @@
             margin: 2em auto; /* More vertical margin */
             background: var(--color-white); /* Use CSS variable */
             border-radius: 25px; /* Very rounded container */
-            box-shadow: 0 10px 30px var(--shadow-light); /* Use CSS variable */
-            border: 1px solid var(--color-border-light); /* Use CSS variable */
+            box-shadow: 0 10px 30px var(--shadow-light); /* Deeper, softer shadow */
+            border: 1px solid var(--color-border-light); /* Subtle border */
             animation: fadeIn 0.8s ease-out forwards; /* Fade in animation */
         }
 
@@ -362,7 +362,7 @@
         }
 
         .toggle-form:hover {
-            color: var(--color-cyan-dark); /* Use CSS variable */
+            color: var(--color-cyan-dark); /* Darker cyan on hover */
         }
 
         /* Chat Messages Container */
@@ -381,7 +381,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.2em 1.5em; /* More padding */
-            background: linear-gradient(90deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
+            background: linear-gradient(90deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Bold cyan gradient */
             color: white;
             position: sticky;
             top: 0;
@@ -417,7 +417,7 @@
         .group-options h2, .contacts-list h2 {
             font-size: 2.2em; /* Larger headings */
             margin-bottom: 1.5em;
-            color: var(--color-cyan-dark); /* Use CSS variable */
+            color: var(--color-cyan-dark); /* Darker cyan */
             text-shadow: 0 1px 3px rgba(0,0,0,0.1);
             font-weight: 800;
         }
@@ -447,8 +447,8 @@
         .loading-spinner {
             width: 80px; /* Even larger spinner */
             height: 80px;
-            border: 10px solid var(--color-border-light); /* Use CSS variable */
-            border-top-color: var(--color-cyan-primary); /* Use CSS variable */
+            border: 10px solid var(--color-border-light); /* Thicker border */
+            border-top-color: var(--color-cyan-primary); /* Vibrant cyan */
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 2em;
@@ -474,13 +474,13 @@
             background: var(--color-white); /* Use CSS variable */
             border-radius: 20px;
             padding: 2em;
-            box-shadow: 0 5px 20px var(--shadow-light); /* Use CSS variable */
+            box-shadow: 0 5px 20px var(--shadow-light); /* Stronger shadow */
             border: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
         .groups-list h3 {
             font-size: 1.5em;
-            color: var(--color-cyan-dark); /* Use CSS variable */
+            color: var(--color-cyan-dark); /* Darker cyan */
             margin-bottom: 1.2em;
             font-weight: 700;
         }
@@ -488,7 +488,7 @@
         .group-item, .contact-item {
             padding: 1.2em; /* More padding */
             margin: 0.8em 0; /* More margin */
-            background: var(--color-light-blue-bg); /* Use CSS variable */
+            background: var(--color-light-blue-bg); /* Very light blue background */
             border-radius: 15px; /* More rounded */
             display: flex;
             align-items: center;
@@ -499,7 +499,7 @@
         }
 
         .group-item:hover, .contact-item:hover {
-            background: var(--color-border-light); /* Use CSS variable */
+            background: var(--color-border-light); /* Lighter cyan on hover */
             transform: translateY(-3px) scale(1.02); /* More pronounced lift and slight scale */
             box-shadow: 0 6px 18px rgba(0,0,0,0.15);
         }
@@ -509,7 +509,7 @@
             width: 60px; /* Even larger avatars */
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(45deg, var(--color-cyan-primary), var(--color-cyan-gradient-end)); /* Use CSS variables */
+            background: linear-gradient(45deg, var(--color-cyan-primary), var(--color-cyan-gradient-end)); /* Gradient avatar background */
             color: white;
             display: flex;
             align-items: center;
@@ -518,8 +518,8 @@
             font-weight: 700;
             overflow: hidden;
             flex-shrink: 0;
-            border: 4px solid var(--color-white); /* Use CSS variable */
-            box-shadow: 0 0 0 4px var(--shadow-strong); /* Use CSS variable */
+            border: 4px solid var(--color-white); /* White border */
+            box-shadow: 0 0 0 4px var(--shadow-strong); /* Stronger glow */
         }
 
         .group-avatar img, .contact-avatar img, .profile-avatar img {
@@ -571,7 +571,7 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 1.2em; /* Decreased size */
+            font-size: 1em; /* Decreased size */
             transition: transform 0.3s ease-out;
             padding: 0.2em; /* Smaller padding */
             margin-left: 1em; /* Space from group name */
@@ -588,8 +588,8 @@
             right: 0;
             bottom: 0;
             width: 350px; /* Wider settings menu */
-            background: linear-gradient(to bottom, var(--color-white) 0%, var(--color-light-blue-bg) 100%); /* Use CSS variables */
-            box-shadow: -8px 0 30px var(--shadow-medium); /* Use CSS variable */
+            background: linear-gradient(to bottom, var(--color-white) 0%, var(--color-light-blue-bg) 100%); /* Subtle gradient */
+            box-shadow: -8px 0 30px var(--shadow-medium); /* Stronger shadow */
             z-index: 1000; /* Ensure it's on top */
             padding: 2em;
             transform: translateX(100%);
@@ -608,12 +608,12 @@
             align-items: center;
             margin-bottom: 2em;
             padding-bottom: 1.5em;
-            border-bottom: 2px solid var(--color-border-light); /* Use CSS variable */
+            border-bottom: 2px solid var(--color-border-light); /* Thicker border */
         }
 
         .settings-header h3 {
             font-size: 2em;
-            color: var(--color-cyan-dark); /* Use CSS variable */
+            color: var(--color-cyan-dark); /* Darker cyan */
             margin: 0;
             font-weight: 700;
         }
@@ -621,7 +621,7 @@
         .close-settings {
             background: none;
             border: none;
-            font-size: 2.5em; /* Very large close icon */
+            font-size: 2em; /* Smaller close icon */
             cursor: pointer;
             color: var(--color-text-secondary); /* Use CSS variable */
             transition: color 0.3s, transform 0.3s;
@@ -643,7 +643,7 @@
             width: 140px; /* Huge avatars */
             height: 140px;
             border-radius: 50%;
-            background: linear-gradient(45deg, var(--color-border-light), var(--color-cyan-light)); /* Use CSS variables */
+            background: linear-gradient(45deg, var(--color-border-light), var(--color-cyan-light)); /* Light cyan gradient */
             margin-bottom: 1.5em;
             overflow: hidden;
             display: flex;
@@ -652,8 +652,8 @@
             font-size: 4em; /* Massive for initials */
             color: var(--color-cyan-dark); /* Use CSS variable */
             font-weight: 800;
-            border: 5px solid var(--color-white); /* Use CSS variable */
-            box-shadow: 0 0 0 6px var(--shadow-strong), 0 5px 20px var(--shadow-light); /* Use CSS variables */
+            border: 5px solid var(--color-white); /* White border */
+            box-shadow: 0 0 0 6px var(--shadow-strong), 0 5px 20px var(--shadow-light); /* Double glow and shadow */
         }
 
         .avatar-preview img {
@@ -663,7 +663,7 @@
         }
 
         .user-id-display {
-            background: var(--color-light-blue-bg); /* Use CSS variable */
+            background: var(--color-light-blue-bg); /* Very light blue background */
             padding: 1.2em;
             border-radius: 12px;
             margin: 2em 0;
@@ -722,11 +722,11 @@
             background-color: var(--color-modal-bg); /* Use CSS variable */
             margin: auto;
             padding: 40px; /* Very generous padding */
-            border: 2px solid var(--color-border-light); /* Use CSS variable */
+            border: 2px solid var(--color-border-light); /* More prominent border */
             width: 95%;
             max-width: 500px; /* Wider max-width */
             border-radius: 20px; /* More rounded */
-            box-shadow: 0 15px 40px var(--shadow-medium); /* Use CSS variable */
+            box-shadow: 0 15px 40px var(--shadow-medium); /* Very pronounced shadow */
             position: relative;
             text-align: center;
             animation: fadeInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; /* Springy animation */
@@ -738,8 +738,8 @@
         }
 
         .close-alert-btn {
-            color: var(--color-input-border); /* Use CSS variable */
-            font-size: 38px; /* Even larger close button */
+            color: var(--color-input-border); /* Softer grey */
+            font-size: 28px; /* Adjusted size */
             font-weight: bold;
             position: absolute;
             top: 15px;
@@ -857,7 +857,7 @@
                 margin-bottom: 0.5em; /* Space between input and button */
             }
             .group-settings-btn {
-                font-size: 1em; /* Further decrease size on very small screens */
+                font-size: 0.8em; /* Further decrease size on very small screens */
             }
             .theme-options {
                 flex-direction: column; /* Stack theme buttons vertically on small screens */
@@ -958,7 +958,7 @@
                 <div class="private-chat-header">
                     <button class="back-btn" id="back-private-btn">←</button>
                     <h2 id="contact-name-display"></h2>
-                </div>
+                    <button class="group-settings-btn" id="block-contact-btn">🚫</button> </div>
                 <div id="private-messages"></div>
                 <footer>
                     <input id="private-msg-input" type="text" placeholder="Type a message..." />
@@ -1676,8 +1676,8 @@
         // Enter private chat
         function enterPrivateChat(contact) {
             currentContact = contact.id;
-            contactsSection.style.display = 'none';
-            privateChatSection.style.display = 'flex';
+            contactsSection.style.display = 'none'; // Hide contacts section
+            privateChatSection.style.display = 'flex'; // Show private chat section
             contactNameDisplay.textContent = contact.username || 'Unknown User';
             privateMessagesDiv.innerHTML = '';
             
