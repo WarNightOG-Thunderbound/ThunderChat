@@ -318,7 +318,7 @@
         }
 
         /* Section Containers (Auth, Groups, Contacts, Settings) */
-        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section {
+        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
             display: none; /* Controlled by JS */
             flex-direction: column;
             align-items: center;
@@ -799,7 +799,7 @@
             main {
                 padding: 3em;
             }
-            .auth-form, .group-options, .contacts-section, .settings-section {
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
                 padding: 3.5em;
             }
             .message {
@@ -824,7 +824,7 @@
                 width: 80%; /* Make tabs wider on small screens */
                 max-width: none; /* Remove max-width constraint */
             }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section {
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
                 padding: 1.5em;
                 margin: 1em auto; /* Reduce vertical margin */
             }
@@ -941,18 +941,19 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="private-chat-section" class="chat-section" style="display: none;">
-                <div class="private-chat-header">
-                    <button class="back-btn" id="back-private-btn">←</button>
-                    <h2 id="contact-name-display"></h2>
-                    <button class="group-settings-btn" id="block-contact-btn">🚫</button> </div>
-                <div id="private-messages"></div>
-                <footer>
-                    <input id="private-msg-input" type="text" placeholder="Type a message..." />
-                    <button id="send-private-btn">Send</button>
-                </footer>
+        <div id="private-chat-section" class="private-chat-section">
+            <div class="private-chat-header">
+                <button class="back-btn" id="back-private-btn">←</button>
+                <h2 id="contact-name-display"></h2>
+                <button class="group-settings-btn" id="block-contact-btn">🚫</button> 
             </div>
+            <div id="private-messages"></div>
+            <footer>
+                <input id="private-msg-input" type="text" placeholder="Type a message..." />
+                <button id="send-private-btn">Send</button>
+            </footer>
         </div>
 
         <div id="settings-section" class="settings-section">
@@ -1437,111 +1438,6 @@
                 }
             }
         });
-
-        // Load user profile
-        async function loadUserProfile() {
-            if (!currentUser || !currentUser.uid) return;
-            
-            const snapshot = await get(child(ref(db), `users/${currentUser.uid}`));
-            if (snapshot.exists()) {
-                userData = snapshot.val();
-                document.getElementById('profile-username').value = userData.username || '';
-                document.getElementById('profile-status').value = userData.status || '';
-                profileAvatarUrlInput.value = userData.avatarUrl || ''; // Populate URL input
-                
-                // Display the memorable ID if available, otherwise fallback to Firebase UID
-                userIdText.textContent = userData.memorableId || currentUser.uid;
-                
-                if (userData.avatarUrl) {
-                    profileAvatarPreview.innerHTML = `<img src="${userData.avatarUrl}" alt="Profile" onerror="this.onerror=null;this.src='https://placehold.co/140x140/00bcd4/ffffff?text=${userData.username?.charAt(0).toUpperCase() || 'U'}'" />`;
-                    profileAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
-                    profileAvatarPreview.style.color = 'inherit';
-                } else {
-                    profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
-                    profileAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
-                    profileAvatarPreview.style.color = 'white';
-                }
-            }
-        }
-
-        // Load group settings
-        async function loadGroupSettings() {
-            if (!currentGroup) return;
-            
-            const snapshot = await get(child(ref(db), `groups/${currentGroup}`));
-            if (snapshot.exists()) {
-                const groupData = snapshot.val();
-                document.getElementById('group-name-setting').value = currentGroup;
-                document.getElementById('group-password-setting').value = groupData.password || 'No password set';
-                document.getElementById('group-desc-setting').value = groupData.description || '';
-                groupAvatarUrlInput.value = groupData.avatarUrl || ''; // Populate URL input
-                
-                if (groupData.avatarUrl) {
-                    groupAvatarPreview.innerHTML = `<img src="${groupData.avatarUrl}" alt="Group" onerror="this.onerror=null;this.src='https://placehold.co/140x140/00bcd4/ffffff?text=${currentGroup.charAt(0).toUpperCase()}'" />`;
-                    groupAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
-                    groupAvatarPreview.style.color = 'inherit';
-                } else {
-                    groupAvatarPreview.innerHTML = `<div>${currentGroup.charAt(0).toUpperCase()}</div>`;
-                    groupAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
-                    groupAvatarPreview.style.color = 'white';
-                }
-            }
-        }
-
-        // Add contact function
-        async function addContact(contactId) {
-            showLoading('Adding contact...');
-            
-            // Check if user exists (by memorable ID or Firebase UID)
-            let targetUserId = null;
-            const usersRef = ref(db, 'users');
-            const usersSnapshot = await get(usersRef);
-
-            if (usersSnapshot.exists()) {
-                usersSnapshot.forEach(childSnapshot => {
-                    const user = childSnapshot.val();
-                    if (user.memorableId === contactId || childSnapshot.key === contactId) {
-                        targetUserId = childSnapshot.key;
-                        return true; // Break forEach loop
-                    }
-                });
-            }
-
-            if (!targetUserId) {
-                hideLoading();
-                showAlert('User not found!');
-                return;
-            }
-            
-            if (targetUserId === currentUser.uid) {
-                hideLoading();
-                showAlert("You can't add yourself as a contact!");
-                return;
-            }
-
-            // Check if already in contacts
-            const contactsSnapshot = await get(child(ref(db), `userContacts/${currentUser.uid}`));
-            if (contactsSnapshot.exists() && contactsSnapshot.val()[targetUserId]) {
-                hideLoading();
-                showAlert('This user is already in your contacts!');
-                return;
-            }
-            
-            // Add to contacts
-            await set(ref(db, `userContacts/${currentUser.uid}/${targetUserId}`), {
-                addedAt: Date.now()
-            });
-            
-            // Optionally, add reverse contact
-            // This creates a mutual connection. Decide if this is desired behavior.
-            await set(ref(db, `userContacts/${targetUserId}/${currentUser.uid}`), {
-                addedAt: Date.now()
-            });
-            
-            hideLoading();
-            loadUserContacts();
-            showAlert('Contact added successfully!');
-        }
 
         // Load user contacts
         async function loadUserContacts() {
