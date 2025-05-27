@@ -7,6 +7,47 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
+        /* CSS Variables for Theming */
+        :root { /* Light theme variables */
+            --bg-body: linear-gradient(135deg, #f0f8ff 0%, #e0f7fa 100%);
+            --color-text-primary: #263238;
+            --color-text-secondary: #78909c;
+            --color-cyan-dark: #00838f;
+            --color-cyan-primary: #00bcd4;
+            --color-cyan-light: #80deea;
+            --color-cyan-gradient-start: #00bcd4;
+            --color-cyan-gradient-end: #00acc1;
+            --color-white: #ffffff;
+            --color-light-blue-bg: #f5faff;
+            --color-border-light: #e0f2f7;
+            --color-input-border: #b0bec5;
+            --color-input-focus-bg: #f5feff;
+            --color-modal-bg: #fefefe;
+            --shadow-light: rgba(0,0,0,0.15);
+            --shadow-medium: rgba(0,0,0,0.25);
+            --shadow-strong: rgba(0, 188, 212, 0.4);
+        }
+
+        body.dark-theme { /* Dark theme overrides */
+            --bg-body: linear-gradient(135deg, #263238 0%, #1a2226 100%); /* Dark grey to black */
+            --color-text-primary: #e0f7fa; /* Light cyan text */
+            --color-text-secondary: #a7b9c2; /* Lighter grey */
+            --color-cyan-dark: #4dd0e1; /* Lighter cyan */
+            --color-cyan-primary: #00bcd4;
+            --color-cyan-light: #80deea;
+            --color-cyan-gradient-start: #00838f; /* Darker cyan gradient */
+            --color-cyan-gradient-end: #00bcd4;
+            --color-white: #37474f; /* Darker white for elements */
+            --color-light-blue-bg: #37474f; /* Dark background for items */
+            --color-border-light: #455a64; /* Darker border */
+            --color-input-border: #546e7a;
+            --color-input-focus-bg: #2d3b42;
+            --color-modal-bg: #2d3b42;
+            --shadow-light: rgba(0,0,0,0.4);
+            --shadow-medium: rgba(0,0,0,0.5);
+            --shadow-strong: rgba(0, 188, 212, 0.6);
+        }
+
         /* Universal box-sizing for consistent layout and base font */
         * {
             box-sizing: border-box;
@@ -19,8 +60,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif; /* Modern, clean font */
-            background: linear-gradient(135deg, #f0f8ff 0%, #e0f7fa 100%); /* Soft white to light cyan gradient */
-            color: #263238; /* Darker text for contrast */
+            background: var(--bg-body); /* Use CSS variable */
+            color: var(--color-text-primary); /* Use CSS variable */
             display: flex;
             flex-direction: column;
             min-height: 100vh; /* Ensure full viewport height */
@@ -32,10 +73,10 @@
         /* Header Styling */
         header {
             padding: 1.5em 1em; /* Generous padding */
-            background: linear-gradient(90deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            background: linear-gradient(90deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
             color: white;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4); /* Strong, vibrant shadow */
+            box-shadow: 0 8px 20px var(--shadow-strong); /* Use CSS variable */
             border-bottom-left-radius: 30px; /* Very rounded bottom corners */
             border-bottom-right-radius: 30px;
             position: relative;
@@ -99,7 +140,7 @@
 
         .tab-btn.active {
             background: rgba(255,255,255,0.4); /* More opaque when active */
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4); /* Stronger shadow for active */
+            box-shadow: 0 6px 15px var(--shadow-strong); /* Use CSS variable */
             transform: translateY(-4px); /* More pronounced lift */
             border-color: white; /* Solid white border for active */
         }
@@ -124,32 +165,38 @@
         /* Footer Styling */
         footer {
             padding: 1.2em; /* More padding */
-            background: white;
-            border-top: 3px solid #e0f2fe; /* Thicker, lighter border */
+            background: var(--color-white); /* Use CSS variable */
+            border-top: 3px solid var(--color-border-light); /* Use CSS variable */
             border-top-left-radius: 25px; /* More rounded corners */
             border-top-right-radius: 25px;
-            box-shadow: 0 -8px 20px rgba(0,0,0,0.15); /* Stronger shadow */
+            box-shadow: 0 -8px 20px var(--shadow-light); /* Use CSS variable */
             display: flex;
             gap: 0.8em; /* More space between input and button */
             align-items: center;
             position: relative; /* For z-index */
             z-index: 10;
             flex-wrap: wrap; /* Allow footer elements to wrap */
+            width: 100%; /* Ensure footer takes full width */
         }
 
         /* Message Bubbles */
         .message {
             margin: 1em 0; /* More vertical space */
             padding: 1.2em 1.5em; /* Generous padding */
-            background: white;
+            background: var(--color-white); /* Use CSS variable */
             border-radius: 22px; /* Super rounded */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Deeper shadow */
+            box-shadow: 0 4px 12px var(--shadow-light); /* Use CSS variable */
             max-width: 90%; /* Wider messages */
             word-wrap: break-word;
             transform: translateY(30px); /* Start further down */
             opacity: 0;
             animation: messageAppear 0.5s ease-out forwards; /* Slower, smoother animation */
             position: relative;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Message bubble corners */
@@ -164,8 +211,8 @@
 
         .message.sent {
             align-self: flex-end;
-            background: linear-gradient(to right, #80deea, #4dd0e1); /* Vibrant light cyan gradient */
-            color: #263238;
+            background: linear-gradient(to right, var(--color-cyan-light), var(--color-cyan-primary)); /* Use CSS variables */
+            color: var(--color-text-primary); /* Ensure text is readable */
             border-bottom-right-radius: 8px; /* Pointed corner */
             margin-right: 10px; /* Space from edge */
         }
@@ -173,14 +220,15 @@
         .message.sent::before {
             border-bottom-right-radius: 8px;
             right: -10px;
-            border-left-color: #4dd0e1; /* Match gradient end color */
-            border-bottom-color: #4dd0e1;
+            border-left-color: var(--color-cyan-primary); /* Match gradient end color */
+            border-bottom-color: var(--color-cyan-primary);
         }
 
         .message.received {
             align-self: flex-start;
-            background: #ffffff;
-            border: 1px solid #e0f2f7; /* Subtle border for received messages */
+            background: var(--color-white); /* Use CSS variable */
+            border: 1px solid var(--color-border-light); /* Use CSS variable */
+            color: var(--color-text-primary); /* Ensure text is readable */
             border-bottom-left-radius: 8px; /* Pointed corner */
             margin-left: 10px; /* Space from edge */
         }
@@ -188,20 +236,24 @@
         .message.received::before {
             border-bottom-left-radius: 8px;
             left: -10px;
-            border-right-color: #ffffff; /* Match background color */
-            border-bottom-color: #ffffff;
+            border-right-color: var(--color-white); /* Match background color */
+            border-bottom-color: var(--color-white);
         }
 
         .message .sender {
             font-weight: 700; /* Bolder sender name */
-            color: #00838f; /* Darker cyan */
+            color: var(--color-cyan-dark); /* Use CSS variable */
             margin-bottom: 0.5em;
             font-size: 0.95em; /* Slightly larger sender name */
         }
 
+        .message .text {
+            color: var(--color-text-primary); /* Explicitly set text color for messages */
+        }
+
         .timestamp {
             font-size: 0.7em;
-            color: #78909c; /* Softer grey */
+            color: var(--color-text-secondary); /* Use CSS variable */
             text-align: right;
             margin-top: 0.5em;
         }
@@ -209,40 +261,41 @@
         /* Input, Button, Textarea General Styles */
         input, button, textarea {
             padding: 1em; /* Generous padding */
-            border: 1px solid #b0bec5; /* Softer border color */
+            border: 1px solid var(--color-input-border); /* Use CSS variable */
             border-radius: 15px; /* More rounded */
             width: 100%;
             font-size: 1.05em; /* Slightly larger font */
             transition: all 0.3s ease; /* Smooth transitions */
-            background-color: #ffffff;
+            background-color: var(--color-white); /* Use CSS variable */
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); /* Subtle inner shadow */
+            color: var(--color-text-primary); /* Ensure input text is visible */
         }
 
         input:focus, textarea:focus {
             outline: none;
-            border-color: #00bcd4; /* Vibrant cyan focus */
-            box-shadow: 0 0 0 5px rgba(0, 188, 212, 0.4); /* Stronger, wider focus glow */
-            background-color: #f5feff; /* Very light cyan on focus */
+            border-color: var(--color-cyan-primary); /* Use CSS variable */
+            box-shadow: 0 0 0 5px var(--shadow-strong); /* Use CSS variable */
+            background-color: var(--color-input-focus-bg); /* Use CSS variable */
         }
 
         /* Primary Button Styles */
         button {
-            background: linear-gradient(45deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            background: linear-gradient(45deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
             color: white;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
             font-weight: 700; /* Bolder text */
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3); /* Vibrant shadow */
+            box-shadow: 0 5px 15px var(--shadow-strong); /* Use CSS variable */
             flex-shrink: 0;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         button:hover {
-            background: linear-gradient(45deg, #00acc1 0%, #00bcd4 100%); /* Reverse gradient on hover */
+            background: linear-gradient(45deg, var(--color-cyan-gradient-end) 0%, var(--color-cyan-gradient-start) 100%); /* Reverse gradient on hover */
             transform: translateY(-3px); /* More pronounced lift */
-            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.5); /* Stronger shadow */
+            box-shadow: 0 8px 20px var(--shadow-strong); /* Use CSS variable */
         }
 
         button:active {
@@ -252,14 +305,14 @@
 
         /* Secondary Button Styles */
         button.secondary {
-            background: #e0f2f7; /* Light grey/cyan */
-            color: #37474f; /* Darker text */
-            border: 1px solid #b0bec5;
+            background: var(--color-border-light); /* Use CSS variable */
+            color: var(--color-text-primary); /* Use CSS variable */
+            border: 1px solid var(--color-input-border); /* Use CSS variable */
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         button.secondary:hover {
-            background: #cce9f0; /* Slightly darker light cyan on hover */
+            background: var(--color-cyan-light); /* Use CSS variable */
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
@@ -273,10 +326,10 @@
             width: 100%; /* Full width on mobile */
             max-width: 650px; /* Wider containers on desktop */
             margin: 2em auto; /* More vertical margin */
-            background: white;
+            background: var(--color-white); /* Use CSS variable */
             border-radius: 25px; /* Very rounded container */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Deeper, softer shadow */
-            border: 1px solid #e0f2f7; /* Subtle border */
+            box-shadow: 0 10px 30px var(--shadow-light); /* Use CSS variable */
+            border: 1px solid var(--color-border-light); /* Use CSS variable */
             animation: fadeIn 0.8s ease-out forwards; /* Fade in animation */
         }
 
@@ -293,13 +346,13 @@
         .form-group label {
             display: block;
             margin-bottom: 0.8em; /* More space */
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
             font-weight: 700; /* Bolder label */
             font-size: 1.1em;
         }
 
         .toggle-form {
-            color: #00bcd4;
+            color: var(--color-cyan-primary); /* Use CSS variable */
             text-decoration: underline;
             cursor: pointer;
             margin-top: 2em; /* More space */
@@ -309,7 +362,7 @@
         }
 
         .toggle-form:hover {
-            color: #0097a7; /* Darker cyan on hover */
+            color: var(--color-cyan-dark); /* Use CSS variable */
         }
 
         /* Chat Messages Container */
@@ -328,14 +381,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.2em 1.5em; /* More padding */
-            background: linear-gradient(90deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            background: linear-gradient(90deg, var(--color-cyan-gradient-start) 0%, var(--color-cyan-gradient-end) 100%); /* Use CSS variables */
             color: white;
             position: sticky;
             top: 0;
             z-index: 10;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+            box-shadow: 0 5px 15px var(--shadow-strong); /* Use CSS variable */
             margin-bottom: 1em; /* Space below header */
         }
 
@@ -364,7 +417,7 @@
         .group-options h2, .contacts-list h2 {
             font-size: 2.2em; /* Larger headings */
             margin-bottom: 1.5em;
-            color: #00838f; /* Darker cyan */
+            color: var(--color-cyan-dark); /* Use CSS variable */
             text-shadow: 0 1px 3px rgba(0,0,0,0.1);
             font-weight: 800;
         }
@@ -383,7 +436,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #f0f8ff 0%, #e0f7fa 100%); /* Match body background */
+            background: var(--bg-body); /* Use CSS variable */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -394,8 +447,8 @@
         .loading-spinner {
             width: 80px; /* Even larger spinner */
             height: 80px;
-            border: 10px solid #e0f2fe; /* Thicker border */
-            border-top-color: #00bcd4; /* Vibrant cyan */
+            border: 10px solid var(--color-border-light); /* Use CSS variable */
+            border-top-color: var(--color-cyan-primary); /* Use CSS variable */
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 2em;
@@ -408,7 +461,7 @@
         }
 
         .loading-text {
-            color: #00bcd4;
+            color: var(--color-cyan-primary); /* Use CSS variable */
             font-size: 2em; /* Larger text */
             font-weight: 700;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -418,16 +471,16 @@
             width: 100%;
             max-width: 550px; /* Wider lists */
             margin: 2em auto;
-            background: white;
+            background: var(--color-white); /* Use CSS variable */
             border-radius: 20px;
             padding: 2em;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Stronger shadow */
-            border: 1px solid #e0f2f7;
+            box-shadow: 0 5px 20px var(--shadow-light); /* Use CSS variable */
+            border: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
         .groups-list h3 {
             font-size: 1.5em;
-            color: #00838f;
+            color: var(--color-cyan-dark); /* Use CSS variable */
             margin-bottom: 1.2em;
             font-weight: 700;
         }
@@ -435,18 +488,18 @@
         .group-item, .contact-item {
             padding: 1.2em; /* More padding */
             margin: 0.8em 0; /* More margin */
-            background: #f5faff; /* Very light blue background */
+            background: var(--color-light-blue-bg); /* Use CSS variable */
             border-radius: 15px; /* More rounded */
             display: flex;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* More visible item shadow */
-            border: 1px solid #e0f2f7;
+            border: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
         .group-item:hover, .contact-item:hover {
-            background: #e0f7fa; /* Lighter cyan on hover */
+            background: var(--color-border-light); /* Use CSS variable */
             transform: translateY(-3px) scale(1.02); /* More pronounced lift and slight scale */
             box-shadow: 0 6px 18px rgba(0,0,0,0.15);
         }
@@ -456,7 +509,7 @@
             width: 60px; /* Even larger avatars */
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #00bcd4, #00acc1); /* Gradient avatar background */
+            background: linear-gradient(45deg, var(--color-cyan-primary), var(--color-cyan-gradient-end)); /* Use CSS variables */
             color: white;
             display: flex;
             align-items: center;
@@ -465,8 +518,8 @@
             font-weight: 700;
             overflow: hidden;
             flex-shrink: 0;
-            border: 4px solid #ffffff; /* White border */
-            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.4); /* Stronger glow */
+            border: 4px solid var(--color-white); /* Use CSS variable */
+            box-shadow: 0 0 0 4px var(--shadow-strong); /* Use CSS variable */
         }
 
         .group-avatar img, .contact-avatar img, .profile-avatar img {
@@ -477,6 +530,7 @@
 
         .group-avatar div, .contact-avatar div, .profile-avatar div {
             font-size: 1.8em !important; /* Ensure initials are very visible */
+            color: white; /* Ensure initials are white */
         }
 
         .group-info, .contact-info {
@@ -491,12 +545,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: 1.2em; /* Larger names */
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
         }
 
         .group-desc, .contact-status {
             font-size: 0.9em; /* Slightly larger */
-            color: #78909c;
+            color: var(--color-text-secondary); /* Use CSS variable */
             margin-top: 0.3em;
             white-space: nowrap;
             overflow: hidden;
@@ -505,7 +559,7 @@
 
         .no-groups, .no-contacts {
             text-align: center;
-            color: #78909c;
+            color: var(--color-text-secondary); /* Use CSS variable */
             padding: 2em;
             font-style: italic;
             font-size: 1.1em;
@@ -517,9 +571,10 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 1.8em; /* Much larger icon */
+            font-size: 1.2em; /* Decreased size */
             transition: transform 0.3s ease-out;
-            padding: 0.2em;
+            padding: 0.2em; /* Smaller padding */
+            margin-left: 1em; /* Space from group name */
         }
 
         .group-settings-btn:hover, .contact-settings-btn:hover {
@@ -533,14 +588,14 @@
             right: 0;
             bottom: 0;
             width: 350px; /* Wider settings menu */
-            background: linear-gradient(to bottom, #ffffff 0%, #f0f8ff 100%); /* Subtle gradient */
-            box-shadow: -8px 0 30px rgba(0,0,0,0.25); /* Stronger shadow */
+            background: linear-gradient(to bottom, var(--color-white) 0%, var(--color-light-blue-bg) 100%); /* Use CSS variables */
+            box-shadow: -8px 0 30px var(--shadow-medium); /* Use CSS variable */
             z-index: 1000; /* Ensure it's on top */
             padding: 2em;
             transform: translateX(100%);
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Springy animation */
             overflow-y: auto;
-            border-left: 1px solid #e0f2f7;
+            border-left: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
         .settings-menu.open {
@@ -553,12 +608,12 @@
             align-items: center;
             margin-bottom: 2em;
             padding-bottom: 1.5em;
-            border-bottom: 2px solid #e0f2f7; /* Thicker border */
+            border-bottom: 2px solid var(--color-border-light); /* Use CSS variable */
         }
 
         .settings-header h3 {
             font-size: 2em;
-            color: #00838f;
+            color: var(--color-cyan-dark); /* Use CSS variable */
             margin: 0;
             font-weight: 700;
         }
@@ -568,12 +623,12 @@
             border: none;
             font-size: 2.5em; /* Very large close icon */
             cursor: pointer;
-            color: #78909c;
+            color: var(--color-text-secondary); /* Use CSS variable */
             transition: color 0.3s, transform 0.3s;
         }
 
         .close-settings:hover {
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
             transform: rotate(180deg) scale(1.1); /* Full spin and scale */
         }
 
@@ -588,17 +643,17 @@
             width: 140px; /* Huge avatars */
             height: 140px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #e0f7fa, #b2ebf2); /* Light cyan gradient */
+            background: linear-gradient(45deg, var(--color-border-light), var(--color-cyan-light)); /* Use CSS variables */
             margin-bottom: 1.5em;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 4em; /* Massive for initials */
-            color: #00838f;
+            color: var(--color-cyan-dark); /* Use CSS variable */
             font-weight: 800;
-            border: 5px solid #ffffff; /* White border */
-            box-shadow: 0 0 0 6px rgba(0, 188, 212, 0.5), 0 5px 20px rgba(0,0,0,0.2); /* Double glow and shadow */
+            border: 5px solid var(--color-white); /* Use CSS variable */
+            box-shadow: 0 0 0 6px var(--shadow-strong), 0 5px 20px var(--shadow-light); /* Use CSS variables */
         }
 
         .avatar-preview img {
@@ -608,7 +663,7 @@
         }
 
         .user-id-display {
-            background: #f0f8ff; /* Very light blue background */
+            background: var(--color-light-blue-bg); /* Use CSS variable */
             padding: 1.2em;
             border-radius: 12px;
             margin: 2em 0;
@@ -616,20 +671,20 @@
             word-break: break-all;
             text-align: left;
             width: 100%;
-            border: 1px solid #b0bec5;
+            border: 1px solid var(--color-input-border); /* Use CSS variable */
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Deeper inner shadow */
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
         }
 
         .user-id-display strong {
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
             font-size: 1em;
             display: block;
             margin-bottom: 0.8em;
         }
 
         .copy-id {
-            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            background: linear-gradient(45deg, var(--color-cyan-gradient-start), var(--color-cyan-gradient-end)); /* Use CSS variables */
             color: white;
             border: none;
             padding: 0.8em 1.5em; /* More padding */
@@ -638,13 +693,13 @@
             margin-top: 1em;
             font-weight: 600;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 10px rgba(0, 188, 212, 0.2);
+            box-shadow: 0 3px 10px var(--shadow-strong); /* Use CSS variable */
         }
 
         .copy-id:hover {
-            background: linear-gradient(45deg, #00acc1, #00bcd4);
+            background: linear-gradient(45deg, var(--color-cyan-gradient-end), var(--color-cyan-gradient-start)); /* Use CSS variables */
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+            box-shadow: 0 5px 15px var(--shadow-strong); /* Use CSS variable */
         }
 
         /* Custom Alert Modal */
@@ -664,14 +719,14 @@
         }
 
         .custom-alert-content {
-            background-color: #fefefe;
+            background-color: var(--color-modal-bg); /* Use CSS variable */
             margin: auto;
             padding: 40px; /* Very generous padding */
-            border: 2px solid #e0f2f7; /* More prominent border */
+            border: 2px solid var(--color-border-light); /* Use CSS variable */
             width: 95%;
             max-width: 500px; /* Wider max-width */
             border-radius: 20px; /* More rounded */
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Very pronounced shadow */
+            box-shadow: 0 15px 40px var(--shadow-medium); /* Use CSS variable */
             position: relative;
             text-align: center;
             animation: fadeInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; /* Springy animation */
@@ -683,7 +738,7 @@
         }
 
         .close-alert-btn {
-            color: #b0bec5; /* Softer grey */
+            color: var(--color-input-border); /* Use CSS variable */
             font-size: 38px; /* Even larger close button */
             font-weight: bold;
             position: absolute;
@@ -695,20 +750,20 @@
 
         .close-alert-btn:hover,
         .close-alert-btn:focus {
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
             transform: rotate(90deg);
         }
 
         #custom-alert-message {
             margin-bottom: 30px; /* More space */
             font-size: 1.3em; /* Larger message text */
-            color: #37474f;
+            color: var(--color-text-primary); /* Use CSS variable */
             line-height: 1.5;
             font-weight: 500;
         }
 
         #custom-alert-ok-btn {
-            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            background: linear-gradient(45deg, var(--color-cyan-gradient-start), var(--color-cyan-gradient-end)); /* Use CSS variables */
             color: white;
             padding: 15px 30px; /* More padding */
             border: none;
@@ -717,11 +772,37 @@
             font-size: 1.2em; /* Larger text */
             font-weight: 700;
             transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+            box-shadow: 0 4px 12px var(--shadow-strong); /* Use CSS variable */
         }
 
         #custom-alert-ok-btn:hover {
-            background: linear-gradient(45deg, #00acc1, #00bcd4);
+            background: linear-gradient(45deg, var(--color-cyan-gradient-end), var(--color-cyan-gradient-start)); /* Use CSS variables */
+            transform: translateY(-2px);
+        }
+
+        /* Theme Switcher specific styles */
+        .theme-switcher {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align label and options to start */
+            margin-top: 2em;
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 1em;
+            margin-top: 0.5em;
+            width: 100%; /* Ensure options take full width */
+            justify-content: flex-start; /* Align buttons to start */
+        }
+
+        .theme-options button {
+            flex-grow: 1; /* Allow buttons to grow */
+            max-width: 150px; /* Limit button width */
+            text-align: center;
+        }
+        .theme-options button.active {
+            box-shadow: 0 0 0 3px var(--color-cyan-primary); /* Highlight active theme */
             transform: translateY(-2px);
         }
 
@@ -774,6 +855,15 @@
             }
             footer input {
                 margin-bottom: 0.5em; /* Space between input and button */
+            }
+            .group-settings-btn {
+                font-size: 1em; /* Further decrease size on very small screens */
+            }
+            .theme-options {
+                flex-direction: column; /* Stack theme buttons vertically on small screens */
+            }
+            .theme-options button {
+                max-width: none; /* Allow full width */
             }
         }
     </style>
@@ -864,7 +954,7 @@
                 </div>
             </div>
 
-            <div id="private-chat-section" class="chat-section">
+            <div id="private-chat-section" class="chat-section" style="display: none;">
                 <div class="private-chat-header">
                     <button class="back-btn" id="back-private-btn">←</button>
                     <h2 id="contact-name-display"></h2>
@@ -896,6 +986,14 @@
             <div class="form-group">
                 <label for="profile-status">Status</label>
                 <input id="profile-status" type="text" placeholder="Your status" />
+            </div>
+
+            <div class="form-group theme-switcher">
+                <label>Theme</label>
+                <div class="theme-options">
+                    <button id="light-theme-btn" class="secondary">Light</button>
+                    <button id="dark-theme-btn" class="secondary">Dark</button>
+                </div>
             </div>
             
             <div class="user-id-display">
@@ -1048,6 +1146,10 @@
         const customAlertOkBtn = document.getElementById('custom-alert-ok-btn');
         const closeAlertBtn = document.getElementById('close-alert-btn');
 
+        // Theme switcher elements
+        const lightThemeBtn = document.getElementById('light-theme-btn');
+        const darkThemeBtn = document.getElementById('dark-theme-btn');
+
 
         let currentGroup = "";
         let currentContact = "";
@@ -1062,10 +1164,10 @@
 
         // Initialize the app
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                // Display auth section by default if no user is logged in, handled by onAuthStateChanged
-            }, 2000);
+            // No artificial timeout, rely on Firebase load times
+            loadingScreen.style.display = 'none';
+            // Display auth section by default if no user is logged in, handled by onAuthStateChanged
+            loadUserTheme(); // Load theme as soon as possible
         });
 
         // Custom Alert Modal functions
@@ -1080,6 +1182,40 @@
 
         customAlertOkBtn.addEventListener('click', hideAlert);
         closeAlertBtn.addEventListener('click', hideAlert);
+
+        // --- Theme Switcher Logic ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                darkThemeBtn.classList.add('active');
+                lightThemeBtn.classList.remove('active');
+            } else {
+                document.body.classList.remove('dark-theme');
+                lightThemeBtn.classList.add('active');
+                darkThemeBtn.classList.remove('active');
+            }
+            // Save theme preference to local storage
+            localStorage.setItem('theme', theme);
+            // Optionally, save to Firebase for cross-device sync
+            if (currentUser && currentUser.uid) {
+                update(ref(db, `users/${currentUser.uid}`), { theme: theme }).catch(e => console.error("Failed to save theme to DB:", e));
+            }
+        }
+
+        async function loadUserTheme() {
+            let savedTheme = localStorage.getItem('theme');
+            if (currentUser && currentUser.uid) {
+                const snapshot = await get(child(ref(db), `users/${currentUser.uid}/theme`));
+                if (snapshot.exists()) {
+                    savedTheme = snapshot.val();
+                }
+            }
+            applyTheme(savedTheme || 'light'); // Default to light if no theme saved
+        }
+
+        lightThemeBtn.addEventListener('click', () => applyTheme('light'));
+        darkThemeBtn.addEventListener('click', () => applyTheme('dark'));
+
 
         // --- Auth Functionality ---
 
@@ -1115,7 +1251,8 @@
                     username: username,
                     email: email,
                     status: 'Online',
-                    avatarUrl: '' // Default empty avatar URL
+                    avatarUrl: '', // Default empty avatar URL
+                    theme: 'light' // Default theme for new users
                 });
 
                 hideLoading();
@@ -1169,6 +1306,7 @@
                     loadUserGroups();
                     loadUserContacts();
                     loadUserProfile();
+                    loadUserTheme(); // Re-load theme after user data is available
                 } else {
                     // This case might happen if user registered but data wasn't saved (e.g., error)
                     hideLoading();
@@ -1190,6 +1328,7 @@
                 userData = {};
                 userGroups = [];
                 userContacts = [];
+                applyTheme('light'); // Revert to default theme on logout
             }
         });
 
@@ -1389,7 +1528,7 @@
                     profileAvatarPreview.style.color = 'inherit';
                 } else {
                     profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
-                    profileAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
+                    profileAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
                     profileAvatarPreview.style.color = 'white';
                 }
             }
@@ -1412,7 +1551,7 @@
                     groupAvatarPreview.style.color = 'inherit';
                 } else {
                     groupAvatarPreview.innerHTML = `<div>${currentGroup.charAt(0).toUpperCase()}</div>`;
-                    groupAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
+                    groupAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
                     groupAvatarPreview.style.color = 'white';
                 }
             }
@@ -1512,7 +1651,7 @@
 
             // Apply styles for fallback avatars (initials)
             document.querySelectorAll('.contact-avatar div').forEach(div => {
-                div.style.backgroundColor = '#00bcd4'; /* Use the primary cyan */
+                div.style.backgroundColor = 'var(--color-cyan-primary)'; /* Use the primary cyan */
                 div.style.color = 'white';
                 div.style.display = 'flex';
                 div.style.alignItems = 'center';
@@ -1776,7 +1915,7 @@
 
             // Apply styles for fallback avatars (initials)
             document.querySelectorAll('.group-avatar div').forEach(div => {
-                div.style.backgroundColor = '#00bcd4'; /* Use the primary cyan */
+                div.style.backgroundColor = 'var(--color-cyan-primary)'; /* Use the primary cyan */
                 div.style.color = 'white';
                 div.style.display = 'flex';
                 div.style.alignItems = 'center';
