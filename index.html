@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ThunderChat</title>
   <style>
+    /* INCREASED CSS SIZE */
     * {
       box-sizing: border-box;
+      font-size: 18px; /* Increased base font size */
     }
     body {
       margin: 0;
@@ -21,34 +23,38 @@
       overflow-x: hidden;
     }
     header {
-      padding: 1em;
+      padding: 1.5em; /* Increased padding */
       background: #06b6d4;
       color: white;
       text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Larger shadow */
+    }
+    header h1 {
+      font-size: 2.2em; /* Larger header */
+      margin: 0;
     }
     main {
       flex: 1;
       overflow-y: auto;
-      padding: 1em;
+      padding: 1.5em; /* Increased padding */
       width: 100%;
     }
     footer {
-      padding: 1em;
+      padding: 1.5em; /* Increased padding */
       background: white;
-      border-top: 1px solid #e2e8f0;
+      border-top: 2px solid #e2e8f0; /* Thicker border */
     }
     .message {
-      margin: 0.5em 0;
-      padding: 0.8em;
+      margin: 1em 0; /* Increased margin */
+      padding: 1em; /* Increased padding */
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      max-width: 80%;
+      border-radius: 16px; /* Larger radius */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Larger shadow */
+      max-width: 85%; /* Wider messages */
       word-wrap: break-word;
       transform: translateY(20px);
       opacity: 0;
-      animation: messageAppear 0.3s ease-out forwards;
+      animation: messageAppear 0.4s ease-out forwards;
     }
     @keyframes messageAppear {
       to {
@@ -59,15 +65,16 @@
     .message .sender {
       font-weight: bold;
       color: #06b6d4;
-      margin-bottom: 0.3em;
+      margin-bottom: 0.5em; /* Increased margin */
+      font-size: 1.1em; /* Larger sender name */
     }
     input, button {
-      padding: 0.8em;
-      border: 1px solid #cbd5e1;
-      margin: 0.2em;
-      border-radius: 8px;
+      padding: 1em; /* Increased padding */
+      border: 2px solid #cbd5e1; /* Thicker border */
+      margin: 0.5em 0; /* Increased margin */
+      border-radius: 12px; /* Larger radius */
       width: 100%;
-      font-size: 1em;
+      font-size: 1.1em; /* Larger font */
     }
     button {
       background: #06b6d4;
@@ -75,6 +82,7 @@
       border: none;
       cursor: pointer;
       transition: background 0.2s;
+      font-weight: bold; /* Bolder text */
     }
     button:hover {
       background: #0891b2;
@@ -83,31 +91,34 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      padding: 1em;
+      padding: 2em; /* Increased padding */
       width: 100%;
-      max-width: 500px;
+      max-width: 600px; /* Wider container */
       margin: 0 auto;
     }
     .form-group {
       width: 100%;
-      margin-bottom: 1em;
+      margin-bottom: 1.5em; /* Increased margin */
     }
     .form-group label {
       display: block;
-      margin-bottom: 0.5em;
+      margin-bottom: 0.8em; /* Increased margin */
       color: #334155;
+      font-size: 1.1em; /* Larger labels */
     }
     .toggle-form {
       color: #06b6d4;
       text-decoration: underline;
       cursor: pointer;
-      margin-top: 1em;
+      margin-top: 1.5em; /* Increased margin */
       text-align: center;
+      font-size: 1.1em; /* Larger text */
     }
     #messages {
       display: flex;
       flex-direction: column;
       width: 100%;
+      gap: 1em; /* Added gap between messages */
     }
     .message.sent {
       align-self: flex-end;
@@ -117,16 +128,16 @@
       align-self: flex-start;
     }
     .timestamp {
-      font-size: 0.7em;
+      font-size: 0.9em; /* Slightly larger */
       color: #64748b;
       text-align: right;
-      margin-top: 0.3em;
+      margin-top: 0.5em; /* Increased margin */
     }
     .chat-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.5em 1em;
+      padding: 1em; /* Increased padding */
       background: #06b6d4;
       color: white;
     }
@@ -134,23 +145,40 @@
       background: none;
       border: none;
       color: white;
-      font-size: 1.2em;
+      font-size: 1.5em; /* Larger arrow */
       cursor: pointer;
+      padding: 0.5em;
     }
 
-    /* Custom Alert Styles */
+    /* GROUP OPTIONS - MADE LARGER */
+    .group-options {
+      text-align: center;
+    }
+    .group-options h2 {
+      font-size: 1.8em; /* Larger heading */
+      margin-bottom: 1.5em; /* More space below */
+    }
+    .group-options button {
+      padding: 1.2em; /* Larger buttons */
+      margin: 0.8em 0; /* More space between */
+      font-size: 1.2em; /* Larger text */
+      width: 100%;
+      max-width: 400px; /* Wider buttons */
+    }
+
+    /* Custom Alert Styles - LARGER */
     .custom-alert {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      padding: 1.5em;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      padding: 2em; /* Increased padding */
+      border-radius: 16px; /* Larger radius */
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Larger shadow */
       z-index: 1000;
       max-width: 90%;
-      width: 300px;
+      width: 400px; /* Wider alerts */
       text-align: center;
       animation: alertAppear 0.3s ease-out;
     }
@@ -167,18 +195,27 @@
     .custom-alert h3 {
       margin-top: 0;
       color: #06b6d4;
+      font-size: 1.8em; /* Larger heading */
+      margin-bottom: 1em; /* More space below */
+    }
+    .custom-alert p {
+      font-size: 1.2em; /* Larger text */
+      margin-bottom: 1.5em; /* More space below */
     }
     .custom-alert input {
-      margin-bottom: 1em;
+      margin-bottom: 1.5em; /* More space below */
+      font-size: 1.1em; /* Larger input */
+      padding: 1em; /* Larger padding */
     }
     .custom-alert-buttons {
       display: flex;
-      gap: 0.5em;
-      margin-top: 1em;
+      gap: 1em; /* More space between */
+      margin-top: 1.5em; /* More space above */
     }
     .custom-alert-buttons button {
       flex: 1;
-      padding: 0.5em;
+      padding: 1em; /* Larger buttons */
+      font-size: 1.1em; /* Larger text */
     }
     .custom-alert-overlay {
       position: fixed;
@@ -190,7 +227,7 @@
       z-index: 999;
     }
 
-    /* Loading Screen */
+    /* Loading Screen - LARGER */
     .loading-screen {
       position: fixed;
       top: 0;
@@ -205,20 +242,20 @@
       z-index: 2000;
     }
     .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #e0f2fe;
+      width: 80px; /* Larger spinner */
+      height: 80px;
+      border: 8px solid #e0f2fe; /* Thicker border */
       border-top-color: #06b6d4;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 1em;
+      margin-bottom: 2em; /* More space below */
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     .loading-text {
       color: #06b6d4;
-      font-size: 1.2em;
+      font-size: 1.8em; /* Larger text */
       margin-top: 1em;
     }
   </style>
@@ -279,7 +316,7 @@
     <div class="chat-header">
       <button class="back-btn" id="back-btn">←</button>
       <h2 id="group-name-display"></h2>
-      <div style="width: 24px;"></div> <!-- Spacer for alignment -->
+      <div style="width: 24px;"></div>
     </div>
     <main id="messages"></main>
     <footer>
@@ -426,7 +463,10 @@
         await set(ref(db, `users/${userCredential.user.uid}`), { username, email });
         currentUser = { ...userCredential.user, username };
         hideLoading();
-        showGroupOptions();
+        // IMMEDIATELY SHOW GROUP OPTIONS AFTER REGISTER
+        authSection.style.display = 'none';
+        groupOptions.style.display = 'flex';
+        usernameDisplay.textContent = username;
       } catch (error) {
         hideLoading();
         showAlert('Registration failed: ' + error.message);
@@ -450,7 +490,10 @@
         if (snapshot.exists()) {
           currentUser = { ...userCredential.user, username: snapshot.val().username };
           hideLoading();
-          showGroupOptions();
+          // IMMEDIATELY SHOW GROUP OPTIONS AFTER LOGIN
+          authSection.style.display = 'none';
+          groupOptions.style.display = 'flex';
+          usernameDisplay.textContent = currentUser.username;
         } else {
           hideLoading();
           showAlert('User data not found');
@@ -560,12 +603,6 @@
       return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    function showGroupOptions() {
-      authSection.style.display = 'none';
-      groupOptions.style.display = 'flex';
-      usernameDisplay.textContent = currentUser.username || currentUser.email;
-    }
-
     function showLoading(message = 'Loading...') {
       loadingScreen.style.display = 'flex';
       loadingScreen.querySelector('.loading-text').textContent = message;
@@ -583,16 +620,17 @@
         if (snapshot.exists()) {
           currentUser = { ...user, username: snapshot.val().username };
           hideLoading();
-          showGroupOptions();
+          // IMMEDIATELY SHOW GROUP OPTIONS WHEN ALREADY LOGGED IN
+          authSection.style.display = 'none';
+          groupOptions.style.display = 'flex';
+          usernameDisplay.textContent = currentUser.username;
         } else {
-          // User logged in but no username set
           hideLoading();
           authSection.style.display = 'flex';
           loginForm.style.display = 'block';
           registerForm.style.display = 'none';
         }
       } else {
-        // No user logged in
         hideLoading();
         authSection.style.display = 'flex';
         loginForm.style.display = 'block';
