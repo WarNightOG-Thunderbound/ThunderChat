@@ -49,6 +49,28 @@
       width: 100%;
       max-width: 600px;
     }
+    .leave-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+  width: 90%;
+  max-width: 300px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3);
+}
+
+.leave-btn:hover {
+  background: #e60000;
+}
+
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -118,6 +140,12 @@
         input.value = "";
       }
     };
+    document.getElementById("leaveGroupBtn").addEventListener("click", () => {
+  localStorage.removeItem("groupName");
+  localStorage.removeItem("groupPassword");
+  location.reload(); // Refresh page to go back to main screen
+});
+
   </script>
 </head>
 <body>
@@ -131,6 +159,8 @@
   </div>
   <div id="chat-section" class="chat-box">
     <main id="messages"></main>
+    <button id="leaveGroupBtn" class="leave-btn">Leave Group</button>
+
     <footer>
       <input id="msg-input" type="text" placeholder="Type a message..." />
       <button id="send-btn">Send</button>
