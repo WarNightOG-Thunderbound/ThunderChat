@@ -317,8 +317,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* Section Containers (Auth, Groups, Contacts, Settings) */
-        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
+        /* Section Containers (Auth, Groups, Contacts, Settings, Posts) */
+        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section {
             display: none; /* Controlled by JS */
             flex-direction: column;
             align-items: center;
@@ -414,7 +414,7 @@
         }
 
         /* Group/Contact Options & Lists */
-        .group-options h2, .contacts-list h2 {
+        .group-options h2, .contacts-list h2, .posts-section h2 {
             font-size: 2.2em; /* Larger headings */
             margin-bottom: 1.5em;
             color: var(--color-cyan-dark); /* Darker cyan */
@@ -422,7 +422,7 @@
             font-weight: 800;
         }
 
-        .group-options button, .contacts-list button {
+        .group-options button, .contacts-list button, .posts-section button {
             padding: 1.3em; /* More padding */
             margin: 0.8em 0; /* More margin */
             max-width: 400px; /* Wider buttons */
@@ -467,7 +467,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
-        .groups-list, .contacts-container {
+        .groups-list, .contacts-container, .posts-container {
             width: 100%;
             max-width: 550px; /* Wider lists */
             margin: 2em auto;
@@ -478,7 +478,7 @@
             border: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
-        .groups-list h3 {
+        .groups-list h3, .contacts-container h3, .posts-container h3 {
             font-size: 1.5em;
             color: var(--color-cyan-dark); /* Darker cyan */
             margin-bottom: 1.2em;
@@ -505,7 +505,7 @@
         }
 
         /* Avatars */
-        .group-avatar, .contact-avatar, .profile-avatar {
+        .group-avatar, .contact-avatar, .profile-avatar, .post-avatar {
             width: 60px; /* Even larger avatars */
             height: 60px;
             border-radius: 50%;
@@ -522,13 +522,13 @@
             box-shadow: 0 0 0 4px var(--shadow-strong); /* Stronger glow */
         }
 
-        .group-avatar img, .contact-avatar img, .profile-avatar img {
+        .group-avatar img, .contact-avatar img, .profile-avatar img, .post-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .group-avatar div, .contact-avatar div, .profile-avatar div {
+        .group-avatar div, .contact-avatar div, .profile-avatar div, .post-avatar div {
             font-size: 1.8em !important; /* Ensure initials are very visible */
             color: white; /* Ensure initials are white */
         }
@@ -557,7 +557,7 @@
             text-overflow: ellipsis;
         }
 
-        .no-groups, .no-contacts {
+        .no-groups, .no-contacts, .no-posts {
             text-align: center;
             color: var(--color-text-secondary); /* Use CSS variable */
             padding: 2em;
@@ -802,64 +802,266 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            main {
-                padding: 3em;
-            }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
-                padding: 3.5em;
-            }
-            .message {
-                padding: 1.5em 1.8em;
-            }
-            input, button, textarea {
-                padding: 1.2em;
-            }
+        /* Post Specific Styles */
+        .posts-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px; /* Make posts section wider */
         }
 
+        .post-categories {
+            display: flex;
+            justify-content: center;
+            gap: 1em;
+            margin-top: 1.5em;
+            margin-bottom: 2em;
+            width: 100%;
+        }
+
+        .post-categories button {
+            flex-grow: 1;
+            max-width: 180px;
+            font-size: 1em;
+            padding: 0.8em 1.5em;
+            border-radius: 25px;
+        }
+
+        .post-categories button.active {
+            background: var(--color-cyan-primary);
+            color: white;
+            box-shadow: 0 4px 10px var(--shadow-strong);
+        }
+
+        .post-item {
+            background: var(--color-white);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px var(--shadow-light);
+            margin-bottom: 2em;
+            padding: 1.5em;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out forwards;
+            border: 1px solid var(--color-border-light);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1em;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            margin-right: 1em;
+        }
+
+        .post-username {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--color-cyan-dark);
+        }
+
+        .post-timestamp {
+            font-size: 0.8em;
+            color: var(--color-text-secondary);
+            margin-left: auto;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px; /* Limit image height */
+            object-fit: contain; /* Ensure entire image is visible */
+            border-radius: 15px;
+            margin-bottom: 1em;
+            border: 1px solid var(--color-border-light);
+        }
+
+        .post-description {
+            font-size: 1em;
+            margin-bottom: 1.5em;
+            line-height: 1.6;
+            color: var(--color-text-primary);
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            margin-bottom: 1.5em;
+            padding-top: 1em;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            padding: 0.5em; /* Increase clickable area */
+            border-radius: 10px;
+        }
+
+        .like-btn:hover {
+            color: var(--color-cyan-primary);
+            transform: scale(1.1);
+        }
+
+        .like-btn.liked {
+            color: #ff4d4d; /* Red for liked */
+            transform: scale(1.1);
+        }
+
+        .like-count {
+            font-weight: 600;
+            color: var(--color-text-primary);
+            font-size: 0.9em;
+        }
+
+        .comment-section {
+            border-top: 1px solid var(--color-border-light);
+            padding-top: 1.5em;
+        }
+
+        .comment-input-group {
+            display: flex;
+            gap: 0.5em;
+            margin-bottom: 1em;
+        }
+
+        .comment-input-group input {
+            flex-grow: 1;
+            padding: 0.8em;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+
+        .comment-input-group button {
+            padding: 0.8em 1.2em;
+            font-size: 0.9em;
+            border-radius: 10px;
+            text-transform: none;
+            letter-spacing: normal;
+            box-shadow: none;
+        }
+
+        .comment-list {
+            max-height: 200px; /* Limit height for comments */
+            overflow-y: auto;
+            padding-right: 10px; /* Space for scrollbar */
+        }
+
+        .comment-item {
+            background: var(--color-light-blue-bg);
+            border-radius: 12px;
+            padding: 0.8em 1em;
+            margin-bottom: 0.5em;
+            font-size: 0.9em;
+            border: 1px solid var(--color-border-light);
+        }
+
+        .comment-item .comment-author {
+            font-weight: 600;
+            color: var(--color-cyan-dark);
+            margin-right: 0.5em;
+        }
+
+        .comment-item .comment-text {
+            color: var(--color-text-primary);
+        }
+
+        .comment-item .comment-timestamp {
+            font-size: 0.7em;
+            color: var(--color-text-secondary);
+            text-align: right;
+            margin-top: 0.3em;
+        }
+
+        /* Create Post Modal */
+        #create-post-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .create-post-content {
+            background-color: var(--color-modal-bg);
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            width: 95%;
+            max-width: 600px;
+            position: relative;
+            animation: fadeInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .create-post-content h3 {
+            font-size: 2em;
+            color: var(--color-cyan-dark);
+            margin-bottom: 1.5em;
+            text-align: center;
+        }
+
+        .create-post-content .form-group {
+            margin-bottom: 1.2em;
+        }
+
+        .create-post-content button {
+            width: auto;
+            min-width: 150px;
+            margin-top: 1.5em;
+            align-self: center; /* Center the button */
+        }
+        
+        /* Responsive adjustments */
         @media (max-width: 480px) {
-            header h1 {
-                font-size: 2em;
-            }
-            .header-tabs {
-                flex-direction: column; /* Stack tabs vertically */
-                align-items: center;
-            }
-            .tab-btn {
-                padding: 0.6em 1em;
-                font-size: 0.9em;
-                width: 80%; /* Make tabs wider on small screens */
-                max-width: none; /* Remove max-width constraint */
-            }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section {
-                padding: 1.5em;
-                margin: 1em auto; /* Reduce vertical margin */
-            }
-            .settings-menu {
-                width: 100%; /* Full width on small screens */
-            }
-            .avatar-preview {
-                width: 100px;
-                height: 100px;
-                font-size: 3em;
-            }
-            footer {
-                flex-direction: column; /* Stack footer elements */
-                gap: 1em; /* More space when stacked */
+            .post-item {
                 padding: 1em;
             }
-            footer input {
-                margin-bottom: 0.5em; /* Space between input and button */
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
             }
-            .group-settings-btn {
-                font-size: 0.8em; /* Further decrease size on very small screens */
+            .post-username {
+                font-size: 1em;
             }
-            .theme-options {
-                flex-direction: column; /* Stack theme buttons vertically on small screens */
+            .post-description {
+                font-size: 0.9em;
             }
-            .theme-options button {
-                max-width: none; /* Allow full width */
+            .like-btn {
+                font-size: 1em;
+            }
+            .like-count {
+                font-size: 0.8em;
+            }
+            .comment-input-group input, .comment-input-group button {
+                font-size: 0.8em;
+                padding: 0.6em;
+            }
+            .comment-item {
+                font-size: 0.8em;
+            }
+            .create-post-content {
+                padding: 20px;
+            }
+            .create-post-content h3 {
+                font-size: 1.5em;
             }
         }
     </style>
@@ -875,6 +1077,7 @@
         <div class="header-tabs">
             <button id="groups-tab" class="tab-btn active">Groups</button>
             <button id="contacts-tab" class="tab-btn">Contacts</button>
+            <button id="posts-tab" class="tab-btn">Posts</button>
             <button id="settings-tab" class="tab-btn">Settings</button>
         </div>
     </header>
@@ -963,6 +1166,20 @@
             </footer>
         </div>
 
+        <div id="posts-section" class="posts-section">
+            <h2>Community Posts</h2>
+            <button id="create-post-btn">Create New Post 📝</button>
+            
+            <div class="post-categories">
+                <button id="new-posts-btn" class="secondary active">New</button>
+                <button id="trending-posts-btn" class="secondary">Trending</button>
+            </div>
+
+            <div id="posts-container" class="posts-container">
+                <div class="no-posts">No posts available yet. Be the first to share!</div>
+            </div>
+        </div>
+
         <div id="settings-section" class="settings-section">
             <h2>Your Profile</h2>
             
@@ -1040,6 +1257,22 @@
         <button id="save-group-settings-btn">Save Changes ✅</button>
     </div>
 
+    <div id="create-post-modal" class="custom-alert-modal">
+        <div class="create-post-content">
+            <span id="close-create-post-modal" class="close-alert-btn">&times;</span>
+            <h3>Create New Post</h3>
+            <div class="form-group">
+                <label for="post-image-url">Image URL</label>
+                <input type="text" id="post-image-url" placeholder="Enter image URL" />
+            </div>
+            <div class="form-group">
+                <label for="post-description">Description</label>
+                <textarea id="post-description" placeholder="What's on your mind?"></textarea>
+            </div>
+            <button id="submit-post-btn">Post It! 🚀</button>
+        </div>
+    </div>
+
     <div id="custom-alert-modal" class="custom-alert-modal">
         <div class="custom-alert-content">
             <span id="close-alert-btn" class="close-alert-btn">&times;</span>
@@ -1094,6 +1327,7 @@
         const chatSection = document.getElementById('chat-section');
         const contactsSection = document.getElementById('contacts-section');
         const privateChatSection = document.getElementById('private-chat-section');
+        const postsSection = document.getElementById('posts-section'); // New
         const settingsSection = document.getElementById('settings-section');
         const messagesDiv = document.getElementById('messages');
         const privateMessagesDiv = document.getElementById('private-messages');
@@ -1103,8 +1337,10 @@
         const joinedGroupsList = document.getElementById('joined-groups-list');
         const groupsCount = document.getElementById('groups-count');
         const contactsList = document.getElementById('contacts-list');
+        const postsContainer = document.getElementById('posts-container'); // New
         const groupsTab = document.getElementById('groups-tab');
         const contactsTab = document.getElementById('contacts-tab');
+        const postsTab = document.getElementById('posts-tab'); // New
         const settingsTab = document.getElementById('settings-tab');
         const groupSettingsMenu = document.getElementById('group-settings-menu');
         const closeGroupSettings = document.getElementById('close-group-settings');
@@ -1116,7 +1352,6 @@
         // New URL input fields
         const profileAvatarUrlInput = document.getElementById('profile-avatar-url');
         const groupAvatarUrlInput = document.getElementById('group-avatar-url');
-
 
         const userIdText = document.getElementById('user-id-text');
         const saveProfileBtn = document.getElementById('save-profile-btn');
@@ -1144,17 +1379,30 @@
         const lightThemeBtn = document.getElementById('light-theme-btn');
         const darkThemeBtn = document.getElementById('dark-theme-btn');
 
+        // Posts specific elements
+        const createPostBtn = document.getElementById('create-post-btn');
+        const newPostsBtn = document.getElementById('new-posts-btn');
+        const trendingPostsBtn = document.getElementById('trending-posts-btn');
+        const createPostModal = document.getElementById('create-post-modal');
+        const closeCreatePostModal = document.getElementById('close-create-post-modal');
+        const postImageUrlInput = document.getElementById('post-image-url');
+        const postDescriptionInput = document.getElementById('post-description');
+        const submitPostBtn = document.getElementById('submit-post-btn');
+
 
         let currentGroup = "";
         let currentContact = "";
+        let currentPostCategory = "new"; // Default post category
         let currentUser = null;
         let userGroups = [];
         let userContacts = [];
         let userData = {}; // Stores additional user profile data from Realtime DB
+        let allPosts = []; // Store all posts for sorting
 
         // Listener references for cleanup
         let currentGroupChatListener = null;
         let currentPrivateChatListener = null;
+        let currentPostsListener = null; // New listener for posts
         let alertTimeoutId = null; // To manage alert auto-hide
 
         // Initialize the app
@@ -1312,6 +1560,7 @@
                     // Initialize sections after login
                     loadUserGroups();
                     loadUserContacts();
+                    loadPosts(); // Load posts after login
                     loadUserProfile();
                     loadUserTheme(); // Re-load theme after user data is available
                 } else {
@@ -1329,53 +1578,63 @@
                 chatSection.style.display = 'none';
                 contactsSection.style.display = 'none';
                 privateChatSection.style.display = 'none';
+                postsSection.style.display = 'none'; // Hide posts section on logout
                 settingsSection.style.display = 'none';
                 // Reset current user info on logout
                 currentUser = null;
                 userData = {};
                 userGroups = [];
                 userContacts = [];
+                allPosts = []; // Clear posts on logout
                 applyTheme('light'); // Revert to default theme on logout
             }
         });
 
 
         // Tab switching
+        function showSection(sectionId) {
+            const sections = [groupOptions, chatSection, contactsSection, privateChatSection, postsSection, settingsSection];
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.style.display = 'flex';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Update active tab button
+            const tabs = [groupsTab, contactsTab, postsTab, settingsTab];
+            tabs.forEach(tab => {
+                if (tab.id.includes(sectionId.replace('-section', ''))) { // Simple mapping
+                    tab.classList.add('active');
+                } else if (tab.id.includes('groups') && sectionId === 'group-options') {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
+
         groupsTab.addEventListener('click', () => {
             if (!currentUser) return;
-            groupsTab.classList.add('active');
-            contactsTab.classList.remove('active');
-            settingsTab.classList.remove('active');
-            groupOptions.style.display = 'flex';
-            contactsSection.style.display = 'none';
-            settingsSection.style.display = 'none';
-            chatSection.style.display = 'none'; // Ensure chat is hidden
-            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+            showSection('group-options');
         });
 
         contactsTab.addEventListener('click', () => {
             if (!currentUser) return;
-            contactsTab.classList.add('active');
-            groupsTab.classList.remove('active');
-            settingsTab.classList.remove('active');
-            contactsSection.style.display = 'flex';
-            groupOptions.style.display = 'none';
-            settingsSection.style.display = 'none';
-            chatSection.style.display = 'none'; // Ensure chat is hidden
-            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+            showSection('contacts-section');
             loadUserContacts(); // Reload contacts when tab is clicked
+        });
+
+        postsTab.addEventListener('click', () => { // New Posts Tab
+            if (!currentUser) return;
+            showSection('posts-section');
+            loadPosts(); // Load posts when tab is clicked
         });
 
         settingsTab.addEventListener('click', () => {
             if (!currentUser) return;
-            settingsTab.classList.add('active');
-            groupsTab.classList.remove('active');
-            contactsTab.classList.remove('active');
-            settingsSection.style.display = 'flex';
-            groupOptions.style.display = 'none';
-            contactsSection.style.display = 'none';
-            chatSection.style.display = 'none'; // Ensure chat is hidden
-            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+            showSection('settings-section');
             loadUserProfile();
         });
 
@@ -1396,20 +1655,26 @@
             const avatarUrl = profileAvatarUrlInput.value.trim(); // Get URL from input
             
             showLoading('Saving profile...');
-            await update(ref(db, `users/${currentUser.uid}`), {
-                username,
-                status,
-                avatarUrl // Use the URL directly
-            });
-            
-            // Update local data and display
-            userData = { ...userData, username, status, avatarUrl };
-            currentUser.username = username; // Update currentUser's username
-            usernameDisplay.textContent = username;
-            
-            hideLoading();
-            showAlert('Profile saved successfully!');
-            loadUserProfile(); // Reload profile to ensure avatar is updated
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    username,
+                    status,
+                    avatarUrl // Use the URL directly
+                });
+                
+                // Update local data and display
+                userData = { ...userData, username, status, avatarUrl };
+                currentUser.username = username; // Update currentUser's username
+                usernameDisplay.textContent = username;
+                
+                hideLoading();
+                showAlert('Profile saved successfully!');
+                loadUserProfile(); // Reload profile to ensure avatar is updated
+            } catch (error) {
+                hideLoading();
+                console.error("Error saving profile:", error);
+                showAlert(`Failed to save profile: ${error.message}`);
+            }
         });
 
         // Save group settings
@@ -1418,23 +1683,35 @@
             const groupAvatarUrl = groupAvatarUrlInput.value.trim(); // Get URL from input
             
             showLoading('Saving group settings...');
-            await update(ref(db, `groups/${currentGroup}`), {
-                description,
-                avatarUrl: groupAvatarUrl // Use the URL directly
-            });
-            
-            hideLoading();
-            groupSettingsMenu.classList.remove('open');
-            showAlert('Group settings saved!');
-            loadUserGroups(); // Reload groups to reflect changes
+            try {
+                await update(ref(db, `groups/${currentGroup}`), {
+                    description,
+                    avatarUrl: groupAvatarUrl // Use the URL directly
+                });
+                
+                hideLoading();
+                groupSettingsMenu.classList.remove('open');
+                showAlert('Group settings saved!');
+                loadUserGroups(); // Reload groups to reflect changes
+            } catch (error) {
+                hideLoading();
+                console.error("Error saving group settings:", error);
+                showAlert(`Failed to save group settings: ${error.message}`);
+            }
         });
 
         // Logout
         logoutBtn.addEventListener('click', async () => {
             showLoading('Logging out...');
-            await signOut(auth);
-            hideLoading();
-            // The onAuthStateChanged listener will handle redirecting to auth section
+            try {
+                await signOut(auth);
+                hideLoading();
+                // The onAuthStateChanged listener will handle redirecting to auth section
+            } catch (error) {
+                hideLoading();
+                console.error("Error during logout:", error);
+                showAlert(`Logout failed: ${error.message}`);
+            }
         });
 
         // Add contact
@@ -1637,8 +1914,7 @@
         // Enter private chat
         function enterPrivateChat(contact) {
             currentContact = contact.id;
-            contactsSection.style.display = 'none'; // Hide contacts section
-            privateChatSection.style.display = 'flex'; // Show private chat section
+            showSection('private-chat-section'); // Use showSection
             contactNameDisplay.textContent = contact.username || 'Unknown User';
             privateMessagesDiv.innerHTML = '';
             
@@ -1683,8 +1959,7 @@
 
         // Back button for private chat
         document.getElementById('back-private-btn').addEventListener('click', () => {
-            privateChatSection.style.display = 'none';
-            contactsSection.style.display = 'flex';
+            showSection('contacts-section'); // Use showSection
             currentContact = "";
             // Detach the listener when leaving private chat
             if (currentPrivateChatListener) {
@@ -1899,8 +2174,7 @@
         // Enter Group Chat
         function enterGroupChat(groupId) {
             currentGroup = groupId;
-            groupOptions.style.display = 'none';
-            chatSection.style.display = 'flex';
+            showSection('chat-section'); // Use showSection
             groupNameDisplay.textContent = groupId;
             messagesDiv.innerHTML = ''; // Clear previous messages
             
@@ -1943,8 +2217,7 @@
 
         // Back button for group chat
         document.getElementById('back-btn').addEventListener('click', () => {
-            chatSection.style.display = 'none';
-            groupOptions.style.display = 'flex';
+            showSection('group-options'); // Use showSection
             currentGroup = "";
             // Detach the listener when leaving group chat
             if (currentGroupChatListener) {
@@ -1978,10 +2251,279 @@
             }
         }
 
+        // --- Posts Functionality ---
+
+        // Open Create Post Modal
+        createPostBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                showAlert("Please log in to create a post.");
+                return;
+            }
+            createPostModal.style.display = 'flex';
+            postImageUrlInput.value = '';
+            postDescriptionInput.value = '';
+        });
+
+        // Close Create Post Modal
+        closeCreatePostModal.addEventListener('click', () => {
+            createPostModal.style.display = 'none';
+        });
+
+        // Submit New Post
+        submitPostBtn.addEventListener('click', async () => {
+            const imageUrl = postImageUrlInput.value.trim();
+            const description = postDescriptionInput.value.trim();
+
+            if (!imageUrl && !description) {
+                showAlert('Please provide an image URL or a description for your post.');
+                return;
+            }
+
+            if (!currentUser) {
+                showAlert("You must be logged in to create a post.");
+                return;
+            }
+
+            showLoading('Creating post...');
+            try {
+                const newPostRef = push(ref(db, 'posts'));
+                await set(newPostRef, {
+                    userId: currentUser.uid,
+                    username: currentUser.username || 'Anonymous',
+                    avatarUrl: currentUser.avatarUrl || '',
+                    imageUrl: imageUrl,
+                    description: description,
+                    timestamp: Date.now(),
+                    likes: {}, // Initialize with no likes
+                    comments: {} // Initialize with no comments
+                });
+
+                hideLoading();
+                createPostModal.style.display = 'none';
+                showAlert('Post created successfully!');
+                loadPosts(); // Reload posts to show the new one
+            } catch (error) {
+                hideLoading();
+                console.error("Error creating post:", error);
+                showAlert(`Failed to create post: ${error.message}`);
+            }
+        });
+
+        // Load Posts
+        function loadPosts() {
+            if (!currentUser) return;
+
+            // Detach previous listener if exists
+            if (currentPostsListener) {
+                off(currentPostsListener);
+                currentPostsListener = null;
+            }
+
+            const postsRef = ref(db, 'posts');
+            currentPostsListener = onValue(postsRef, (snapshot) => {
+                allPosts = [];
+                snapshot.forEach((childSnapshot) => {
+                    allPosts.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                renderPosts(); // Render posts whenever data changes
+            }, (error) => {
+                console.error("Error loading posts:", error);
+                showAlert("Failed to load posts.");
+                allPosts = [];
+                renderPosts();
+            });
+        }
+
+        // Render Posts
+        function renderPosts() {
+            let postsToDisplay = [...allPosts]; // Create a copy to sort
+
+            if (currentPostCategory === 'new') {
+                postsToDisplay.sort((a, b) => b.timestamp - a.timestamp); // Latest first
+            } else if (currentPostCategory === 'trending') {
+                postsToDisplay.sort((a, b) => {
+                    const likesA = Object.keys(a.likes || {}).length;
+                    const likesB = Object.keys(b.likes || {}).length;
+                    return likesB - likesA; // Most likes first
+                });
+            }
+
+            if (postsToDisplay.length === 0) {
+                postsContainer.innerHTML = '<div class="no-posts">No posts available yet. Be the first to share!</div>';
+                return;
+            }
+
+            postsContainer.innerHTML = postsToDisplay.map(post => {
+                const likeCount = Object.keys(post.likes || {}).length;
+                const isLiked = post.likes && post.likes[currentUser?.uid];
+                const commentsHtml = post.comments ? Object.values(post.comments).map(comment => `
+                    <div class="comment-item">
+                        <span class="comment-author">${comment.username || 'Anonymous'}:</span>
+                        <span class="comment-text">${comment.text}</span>
+                        <div class="comment-timestamp">${formatTime(comment.timestamp)}</div>
+                    </div>
+                `).join('') : '';
+
+                return `
+                    <div class="post-item" data-post-id="${post.id}">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                ${post.avatarUrl ? 
+                                    `<img src="${post.avatarUrl}" alt="${post.username}" onerror="this.onerror=null;this.src='https://placehold.co/50x50/00bcd4/ffffff?text=${post.username?.charAt(0).toUpperCase() || 'U'}'" />` : 
+                                    `<div>${post.username?.charAt(0).toUpperCase() || 'U'}</div>`}
+                            </div>
+                            <div class="post-username">${post.username || 'Anonymous'}</div>
+                            <div class="post-timestamp">${formatTime(post.timestamp)}</div>
+                        </div>
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post Image" class="post-image" onerror="this.onerror=null;this.style.display='none';">` : ''}
+                        <p class="post-description">${post.description || ''}</p>
+                        <div class="post-actions">
+                            <button class="like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">❤️</button>
+                            <span class="like-count">${likeCount} Likes</span>
+                        </div>
+                        <div class="comment-section">
+                            <div class="comment-input-group">
+                                <input type="text" class="comment-input" placeholder="Add a comment..." data-post-id="${post.id}" />
+                                <button class="send-comment-btn" data-post-id="${post.id}">Send</button>
+                            </div>
+                            <div class="comment-list">
+                                ${commentsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Re-attach event listeners for dynamic content
+            document.querySelectorAll('.like-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    toggleLike(postId);
+                });
+            });
+
+            document.querySelectorAll('.send-comment-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    const input = e.currentTarget.previousElementSibling;
+                    addComment(postId, input.value);
+                    input.value = '';
+                });
+            });
+
+            document.querySelectorAll('.comment-input').forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const postId = e.currentTarget.getAttribute('data-post-id');
+                        addComment(postId, e.currentTarget.value);
+                        e.currentTarget.value = '';
+                    }
+                });
+            });
+
+            // Apply styles for fallback avatars (initials) for posts
+            document.querySelectorAll('.post-avatar div').forEach(div => {
+                div.style.backgroundColor = 'var(--color-cyan-primary)'; /* Use the primary cyan */
+                div.style.color = 'white';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.fontSize = '1.5em'; /* Larger initials for posts */
+            });
+        }
+
+        // Toggle Like on a Post
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                showAlert("You must be logged in to like posts.");
+                return;
+            }
+            const postRef = ref(db, `posts/${postId}/likes/${currentUser.uid}`);
+            const snapshot = await get(postRef);
+
+            if (snapshot.exists()) {
+                // User already liked, so unlike
+                await set(postRef, null); // Remove the like
+            } else {
+                // User hasn't liked, so like
+                await set(postRef, true);
+            }
+            // loadPosts() will automatically re-render with updated like count
+        }
+
+        // Add Comment to a Post
+        async function addComment(postId, commentText) {
+            const trimmedComment = commentText.trim();
+            if (!trimmedComment) {
+                showAlert("Comment cannot be empty.");
+                return;
+            }
+            if (!currentUser) {
+                showAlert("You must be logged in to comment.");
+                return;
+            }
+
+            const commentsRef = ref(db, `posts/${postId}/comments`);
+            await push(commentsRef, {
+                userId: currentUser.uid,
+                username: currentUser.username || 'Anonymous',
+                text: trimmedComment,
+                timestamp: Date.now()
+            });
+            // loadPosts() will automatically re-render with new comment
+        }
+
+        // Event listeners for post categories
+        newPostsBtn.addEventListener('click', () => {
+            currentPostCategory = 'new';
+            newPostsBtn.classList.add('active');
+            trendingPostsBtn.classList.remove('active');
+            renderPosts();
+        });
+
+        trendingPostsBtn.addEventListener('click', () => {
+            currentPostCategory = 'trending';
+            trendingPostsBtn.classList.add('active');
+            newPostsBtn.classList.remove('active');
+            renderPosts();
+        });
+
 
         // Helper functions
         function formatTime(timestamp) {
-            return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            const now = new Date();
+
+            const diffSeconds = Math.floor((now - date) / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            const diffWeeks = Math.floor(diffDays / 7);
+            const diffMonths = Math.floor(diffDays / 30);
+            const diffYears = Math.floor(diffDays / 365);
+
+            if (diffSeconds < 60) {
+                return `${diffSeconds}s ago`;
+            } else if (diffMinutes < 60) {
+                return `${diffMinutes}m ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours}h ago`;
+            } else if (diffDays < 7) {
+                return `${diffDays}d ago`;
+            } else if (diffWeeks < 4) {
+                return `${diffWeeks}w ago`;
+            } else if (diffMonths < 12) {
+                return `${diffMonths}mo ago`;
+            } else {
+                return `${diffYears}y ago`;
+            }
         }
 
         function showLoading(message = 'Loading...') {
