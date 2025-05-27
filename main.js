@@ -1,108 +1,123 @@
-import { getDatabase, ref, query, orderByChild, startAt, onChildAdded, push, set, serverTimestamp } from "firebase/database";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getDatabase, ref, push, set, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-const db = getDatabase();
-const auth = getAuth();
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
+  authDomain: "thunderboundthunderchat.firebaseapp.com",
+  databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "thunderboundthunderchat",
+  storageBucket: "thunderboundthunderchat.appspot.com",
+  messagingSenderId: "79690962383",
+  appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
+};
 
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const chatContainer = document.getElementById('chatContainer');
-const messageList = document.getElementById('messageList');
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const logoutBtn = document.getElementById('logoutBtn');
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-let serverJoinTime = null;
+// UI elements
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const captchaQuestion = document.getElementById("captcha-question");
+const captchaAnswer = document.getElementById("captcha-answer");
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'none';
-    chatContainer.style.display = 'block';
+const authDiv = document.getElementById("auth");
+const groupSelect = document.getElementById("group-selection");
+const createForm = document.getElementById("create-group-form");
+const joinForm = document.getElementById("join-group-form");
+const chatDiv = document.getElementById("chat");
+const groupPassword = document.getElementById("groupPassword");
+const messages = document.getElementById("messages");
 
-    serverJoinTime = await getAccurateServerTime();
-    startListeningForMessages(serverJoinTime);
-  } else {
-    loginForm.style.display = 'block';
-    registerForm.style.display = 'block';
-    chatContainer.style.display = 'none';
-    clearMessages();
+// CAPTCHA
+let captchaResult;
+function generateCaptcha() {
+  const a = Math.floor(Math.random() * 10);
+  const b = Math.floor(Math.random() * 10);
+  captchaResult = a + b;
+  captchaQuestion.innerText = `${a} + ${b}`;
+}
+generateCaptcha();
+
+// Register
+document.getElementById("register").onclick = async () => {
+  if (parseInt(captchaAnswer.value) !== captchaResult) {
+    alert("Wrong CAPTCHA!");
+    return;
   }
-});
-
-registerForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const email = registerForm.email.value;
-  const password = registerForm.password.value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => registerForm.reset())
-    .catch(error => alert(error.message));
-});
-
-loginForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const email = loginForm.email.value;
-  const password = loginForm.password.value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => loginForm.reset())
-    .catch(error => alert(error.message));
-});
-
-logoutBtn.addEventListener('click', () => {
-  signOut(auth);
-  clearMessages();
-});
-
-sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    await set(ref(db, "users/" + userCred.user.uid), {
+      email: email.value,
+      createdAt: new Date().toISOString()
+    });
+    alert("Registered!");
+  } catch (err) {
+    alert(err.message);
   }
-});
+};
 
-function sendMessage() {
-  const text = messageInput.value.trim();
-  const user = auth.currentUser;
-  if (!text || !user) return;
+// Login
+document.getElementById("login").onclick = async () => {
+  if (parseInt(captchaAnswer.value) !== captchaResult) {
+    alert("Wrong CAPTCHA!");
+    return;
+  }
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    showGroupSelection();
+  } catch (err) {
+    alert(err.message);
+  }
+};
 
-  push(ref(db, 'messages'), {
-    uid: user.uid,
-    email: user.email,
-    text: text,
-    timestamp: Date.now() // always send local timestamp
+function showGroupSelection() {
+  authDiv.classList.add("hidden");
+  groupSelect.classList.remove("hidden");
+}
+
+document.getElementById("createGroupBtn").onclick = () => {
+  groupSelect.classList.add("hidden");
+  createForm.classList.remove("hidden");
+};
+
+document.getElementById("joinGroupBtn").onclick = () => {
+  groupSelect.classList.add("hidden");
+  joinForm.classList.remove("hidden");
+};
+
+// Create Group
+document.getElementById("submitCreateGroup").onclick = async () => {
+  const name = document.getElementById("groupName").value;
+  const groupRef = push(ref(db, "groups"));
+  const password = Math.random().toString(36).slice(-6);
+  await set(groupRef, {
+    name,
+    password,
+    createdAt: Date.now()
   });
+  groupPassword.textContent = password;
+  showChat();
+};
 
-  messageInput.value = '';
+// Join Group
+document.getElementById("submitJoinGroup").onclick = async () => {
+  const enteredPassword = document.getElementById("joinGroupId").value;
+  // You would search through DB to match group password (not efficient for large scale)
+  // Skipping for demo purposes
+  groupPassword.textContent = enteredPassword;
+  showChat();
+};
+
+function showChat() {
+  createForm.classList.add("hidden");
+  joinForm.classList.add("hidden");
+  chatDiv.classList.remove("hidden");
 }
 
-function clearMessages() {
-  messageList.innerHTML = '';
-}
-
-// ✅ Better & fast way to get Firebase server time
-async function getAccurateServerTime() {
-  const tempRef = push(ref(db, 'timestamps'));
-  await set(tempRef, { createdAt: serverTimestamp() });
-
-  const snap = await new Promise(resolve =>
-    onChildAdded(ref(db, 'timestamps'), snapshot => resolve(snapshot))
-  );
-
-  return snap.val().createdAt || Date.now();
-}
-
-function startListeningForMessages(time) {
-  const q = query(ref(db, 'messages'), orderByChild('timestamp'), startAt(time));
-  onChildAdded(q, snap => {
-    const msg = snap.val();
-    if (!msg) return;
-
-    const li = document.createElement('li');
-    li.textContent = `${msg.email}: ${msg.text}`;
-    messageList.appendChild(li);
-    messageList.scrollTop = messageList.scrollHeight;
-  });
-}
+document.getElementById("logout").onclick = async () => {
+  await signOut(auth);
+  window.location.reload();
+};
