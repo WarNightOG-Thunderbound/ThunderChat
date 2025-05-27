@@ -258,6 +258,58 @@
       font-size: 1.8em; /* Larger text */
       margin-top: 1em;
     }
+    .groups-list {
+      width: 100%;
+      max-width: 500px;
+      margin: 1.5em auto;
+      background: white;
+      border-radius: 12px;
+      padding: 1em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    .groups-list h3 {
+      margin-top: 0;
+      color: #06b6d4;
+      font-size: 1.3em;
+      border-bottom: 2px solid #e0f2fe;
+      padding-bottom: 0.5em;
+    }
+    
+    .group-item {
+      padding: 0.8em;
+      margin: 0.5em 0;
+      background: #f8fafc;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .group-item:hover {
+      background: #e0f2fe;
+    }
+    
+    .group-item-name {
+      font-weight: bold;
+    }
+    
+    .group-item-join {
+      background: #06b6d4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5em 1em;
+      cursor: pointer;
+    }
+    
+    .no-groups {
+      text-align: center;
+      color: #64748b;
+      padding: 1em;
+    }
   </style>
 </head>
 <body>
@@ -309,6 +361,13 @@
     <h2>Welcome, <span id="username-display"></span></h2>
     <button id="create-group-btn">Create Group</button>
     <button id="join-group-btn">Join Group</button>
+  </div>
+    <div class="groups-list">
+      <h3>Your Groups (<span id="groups-count">0</span>)</h3>
+      <div id="joined-groups-list">
+        <div class="no-groups">You haven't joined any groups yet</div>
+      </div>
+    </div>
   </div>
 
   <!-- Chat Section -->
@@ -639,6 +698,120 @@
         chatSection.style.display = 'none';
       }
     });
+     const joinedGroupsList = document.getElementById('joined-groups-list');
+    const groupsCount = document.getElementById('groups-count');
+    let userGroups = [];
+    
+    // Add this new function to load user's groups
+    async function loadUserGroups() {
+      if (!currentUser) return;
+      
+      try {
+        const snapshot = await get(child(ref(db), `userGroups/${currentUser.uid}`));
+        if (snapshot.exists()) {
+          userGroups = Object.entries(snapshot.val()).map(([name, data]) => ({ name, ...data }));
+          renderGroupsList();
+        } else {
+          userGroups = [];
+          renderGroupsList();
+        }
+      } catch (error) {
+        console.error("Error loading groups:", error);
+        userGroups = [];
+        renderGroupsList();
+      }
+    }
+    
+    // Add this function to render the groups list
+    function renderGroupsList() {
+      groupsCount.textContent = userGroups.length;
+      
+      if (userGroups.length === 0) {
+        joinedGroupsList.innerHTML = '<div class="no-groups">You haven\'t joined any groups yet</div>';
+        return;
+      }
+      
+      joinedGroupsList.innerHTML = userGroups.map(group => `
+        <div class="group-item" data-group="${group.name}">
+          <span class="group-item-name">${group.name}</span>
+          <button class="group-item-join">Join</button>
+        </div>
+      `).join('');
+      
+      // Add event listeners to group items
+      document.querySelectorAll('.group-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const groupName = item.getAttribute('data-group');
+          enterGroup(groupName);
+        });
+      });
+    }
+    
+    // Modify the enterGroup function to track joined groups
+    async function enterGroup(groupName) {
+      // Add this group to user's joined groups if not already there
+      if (!userGroups.some(g => g.name === groupName)) {
+        await set(ref(db, `userGroups/${currentUser.uid}/${groupName}`), {
+          joinedAt: Date.now()
+        });
+        userGroups.push({ name: groupName, joinedAt: Date.now() });
+        renderGroupsList();
+      }
+      
+      currentGroup = groupName;
+      groupOptions.style.display = 'none';
+      chatSection.style.display = 'flex';
+      groupNameDisplay.textContent = groupName;
+      
+      // Clear previous messages
+      messagesDiv.innerHTML = '';
+      
+      // Listen for new messages
+      const groupRef = ref(db, `messages/${groupName}`);
+      onChildAdded(groupRef, (data) => {
+        const msgData = data.val();
+        const msg = document.createElement('div');
+        msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
+        
+        msg.innerHTML = `
+          <div class="sender">${msgData.sender}</div>
+          <div class="text">${msgData.text}</div>
+          <div class="timestamp">${formatTime(msgData.timestamp)}</div>
+        `;
+        
+        messagesDiv.appendChild(msg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    }
+    
+    // Update the onAuthStateChanged to load groups when user logs in
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        showLoading('Loading your data...');
+        const snapshot = await get(child(ref(db), `users/${user.uid}`));
+        if (snapshot.exists()) {
+          currentUser = { ...user, username: snapshot.val().username };
+          hideLoading();
+          authSection.style.display = 'none';
+          groupOptions.style.display = 'flex';
+          usernameDisplay.textContent = currentUser.username;
+          loadUserGroups(); // Load user's groups
+        } else {
+          hideLoading();
+          authSection.style.display = 'flex';
+          loginForm.style.display = 'block';
+          registerForm.style.display = 'none';
+        }
+      } else {
+        hideLoading();
+        authSection.style.display = 'flex';
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        groupOptions.style.display = 'none';
+        chatSection.style.display = 'none';
+      }
+    });
+    
   </script>
 </body>
 </html>
