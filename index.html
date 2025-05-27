@@ -46,6 +46,15 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       max-width: 80%;
       word-wrap: break-word;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: messageAppear 0.3s ease-out forwards;
+    }
+    @keyframes messageAppear {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
     .message .sender {
       font-weight: bold;
@@ -126,10 +135,101 @@
       border: none;
       color: white;
       font-size: 1.2em;
+      cursor: pointer;
+    }
+
+    /* Custom Alert Styles */
+    .custom-alert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 1.5em;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-width: 90%;
+      width: 300px;
+      text-align: center;
+      animation: alertAppear 0.3s ease-out;
+    }
+    @keyframes alertAppear {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+    .custom-alert h3 {
+      margin-top: 0;
+      color: #06b6d4;
+    }
+    .custom-alert input {
+      margin-bottom: 1em;
+    }
+    .custom-alert-buttons {
+      display: flex;
+      gap: 0.5em;
+      margin-top: 1em;
+    }
+    .custom-alert-buttons button {
+      flex: 1;
+      padding: 0.5em;
+    }
+    .custom-alert-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #f5fcff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #e0f2fe;
+      border-top-color: #06b6d4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1em;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-text {
+      color: #06b6d4;
+      font-size: 1.2em;
+      margin-top: 1em;
     }
   </style>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading ThunderChat...</div>
+  </div>
+
   <header>
     <h1>ThunderChat</h1>
   </header>
@@ -229,9 +329,77 @@
     const messagesDiv = document.getElementById('messages');
     const usernameDisplay = document.getElementById('username-display');
     const groupNameDisplay = document.getElementById('group-name-display');
+    const loadingScreen = document.getElementById('loading-screen');
 
     let currentGroup = "";
     let currentUser = null;
+
+    // Initial loading screen
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+      authSection.style.display = 'flex';
+      loginForm.style.display = 'block';
+    }, 3000);
+
+    // Custom alert/prompt functions
+    function showAlert(message) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'custom-alert-overlay';
+      
+      const alertContent = document.createElement('div');
+      alertContent.className = 'custom-alert';
+      alertContent.innerHTML = `
+        <h3>Alert</h3>
+        <p>${message}</p>
+        <button id="alert-ok-btn">OK</button>
+      `;
+      
+      alertDiv.appendChild(alertContent);
+      document.body.appendChild(alertDiv);
+      
+      document.getElementById('alert-ok-btn').addEventListener('click', () => {
+        document.body.removeChild(alertDiv);
+      });
+    }
+
+    function showPrompt(title, inputs, callback) {
+      const promptDiv = document.createElement('div');
+      promptDiv.className = 'custom-alert-overlay';
+      
+      const promptContent = document.createElement('div');
+      promptContent.className = 'custom-alert';
+      
+      let inputHTML = inputs.map(input => `
+        <label for="prompt-${input.name}">${input.label}</label>
+        <input type="${input.type || 'text'}" id="prompt-${input.name}" 
+               placeholder="${input.placeholder || ''}" ${input.required ? 'required' : ''}>
+      `).join('');
+      
+      promptContent.innerHTML = `
+        <h3>${title}</h3>
+        ${inputHTML}
+        <div class="custom-alert-buttons">
+          <button id="prompt-cancel-btn">Cancel</button>
+          <button id="prompt-ok-btn">OK</button>
+        </div>
+      `;
+      
+      promptDiv.appendChild(promptContent);
+      document.body.appendChild(promptDiv);
+      
+      document.getElementById('prompt-ok-btn').addEventListener('click', () => {
+        const values = {};
+        inputs.forEach(input => {
+          values[input.name] = document.getElementById(`prompt-${input.name}`).value;
+        });
+        document.body.removeChild(promptDiv);
+        callback(values);
+      });
+      
+      document.getElementById('prompt-cancel-btn').addEventListener('click', () => {
+        document.body.removeChild(promptDiv);
+      });
+    }
 
     // Toggle between login and register forms
     document.querySelectorAll('.toggle-form').forEach(el => {
@@ -248,17 +416,20 @@
       const password = document.getElementById('reg-password').value.trim();
 
       if (!username || !email || !password) {
-        alert('Please fill all fields');
+        showAlert('Please fill all fields');
         return;
       }
 
       try {
+        showLoading('Creating your account...');
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await set(ref(db, `users/${userCredential.user.uid}`), { username, email });
         currentUser = { ...userCredential.user, username };
+        hideLoading();
         showGroupOptions();
       } catch (error) {
-        alert('Registration failed: ' + error.message);
+        hideLoading();
+        showAlert('Registration failed: ' + error.message);
       }
     });
 
@@ -268,52 +439,65 @@
       const password = document.getElementById('login-password').value.trim();
 
       if (!email || !password) {
-        alert('Please fill all fields');
+        showAlert('Please fill all fields');
         return;
       }
 
       try {
+        showLoading('Logging in...');
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const snapshot = await get(child(ref(db), `users/${userCredential.user.uid}`));
         if (snapshot.exists()) {
           currentUser = { ...userCredential.user, username: snapshot.val().username };
+          hideLoading();
           showGroupOptions();
         } else {
-          alert('User data not found');
+          hideLoading();
+          showAlert('User data not found');
         }
       } catch (error) {
-        alert('Login failed: ' + error.message);
+        hideLoading();
+        showAlert('Login failed: ' + error.message);
       }
     });
 
     // Create group
     document.getElementById('create-group-btn').addEventListener('click', () => {
-      const name = prompt("Enter group name:");
-      const password = prompt("Enter group password:");
-      
-      if (name && password) {
-        set(ref(db, `groups/${name}`), { 
-          password, 
-          createdBy: currentUser.uid,
-          createdAt: Date.now()
-        });
-        enterGroup(name);
-      }
+      showPrompt('Create Group', [
+        { name: 'name', label: 'Group Name', placeholder: 'Enter group name', required: true },
+        { name: 'password', label: 'Password', type: 'password', placeholder: 'Set a password', required: true }
+      ], async ({name, password}) => {
+        if (name && password) {
+          showLoading('Creating group...');
+          await set(ref(db, `groups/${name}`), { 
+            password, 
+            createdBy: currentUser.uid,
+            createdAt: Date.now()
+          });
+          hideLoading();
+          enterGroup(name);
+        }
+      });
     });
 
     // Join group
-    document.getElementById('join-group-btn').addEventListener('click', async () => {
-      const name = prompt("Enter group name:");
-      const password = prompt("Enter group password:");
-      
-      if (name && password) {
-        const snapshot = await get(child(ref(db), `groups/${name}`));
-        if (snapshot.exists() && snapshot.val().password === password) {
-          enterGroup(name);
-        } else {
-          alert("Invalid group name or password");
+    document.getElementById('join-group-btn').addEventListener('click', () => {
+      showPrompt('Join Group', [
+        { name: 'name', label: 'Group Name', placeholder: 'Enter group name', required: true },
+        { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter password', required: true }
+      ], async ({name, password}) => {
+        if (name && password) {
+          showLoading('Joining group...');
+          const snapshot = await get(child(ref(db), `groups/${name}`));
+          if (snapshot.exists() && snapshot.val().password === password) {
+            hideLoading();
+            enterGroup(name);
+          } else {
+            hideLoading();
+            showAlert("Invalid group name or password");
+          }
         }
-      }
+      });
     });
 
     // Send message
@@ -382,21 +566,34 @@
       usernameDisplay.textContent = currentUser.username || currentUser.email;
     }
 
+    function showLoading(message = 'Loading...') {
+      loadingScreen.style.display = 'flex';
+      loadingScreen.querySelector('.loading-text').textContent = message;
+    }
+
+    function hideLoading() {
+      loadingScreen.style.display = 'none';
+    }
+
     // Check auth state
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        showLoading('Loading your data...');
         const snapshot = await get(child(ref(db), `users/${user.uid}`));
         if (snapshot.exists()) {
           currentUser = { ...user, username: snapshot.val().username };
+          hideLoading();
           showGroupOptions();
         } else {
           // User logged in but no username set
+          hideLoading();
           authSection.style.display = 'flex';
           loginForm.style.display = 'block';
           registerForm.style.display = 'none';
         }
       } else {
         // No user logged in
+        hideLoading();
         authSection.style.display = 'flex';
         loginForm.style.display = 'block';
         registerForm.style.display = 'none';
@@ -404,11 +601,6 @@
         chatSection.style.display = 'none';
       }
     });
-
-    // Show auth section by default
-    authSection.style.display = 'flex';
-    loginForm.style.display = 'block';
-    registerForm.style.display = 'none';
   </script>
 </body>
 </html>
