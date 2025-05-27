@@ -1,105 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ThunderChat</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      animation: fadeIn 1.5s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .input {
-      @apply w-full p-3 rounded-lg border border-cyan-400 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300;
-    }
-
-    .button {
-      @apply w-full py-3 rounded-lg text-white bg-cyan-600 hover:bg-blue-700 transition duration-300 shadow-lg;
-    }
-
-    .chat-bubble {
-      @apply bg-cyan-200 text-black p-3 rounded-xl shadow-lg mb-2 max-w-xs;
-    }
-
-    .chat-bubble.self {
-      @apply bg-blue-300 text-black ml-auto;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+<body>
+  <div id="app" class="app-container">
+    <h1>⚡ ThunderChat</h1>
 
-<body class="min-h-screen flex items-center justify-center px-4">
-  <div id="app" class="max-w-md w-full bg-white p-6 rounded-2xl shadow-2xl">
-    <h1 class="text-3xl font-bold text-center text-cyan-700 mb-6">⚡ ThunderChat</h1>
-
-    <div id="auth" class="space-y-4">
-      <input type="email" id="email" class="input" placeholder="Email">
-      <input type="password" id="password" class="input" placeholder="Password">
-      <div class="g-recaptcha" data-sitekey="your-site-key"></div>
-      <button id="register" class="button">Register</button>
-      <button id="login" class="button bg-blue-600">Login</button>
+    <div id="auth">
+      <input type="email" id="email" placeholder="Email"/>
+      <input type="password" id="password" placeholder="Password"/>
+      <div id="captcha-box">
+        <label>Solve: <span id="captcha-question"></span></label>
+        <input type="text" id="captcha-answer" placeholder="Answer" />
+      </div>
+      <button id="register">Register</button>
+      <button id="login">Login</button>
     </div>
 
-    <div id="group-selection" class="hidden space-y-4">
-      <button id="createGroupBtn" class="button bg-green-500">Create Group</button>
-      <button id="joinGroupBtn" class="button bg-purple-600">Join Group</button>
-      <p class="text-sm text-gray-600 mt-2">Inactive groups will be deleted after 1 week of no messages.</p>
+    <div id="group-selection" class="hidden">
+      <button id="createGroupBtn">Create Group</button>
+      <button id="joinGroupBtn">Join Group</button>
+      <p class="group-warning">Inactive groups will be deleted after 1 week.</p>
     </div>
 
-    <div id="create-group-form" class="hidden space-y-4">
-      <input type="text" id="groupName" class="input" placeholder="Enter Group Name">
-      <button id="submitCreateGroup" class="button bg-green-600">Create Private Group</button>
+    <div id="create-group-form" class="hidden">
+      <input type="text" id="groupName" placeholder="Group Name"/>
+      <button id="submitCreateGroup">Create Group</button>
     </div>
 
-    <div id="join-group-form" class="hidden space-y-4">
-      <input type="text" id="joinGroupId" class="input" placeholder="Enter Group Password">
-      <button id="submitJoinGroup" class="button bg-purple-700">Join Group</button>
+    <div id="join-group-form" class="hidden">
+      <input type="text" id="joinGroupId" placeholder="Group Password"/>
+      <button id="submitJoinGroup">Join Group</button>
     </div>
 
-    <div id="chat" class="hidden mt-6">
-      <div id="groupInfo" class="text-sm text-gray-600 mb-2">Group Password: <span id="groupPassword"></span></div>
-      <div id="messages" class="h-64 overflow-y-auto bg-gray-100 p-4 rounded-lg space-y-2 mb-4"></div>
-      <input type="text" id="messageInput" class="input mb-2" placeholder="Type a message">
-      <button id="send" class="button">Send</button>
-      <button id="logout" class="button bg-red-600 mt-2">Logout</button>
+    <div id="chat" class="hidden">
+      <div id="groupInfo">Group Password: <span id="groupPassword"></span></div>
+      <div id="messages"></div>
+      <input type="text" id="messageInput" placeholder="Type a message" />
+      <button id="send">Send</button>
+      <button id="logout">Logout</button>
     </div>
   </div>
 
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
-      authDomain: "thunderboundthunderchat.firebaseapp.com",
-      databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "thunderboundthunderchat",
-      storageBucket: "thunderboundthunderchat.appspot.com",
-      messagingSenderId: "79690962383",
-      appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    // Additional logic can be added here
-  </script>
+  <script type="module" src="main.js"></script>
 </body>
-
 </html>
