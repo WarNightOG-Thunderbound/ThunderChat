@@ -1,1415 +1,1896 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ThunderChat</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-size: 18px;
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5fcff;
-      color: #0f172a;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    header {
-      padding: 1em;
-      background: #06b6d4;
-      color: white;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .header-tabs {
-      display: flex;
-      justify-content: center;
-      margin-top: 0.5em;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: white;
-      padding: 0.5em 1em;
-      margin: 0 0.5em;
-      font-size: 1em;
-      cursor: pointer;
-      border-radius: 20px;
-      transition: background 0.2s;
-    }
-    .tab-btn.active {
-      background: rgba(255,255,255,0.2);
-    }
-    .tab-btn:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    header h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    main {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1em;
-      width: 100%;
-    }
-    footer {
-      padding: 1em;
-      background: white;
-      border-top: 2px solid #e2e8f0;
-    }
-    .message {
-      margin: 0.8em 0;
-      padding: 0.8em;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      max-width: 80%;
-      word-wrap: break-word;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: messageAppear 0.3s ease-out forwards;
-    }
-    @keyframes messageAppear {
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .message .sender {
-      font-weight: bold;
-      color: #06b6d4;
-      margin-bottom: 0.3em;
-    }
-    input, button, textarea {
-      padding: 0.8em;
-      border: 1px solid #cbd5e1;
-      margin: 0.3em 0;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 1em;
-    }
-    button {
-      background: #06b6d4;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #0891b2;
-    }
-    button.secondary {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-    .auth-form, .group-options, .chat-section, .contacts-section, .settings-section {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 1em;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .form-group {
-      width: 100%;
-      margin-bottom: 1em;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5em;
-      color: #334155;
-    }
-    .toggle-form {
-      color: #06b6d4;
-      text-decoration: underline;
-      cursor: pointer;
-      margin-top: 1em;
-      text-align: center;
-    }
-    #messages, #private-messages {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 0.5em;
-    }
-    .message.sent {
-      align-self: flex-end;
-      background: #e0f2fe;
-    }
-    .message.received {
-      align-self: flex-start;
-    }
-    .timestamp {
-      font-size: 0.7em;
-      color: #64748b;
-      text-align: right;
-      margin-top: 0.3em;
-    }
-    .chat-header, .private-chat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8em;
-      background: #06b6d4;
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .back-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-    .group-options, .contacts-list {
-      text-align: center;
-    }
-    .group-options h2, .contacts-list h2 {
-      font-size: 1.5em;
-      margin-bottom: 1em;
-    }
-    .group-options button, .contacts-list button {
-      padding: 1em;
-      margin: 0.5em 0;
-      width: 100%;
-      max-width: 300px;
-    }
-    .loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #f5fcff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    .loading-spinner {
-      width: 60px;
-      height: 60px;
-      border: 6px solid #e0f2fe;
-      border-top-color: #06b6d4;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1em;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .loading-text {
-      color: #06b6d4;
-      font-size: 1.5em;
-    }
-    .groups-list, .contacts-container {
-      width: 100%;
-      max-width: 500px;
-      margin: 1em auto;
-      background: white;
-      border-radius: 10px;
-      padding: 1em;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .group-item, .contact-item {
-      padding: 0.8em;
-      margin: 0.5em 0;
-      background: #f8fafc;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .group-item:hover, .contact-item:hover {
-      background: #e0f2fe;
-    }
-    .group-avatar, .contact-avatar, .profile-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #06b6d4;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 1em;
-      font-weight: bold;
-      overflow: hidden;
-    }
-    .group-avatar img, .contact-avatar img, .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .group-info, .contact-info {
-      flex: 1;
-      text-align: left;
-    }
-    .group-name, .contact-name {
-      font-weight: bold;
-    }
-    .group-desc, .contact-status {
-      font-size: 0.8em;
-      color: #64748b;
-      margin-top: 0.3em;
-    }
-    .no-groups, .no-contacts {
-      text-align: center;
-      color: #64748b;
-      padding: 1em;
-    }
-    .group-settings-btn, .contact-settings-btn {
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 1.2em;
-    }
-    .settings-menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 300px;
-      background: white;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-      z-index: 100;
-      padding: 1em;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-    }
-    .settings-menu.open {
-      transform: translateX(0);
-    }
-    .settings-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1em;
-      padding-bottom: 1em;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .close-settings {
-      background: none;
-      border: none;
-      font-size: 1.5em;
-      cursor: pointer;
-    }
-    .avatar-upload {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 1em 0;
-    }
-    .avatar-preview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: #e0f2fe;
-      margin-bottom: 1em;
-      overflow: hidden;
-    }
-    .avatar-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .user-id-display {
-      background: #f1f5f9;
-      padding: 0.8em;
-      border-radius: 8px;
-      margin: 1em 0;
-      font-family: monospace;
-      word-break: break-all;
-    }
-    .copy-id {
-      background: #06b6d4;
-      color: white;
-      border: none;
-      padding: 0.5em;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 0.5em;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThunderChat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        /* Universal box-sizing for consistent layout and base font */
+        * {
+            box-sizing: border-box;
+            font-size: 18px; /* Base font size for readability */
+            -webkit-font-smoothing: antialiased; /* Smoother fonts for Webkit browsers */
+            -moz-osx-font-smoothing: grayscale; /* Smoother fonts for Firefox */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif; /* Modern, clean font */
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f7fa 100%); /* Soft white to light cyan gradient */
+            color: #263238; /* Darker text for contrast */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure full viewport height */
+            width: 100%; /* Ensure full width */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            transition: background 0.5s ease; /* Smooth transition for background changes */
+        }
+
+        /* Header Styling */
+        header {
+            padding: 1.5em 1em; /* Generous padding */
+            background: linear-gradient(90deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            color: white;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4); /* Strong, vibrant shadow */
+            border-bottom-left-radius: 30px; /* Very rounded bottom corners */
+            border-bottom-right-radius: 30px;
+            position: relative;
+            z-index: 20;
+            overflow: hidden; /* Hide overflow for pseudo-elements */
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            opacity: 0.3;
+            animation: headerGlow 10s infinite linear; /* Subtle background animation */
+        }
+
+        @keyframes headerGlow {
+            0% { transform: rotate(0deg); opacity: 0.3; }
+            50% { transform: rotate(180deg); opacity: 0.5; }
+            100% { transform: rotate(360deg); opacity: 0.3; }
+        }
+
+        header h1 {
+            font-size: 3em; /* Super large title */
+            margin: 0;
+            font-weight: 800; /* Extra bold */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Stronger text shadow */
+            letter-spacing: 0.08em; /* More spaced out letters */
+        }
+
+        /* Header Tabs */
+        .header-tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5em; /* More space below title */
+            gap: 1.2em; /* Increased space between tabs */
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.15); /* Slightly less transparent */
+            border: 2px solid rgba(255,255,255,0.5); /* More prominent border */
+            color: white;
+            padding: 0.8em 1.8em; /* More padding */
+            font-size: 1.1em; /* Slightly larger font */
+            cursor: pointer;
+            border-radius: 30px; /* Very rounded */
+            transition: all 0.3s ease-in-out; /* Smooth transitions */
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            backdrop-filter: blur(5px); /* Frosted glass effect */
+            flex-grow: 1; /* Allow buttons to grow */
+            max-width: 180px; /* Limit max width for tabs */
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: rgba(255,255,255,0.4); /* More opaque when active */
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4); /* Stronger shadow for active */
+            transform: translateY(-4px); /* More pronounced lift */
+            border-color: white; /* Solid white border for active */
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2em; /* Increased padding */
+            width: 100%;
+            display: flex; /* Use flex for centering content */
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top within main */
+        }
+
+        /* Footer Styling */
+        footer {
+            padding: 1.2em; /* More padding */
+            background: white;
+            border-top: 3px solid #e0f2fe; /* Thicker, lighter border */
+            border-top-left-radius: 25px; /* More rounded corners */
+            border-top-right-radius: 25px;
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.15); /* Stronger shadow */
+            display: flex;
+            gap: 0.8em; /* More space between input and button */
+            align-items: center;
+            position: relative; /* For z-index */
+            z-index: 10;
+            flex-wrap: wrap; /* Allow footer elements to wrap */
+        }
+
+        /* Message Bubbles */
+        .message {
+            margin: 1em 0; /* More vertical space */
+            padding: 1.2em 1.5em; /* Generous padding */
+            background: white;
+            border-radius: 22px; /* Super rounded */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Deeper shadow */
+            max-width: 90%; /* Wider messages */
+            word-wrap: break-word;
+            transform: translateY(30px); /* Start further down */
+            opacity: 0;
+            animation: messageAppear 0.5s ease-out forwards; /* Slower, smoother animation */
+            position: relative;
+        }
+
+        /* Message bubble corners */
+        .message::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: linear-gradient(to right, #80deea, #4dd0e1); /* Vibrant light cyan gradient */
+            color: #263238;
+            border-bottom-right-radius: 8px; /* Pointed corner */
+            margin-right: 10px; /* Space from edge */
+        }
+
+        .message.sent::before {
+            border-bottom-right-radius: 8px;
+            right: -10px;
+            border-left-color: #4dd0e1; /* Match gradient end color */
+            border-bottom-color: #4dd0e1;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: #ffffff;
+            border: 1px solid #e0f2f7; /* Subtle border for received messages */
+            border-bottom-left-radius: 8px; /* Pointed corner */
+            margin-left: 10px; /* Space from edge */
+        }
+
+        .message.received::before {
+            border-bottom-left-radius: 8px;
+            left: -10px;
+            border-right-color: #ffffff; /* Match background color */
+            border-bottom-color: #ffffff;
+        }
+
+        .message .sender {
+            font-weight: 700; /* Bolder sender name */
+            color: #00838f; /* Darker cyan */
+            margin-bottom: 0.5em;
+            font-size: 0.95em; /* Slightly larger sender name */
+        }
+
+        .timestamp {
+            font-size: 0.7em;
+            color: #78909c; /* Softer grey */
+            text-align: right;
+            margin-top: 0.5em;
+        }
+
+        /* Input, Button, Textarea General Styles */
+        input, button, textarea {
+            padding: 1em; /* Generous padding */
+            border: 1px solid #b0bec5; /* Softer border color */
+            border-radius: 15px; /* More rounded */
+            width: 100%;
+            font-size: 1.05em; /* Slightly larger font */
+            transition: all 0.3s ease; /* Smooth transitions */
+            background-color: #ffffff;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); /* Subtle inner shadow */
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #00bcd4; /* Vibrant cyan focus */
+            box-shadow: 0 0 0 5px rgba(0, 188, 212, 0.4); /* Stronger, wider focus glow */
+            background-color: #f5feff; /* Very light cyan on focus */
+        }
+
+        /* Primary Button Styles */
+        button {
+            background: linear-gradient(45deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            font-weight: 700; /* Bolder text */
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3); /* Vibrant shadow */
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #00acc1 0%, #00bcd4 100%); /* Reverse gradient on hover */
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.5); /* Stronger shadow */
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Secondary Button Styles */
+        button.secondary {
+            background: #e0f2f7; /* Light grey/cyan */
+            color: #37474f; /* Darker text */
+            border: 1px solid #b0bec5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        button.secondary:hover {
+            background: #cce9f0; /* Slightly darker light cyan on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Section Containers (Auth, Groups, Contacts, Settings) */
+        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section {
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            align-items: center;
+            padding: 3em; /* Very generous padding */
+            width: 100%; /* Full width on mobile */
+            max-width: 650px; /* Wider containers on desktop */
+            margin: 2em auto; /* More vertical margin */
+            background: white;
+            border-radius: 25px; /* Very rounded container */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Deeper, softer shadow */
+            border: 1px solid #e0f2f7; /* Subtle border */
+            animation: fadeIn 0.8s ease-out forwards; /* Fade in animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 1.5em; /* More space */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8em; /* More space */
+            color: #37474f;
+            font-weight: 700; /* Bolder label */
+            font-size: 1.1em;
+        }
+
+        .toggle-form {
+            color: #00bcd4;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 2em; /* More space */
+            text-align: center;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .toggle-form:hover {
+            color: #0097a7; /* Darker cyan on hover */
+        }
+
+        /* Chat Messages Container */
+        #messages, #private-messages {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 1em; /* More space between messages */
+            padding-bottom: 1.5em; /* Space for footer */
+            flex-grow: 1; /* Allow messages to take up available space */
+        }
+
+        /* Chat Header */
+        .chat-header, .private-chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2em 1.5em; /* More padding */
+            background: linear-gradient(90deg, #00bcd4 0%, #00acc1 100%); /* Bold cyan gradient */
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+            margin-bottom: 1em; /* Space below header */
+        }
+
+        .chat-header h2, .private-chat-header h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8em; /* Larger arrow */
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+            padding: 0.2em; /* Make click target larger */
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px) scale(1.1); /* More pronounced slide and scale */
+        }
+
+        /* Group/Contact Options & Lists */
+        .group-options h2, .contacts-list h2 {
+            font-size: 2.2em; /* Larger headings */
+            margin-bottom: 1.5em;
+            color: #00838f; /* Darker cyan */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-weight: 800;
+        }
+
+        .group-options button, .contacts-list button {
+            padding: 1.3em; /* More padding */
+            margin: 0.8em 0; /* More margin */
+            max-width: 400px; /* Wider buttons */
+            border-radius: 18px; /* More rounded */
+            font-size: 1.1em;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f7fa 100%); /* Match body background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            width: 80px; /* Even larger spinner */
+            height: 80px;
+            border: 10px solid #e0f2fe; /* Thicker border */
+            border-top-color: #00bcd4; /* Vibrant cyan */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2em;
+            box-shadow: 0 0 0 5px rgba(0, 188, 212, 0.2); /* Subtle glow */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #00bcd4;
+            font-size: 2em; /* Larger text */
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .groups-list, .contacts-container {
+            width: 100%;
+            max-width: 550px; /* Wider lists */
+            margin: 2em auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2em;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Stronger shadow */
+            border: 1px solid #e0f2f7;
+        }
+
+        .groups-list h3 {
+            font-size: 1.5em;
+            color: #00838f;
+            margin-bottom: 1.2em;
+            font-weight: 700;
+        }
+
+        .group-item, .contact-item {
+            padding: 1.2em; /* More padding */
+            margin: 0.8em 0; /* More margin */
+            background: #f5faff; /* Very light blue background */
+            border-radius: 15px; /* More rounded */
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* More visible item shadow */
+            border: 1px solid #e0f2f7;
+        }
+
+        .group-item:hover, .contact-item:hover {
+            background: #e0f7fa; /* Lighter cyan on hover */
+            transform: translateY(-3px) scale(1.02); /* More pronounced lift and slight scale */
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+
+        /* Avatars */
+        .group-avatar, .contact-avatar, .profile-avatar {
+            width: 60px; /* Even larger avatars */
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00bcd4, #00acc1); /* Gradient avatar background */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5em; /* More margin */
+            font-weight: 700;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 4px solid #ffffff; /* White border */
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.4); /* Stronger glow */
+        }
+
+        .group-avatar img, .contact-avatar img, .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .group-avatar div, .contact-avatar div, .profile-avatar div {
+            font-size: 1.8em !important; /* Ensure initials are very visible */
+        }
+
+        .group-info, .contact-info {
+            flex: 1;
+            text-align: left;
+            min-width: 0; /* Allow text to shrink */
+        }
+
+        .group-name, .contact-name {
+            font-weight: 700; /* Bolder names */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1.2em; /* Larger names */
+            color: #37474f;
+        }
+
+        .group-desc, .contact-status {
+            font-size: 0.9em; /* Slightly larger */
+            color: #78909c;
+            margin-top: 0.3em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .no-groups, .no-contacts {
+            text-align: center;
+            color: #78909c;
+            padding: 2em;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        /* Settings Gear Icon */
+        .group-settings-btn, .contact-settings-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.8em; /* Much larger icon */
+            transition: transform 0.3s ease-out;
+            padding: 0.2em;
+        }
+
+        .group-settings-btn:hover, .contact-settings-btn:hover {
+            transform: rotate(60deg) scale(1.1); /* More pronounced spin and scale */
+        }
+
+        /* Settings Menu */
+        .settings-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px; /* Wider settings menu */
+            background: linear-gradient(to bottom, #ffffff 0%, #f0f8ff 100%); /* Subtle gradient */
+            box-shadow: -8px 0 30px rgba(0,0,0,0.25); /* Stronger shadow */
+            z-index: 1000; /* Ensure it's on top */
+            padding: 2em;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Springy animation */
+            overflow-y: auto;
+            border-left: 1px solid #e0f2f7;
+        }
+
+        .settings-menu.open {
+            transform: translateX(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2em;
+            padding-bottom: 1.5em;
+            border-bottom: 2px solid #e0f2f7; /* Thicker border */
+        }
+
+        .settings-header h3 {
+            font-size: 2em;
+            color: #00838f;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 2.5em; /* Very large close icon */
+            cursor: pointer;
+            color: #78909c;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .close-settings:hover {
+            color: #37474f;
+            transform: rotate(180deg) scale(1.1); /* Full spin and scale */
+        }
+
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2em 0;
+        }
+
+        .avatar-preview {
+            width: 140px; /* Huge avatars */
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e0f7fa, #b2ebf2); /* Light cyan gradient */
+            margin-bottom: 1.5em;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em; /* Massive for initials */
+            color: #00838f;
+            font-weight: 800;
+            border: 5px solid #ffffff; /* White border */
+            box-shadow: 0 0 0 6px rgba(0, 188, 212, 0.5), 0 5px 20px rgba(0,0,0,0.2); /* Double glow and shadow */
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-id-display {
+            background: #f0f8ff; /* Very light blue background */
+            padding: 1.2em;
+            border-radius: 12px;
+            margin: 2em 0;
+            font-family: 'Consolas', 'Monaco', monospace; /* More distinct monospace font */
+            word-break: break-all;
+            text-align: left;
+            width: 100%;
+            border: 1px solid #b0bec5;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Deeper inner shadow */
+            color: #37474f;
+        }
+
+        .user-id-display strong {
+            color: #37474f;
+            font-size: 1em;
+            display: block;
+            margin-bottom: 0.8em;
+        }
+
+        .copy-id {
+            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            color: white;
+            border: none;
+            padding: 0.8em 1.5em; /* More padding */
+            border-radius: 10px; /* More rounded */
+            cursor: pointer;
+            margin-top: 1em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(0, 188, 212, 0.2);
+        }
+
+        .copy-id:hover {
+            background: linear-gradient(45deg, #00acc1, #00bcd4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+        }
+
+        /* Custom Alert Modal */
+        .custom-alert-modal {
+            display: none; /* Hidden by default, controlled by JS */
+            position: fixed;
+            z-index: 2001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7); /* Even darker overlay */
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px); /* More intense blur */
+        }
+
+        .custom-alert-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 40px; /* Very generous padding */
+            border: 2px solid #e0f2f7; /* More prominent border */
+            width: 95%;
+            max-width: 500px; /* Wider max-width */
+            border-radius: 20px; /* More rounded */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Very pronounced shadow */
+            position: relative;
+            text-align: center;
+            animation: fadeInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; /* Springy animation */
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-alert-btn {
+            color: #b0bec5; /* Softer grey */
+            font-size: 38px; /* Even larger close button */
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .close-alert-btn:hover,
+        .close-alert-btn:focus {
+            color: #37474f;
+            transform: rotate(90deg);
+        }
+
+        #custom-alert-message {
+            margin-bottom: 30px; /* More space */
+            font-size: 1.3em; /* Larger message text */
+            color: #37474f;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        #custom-alert-ok-btn {
+            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            color: white;
+            padding: 15px 30px; /* More padding */
+            border: none;
+            border-radius: 10px; /* More rounded */
+            cursor: pointer;
+            font-size: 1.2em; /* Larger text */
+            font-weight: 700;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+
+        #custom-alert-ok-btn:hover {
+            background: linear-gradient(45deg, #00acc1, #00bcd4);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            main {
+                padding: 3em;
+            }
+            .auth-form, .group-options, .contacts-section, .settings-section {
+                padding: 3.5em;
+            }
+            .message {
+                padding: 1.5em 1.8em;
+            }
+            input, button, textarea {
+                padding: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2em;
+            }
+            .header-tabs {
+                flex-direction: column; /* Stack tabs vertically */
+                align-items: center;
+            }
+            .tab-btn {
+                padding: 0.6em 1em;
+                font-size: 0.9em;
+                width: 80%; /* Make tabs wider on small screens */
+                max-width: none; /* Remove max-width constraint */
+            }
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section {
+                padding: 1.5em;
+                margin: 1em auto; /* Reduce vertical margin */
+            }
+            .settings-menu {
+                width: 100%; /* Full width on small screens */
+            }
+            .avatar-preview {
+                width: 100px;
+                height: 100px;
+                font-size: 3em;
+            }
+            footer {
+                flex-direction: column; /* Stack footer elements */
+                gap: 1em; /* More space when stacked */
+                padding: 1em;
+            }
+            footer input {
+                margin-bottom: 0.5em; /* Space between input and button */
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="loading-screen" class="loading-screen">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Loading ThunderChat...</div>
-  </div>
-
-  <header>
-    <h1>ThunderChat</h1>
-    <div class="header-tabs">
-      <button id="groups-tab" class="tab-btn active">Groups</button>
-      <button id="contacts-tab" class="tab-btn">Contacts</button>
-      <button id="settings-tab" class="tab-btn">Settings</button>
-    </div>
-  </header>
-
-  <main>
-        <div id="auth-section" class="auth-form">
-      <div id="login-form">
-        <div class="form-group">
-          <label for="login-email">Email</label>
-          <input id="login-email" type="email" placeholder="Enter your email" />
-        </div>
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <input id="login-password" type="password" placeholder="Enter your password" />
-        </div>
-        <button id="login-btn">Login</button>
-        <div id="toggle-to-register" class="toggle-form">Don't have an account? Register</div>
-      </div>
-
-      <div id="register-form" style="display: none;">
-        <div class="form-group">
-          <label for="reg-username">Username</label>
-          <input id="reg-username" type="text" placeholder="Choose a username" />
-        </div>
-        <div class="form-group">
-          <label for="reg-email">Email</label>
-          <input id="reg-email" type="email" placeholder="Enter your email" />
-        </div>
-        <div class="form-group">
-          <label for="reg-password">Password</label>
-          <input id="reg-password" type="password" placeholder="Create a password" />
-        </div>
-        <button id="register-btn">Register</button>
-        <div id="toggle-to-login" class="toggle-form">Already have an account? Login</div>
-      </div>
-    </div>
-
-        <div id="group-options" class="group-options">
-      <h2>Welcome, <span id="username-display"></span></h2>
-      <button id="create-group-btn">Create Group</button>
-      <button id="join-group-btn">Join New Group</button>
-      
-      <div class="groups-list">
-        <h3>Your Groups (<span id="groups-count">0</span>)</h3>
-        <div id="joined-groups-list">
-          <div class="no-groups">You haven't joined any groups yet</div>
-        </div>
-      </div>
-    </div>
-
-        <div id="chat-section" class="chat-section">
-      <div class="chat-header">
-        <button class="back-btn" id="back-btn">←</button>
-        <h2 id="group-name-display"></h2>
-        <button class="group-settings-btn" id="group-settings-btn">⚙️</button>
-      </div>
-      <div id="messages"></div>
-      <footer>
-        <input id="msg-input" type="text" placeholder="Type a message..." />
-        <button id="send-btn">Send</button>
-      </footer>
-    </div>
-
-        <div id="contacts-section" class="contacts-section">
-      <div class="contacts-list">
-        <h2>Your Contacts</h2>
-        <button id="add-contact-btn">Add Contact</button>
-        
-        <div class="contacts-container">
-          <div id="contacts-list">
-            <div class="no-contacts">You don't have any contacts yet</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-        <div id="private-chat-section" class="chat-section">
-      <div class="private-chat-header">
-        <button class="back-btn" id="back-private-btn">←</button>
-        <h2 id="contact-name-display"></h2>
-      </div>
-      <div id="private-messages"></div>
-      <footer>
-        <input id="private-msg-input" type="text" placeholder="Type a message..." />
-        <button id="send-private-btn">Send</button>
-      </footer>
-    </div>
-
-        <div id="settings-section" class="settings-section">
-      <h2>Your Profile</h2>
-      
-      <div class="avatar-upload">
-        <div class="avatar-preview" id="profile-avatar-preview">
-                  </div>
-        <input type="file" id="avatar-upload" accept="image/*" style="display: none;" />
-        <button id="upload-avatar-btn" class="secondary">Change Profile Picture</button>
-      </div>
-      
-      <div class="form-group">
-        <label for="profile-username">Username</label>
-        <input id="profile-username" type="text" placeholder="Your username" />
-      </div>
-      
-      <div class="form-group">
-        <label for="profile-status">Status</label>
-        <input id="profile-status" type="text" placeholder="Your status" />
-      </div>
-      
-      <div class="user-id-display">
-        <strong>Your ID:</strong>
-        <div id="user-id-text">Loading...</div>
-        <button id="copy-id-btn" class="copy-id">Copy ID</button>
-      </div>
-      
-      <button id="save-profile-btn">Save Changes</button>
-      <button id="logout-btn" class="secondary">Logout</button>
-    </div>
-  </main>
-
-    <div id="group-settings-menu" class="settings-menu">
-    <div class="settings-header">
-      <h3>Group Settings</h3>
-      <button class="close-settings" id="close-group-settings">×</button>
-    </div>
-    
-    <div class="avatar-upload">
-      <div class="avatar-preview" id="group-avatar-preview">
-              </div>
-      <input type="file" id="group-avatar-upload" accept="image/*" style="display: none;" />
-      <button id="upload-group-avatar-btn" class="secondary">Change Group Picture</button>
-    </div>
-    
-    <div class="form-group">
-      <label>Group Name</label>
-      <input id="group-name-setting" type="text" readonly />
-    </div>
-    
-    <div class="form-group">
-      <label>Group Password</label>
-      <input id="group-password-setting" type="text" readonly />
-    </div>
-    
-    <div class="form-group">
-      <label for="group-desc-setting">Group Description</label>
-      <textarea id="group-desc-setting" placeholder="Enter group description"></textarea>
-    </div>
-    
-    <button id="save-group-settings-btn">Save Changes</button>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      push, 
-      onChildAdded, 
-      get, 
-      child,
-      update,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { 
-      getStorage,
-      ref as storageRef,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
-      authDomain: "thunderboundthunderchat.firebaseapp.com",
-      databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "thunderboundthunderchat",
-      storageBucket: "thunderboundthunderchat.appspot.com",
-      messagingSenderId: "79690962383",
-      appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const storage = getStorage(app);
-
-    // DOM Elements
-    const loadingScreen = document.getElementById('loading-screen');
-    const authSection = document.getElementById('auth-section');
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    const groupOptions = document.getElementById('group-options');
-    const chatSection = document.getElementById('chat-section');
-    const contactsSection = document.getElementById('contacts-section');
-    const privateChatSection = document.getElementById('private-chat-section');
-    const settingsSection = document.getElementById('settings-section');
-    const messagesDiv = document.getElementById('messages');
-    const privateMessagesDiv = document.getElementById('private-messages');
-    const usernameDisplay = document.getElementById('username-display');
-    const groupNameDisplay = document.getElementById('group-name-display');
-    const contactNameDisplay = document.getElementById('contact-name-display');
-    const joinedGroupsList = document.getElementById('joined-groups-list');
-    const groupsCount = document.getElementById('groups-count');
-    const contactsList = document.getElementById('contacts-list');
-    const groupsTab = document.getElementById('groups-tab');
-    const contactsTab = document.getElementById('contacts-tab');
-    const settingsTab = document.getElementById('settings-tab');
-    const groupSettingsMenu = document.getElementById('group-settings-menu');
-    const closeGroupSettings = document.getElementById('close-group-settings');
-    const groupSettingsBtn = document.getElementById('group-settings-btn');
-    const addContactBtn = document.getElementById('add-contact-btn');
-    const profileAvatarPreview = document.getElementById('profile-avatar-preview');
-    const groupAvatarPreview = document.getElementById('group-avatar-preview');
-    const uploadAvatarBtn = document.getElementById('upload-avatar-btn');
-    const avatarUpload = document.getElementById('avatar-upload');
-    const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn');
-    const groupAvatarUpload = document.getElementById('group-avatar-upload');
-    const userIdText = document.getElementById('user-id-text');
-    const copyIdBtn = document.getElementById('copy-id-btn');
-    const saveProfileBtn = document.getElementById('save-profile-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    const saveGroupSettingsBtn = document.getElementById('save-group-settings-btn');
-
-    // Auth specific elements
-    const loginEmailInput = document.getElementById('login-email');
-    const loginPasswordInput = document.getElementById('login-password');
-    const loginBtn = document.getElementById('login-btn');
-    const regUsernameInput = document.getElementById('reg-username');
-    const regEmailInput = document.getElementById('reg-email');
-    const regPasswordInput = document.getElementById('reg-password');
-    const registerBtn = document.getElementById('register-btn');
-    const toggleToRegister = document.getElementById('toggle-to-register');
-    const toggleToLogin = document.getElementById('toggle-to-login');
-
-    let currentGroup = "";
-    let currentContact = "";
-    let currentUser = null;
-    let userGroups = [];
-    let userContacts = [];
-    let userData = {};
-
-    // Initialize the app
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        // Display auth section by default if no user is logged in
-        if (!currentUser) {
-          authSection.style.display = 'flex';
-          loginForm.style.display = 'block';
-        }
-      }, 2000);
-    });
-
-    // --- Auth Functionality ---
-
-    // Toggle between login and register forms
-    toggleToRegister.addEventListener('click', () => {
-      loginForm.style.display = 'none';
-      registerForm.style.display = 'block';
-    });
-
-    toggleToLogin.addEventListener('click', () => {
-      registerForm.style.display = 'none';
-      loginForm.style.display = 'block';
-    });
-
-    // Register User
-    registerBtn.addEventListener('click', async () => {
-      const email = regEmailInput.value;
-      const password = regPasswordInput.value;
-      const username = regUsernameInput.value;
-
-      if (!email || !password || !username) {
-        alert('Please fill in all registration fields.');
-        return;
-      }
-
-      showLoading('Registering...');
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        
-        // Store user data in Realtime Database
-        await set(ref(db, `users/${user.uid}`), {
-          username: username,
-          email: email,
-          status: 'Online',
-          avatarUrl: '' // Default empty avatar URL
-        });
-
-        hideLoading();
-        alert('Registration successful! You are now logged in.');
-        // onAuthStateChanged will handle UI update
-      } catch (error) {
-        hideLoading();
-        console.error("Error during registration:", error);
-        alert(`Registration failed: ${error.message}`);
-      }
-    });
-
-    // Login User
-    loginBtn.addEventListener('click', async () => {
-      const email = loginEmailInput.value;
-      const password = loginPasswordInput.value;
-
-      if (!email || !password) {
-        alert('Please enter your email and password.');
-        return;
-      }
-
-      showLoading('Logging in...');
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        hideLoading();
-        alert('Login successful!');
-        // onAuthStateChanged will handle UI update
-      } catch (error) {
-        hideLoading();
-        console.error("Error during login:", error);
-        alert(`Login failed: ${error.message}`);
-      }
-    });
-
-    // Auth state handler
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        showLoading('Loading your data...');
-        const snapshot = await get(child(ref(db), `users/${user.uid}`));
-        if (snapshot.exists()) {
-          currentUser = { ...user, ...snapshot.val() }; // Merge Firebase Auth user with Realtime DB data
-          userData = snapshot.val(); // Keep userData for other profile updates
-          hideLoading();
-          
-          authSection.style.display = 'none';
-          groupOptions.style.display = 'flex'; // Show groups by default
-          usernameDisplay.textContent = currentUser.username;
-          
-          // Initialize sections after login
-          loadUserGroups();
-          loadUserContacts();
-          loadUserProfile();
-        } else {
-          // This case might happen if user registered but data wasn't saved (e.g., error)
-          // For robustness, consider prompting user to complete profile or log out.
-          hideLoading();
-          alert('User data not found in database. Please contact support or try registering again.');
-          signOut(auth); // Force logout if user data is missing
-        }
-      } else {
-        hideLoading();
-        authSection.style.display = 'flex';
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        groupOptions.style.display = 'none';
-        chatSection.style.display = 'none';
-        contactsSection.style.display = 'none';
-        privateChatSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        // Reset current user info on logout
-        currentUser = null;
-        userData = {};
-        userGroups = [];
-        userContacts = [];
-      }
-    });
-
-
-    // Tab switching
-    groupsTab.addEventListener('click', () => {
-      if (!currentUser) return;
-      groupsTab.classList.add('active');
-      contactsTab.classList.remove('active');
-      settingsTab.classList.remove('active');
-      groupOptions.style.display = 'flex';
-      contactsSection.style.display = 'none';
-      settingsSection.style.display = 'none';
-      chatSection.style.display = 'none'; // Ensure chat is hidden
-      privateChatSection.style.display = 'none'; // Ensure private chat is hidden
-    });
-
-    contactsTab.addEventListener('click', () => {
-      if (!currentUser) return;
-      contactsTab.classList.add('active');
-      groupsTab.classList.remove('active');
-      settingsTab.classList.remove('active');
-      contactsSection.style.display = 'flex';
-      groupOptions.style.display = 'none';
-      settingsSection.style.display = 'none';
-      chatSection.style.display = 'none'; // Ensure chat is hidden
-      privateChatSection.style.display = 'none'; // Ensure private chat is hidden
-      loadUserContacts(); // Reload contacts when tab is clicked
-    });
-
-    settingsTab.addEventListener('click', () => {
-      if (!currentUser) return;
-      settingsTab.classList.add('active');
-      groupsTab.classList.remove('active');
-      contactsTab.classList.remove('active');
-      settingsSection.style.display = 'flex';
-      groupOptions.style.display = 'none';
-      contactsSection.style.display = 'none';
-      chatSection.style.display = 'none'; // Ensure chat is hidden
-      privateChatSection.style.display = 'none'; // Ensure private chat is hidden
-      loadUserProfile();
-    });
-
-    // Group settings
-    groupSettingsBtn.addEventListener('click', () => {
-      groupSettingsMenu.classList.add('open');
-      loadGroupSettings();
-    });
-
-    closeGroupSettings.addEventListener('click', () => {
-      groupSettingsMenu.classList.remove('open');
-    });
-
-    // Avatar upload
-    uploadAvatarBtn.addEventListener('click', () => {
-      avatarUpload.click();
-    });
-
-    avatarUpload.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          profileAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Profile" />`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    uploadGroupAvatarBtn.addEventListener('click', () => {
-      groupAvatarUpload.click();
-    });
-
-    groupAvatarUpload.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          groupAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Group" />`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Copy ID button
-    copyIdBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(currentUser.uid);
-      alert('User ID copied to clipboard!');
-    });
-
-    // Save profile
-    saveProfileBtn.addEventListener('click', async () => {
-      const username = document.getElementById('profile-username').value;
-      const status = document.getElementById('profile-status').value;
-      const file = avatarUpload.files[0];
-      
-      let avatarUrl = userData.avatarUrl || '';
-      
-      if (file) {
-        showLoading('Uploading profile picture...');
-        const storageReference = storageRef(storage, `avatars/${currentUser.uid}`);
-        await uploadBytes(storageReference, file);
-        avatarUrl = await getDownloadURL(storageReference);
-        hideLoading();
-      }
-      
-      showLoading('Saving profile...');
-      await update(ref(db, `users/${currentUser.uid}`), {
-        username,
-        status,
-        avatarUrl
-      });
-      
-      // Update local data and display
-      userData = { ...userData, username, status, avatarUrl };
-      currentUser.username = username; // Update currentUser's username
-      usernameDisplay.textContent = username;
-      
-      hideLoading();
-      alert('Profile saved successfully!');
-    });
-
-    // Save group settings
-    saveGroupSettingsBtn.addEventListener('click', async () => {
-      const description = document.getElementById('group-desc-setting').value;
-      const file = groupAvatarUpload.files[0];
-      
-      let groupAvatarUrl = '';
-      
-      if (file) {
-        showLoading('Uploading group picture...');
-        const storageReference = storageRef(storage, `groupAvatars/${currentGroup}`);
-        await uploadBytes(storageReference, file);
-        groupAvatarUrl = await getDownloadURL(storageReference);
-        hideLoading();
-      }
-      
-      showLoading('Saving group settings...');
-      await update(ref(db, `groups/${currentGroup}`), {
-        description,
-        ...(groupAvatarUrl && { avatarUrl: groupAvatarUrl })
-      });
-      
-      hideLoading();
-      groupSettingsMenu.classList.remove('open');
-      alert('Group settings saved!');
-      loadUserGroups(); // Reload groups to reflect changes
-    });
-
-    // Logout
-    logoutBtn.addEventListener('click', async () => {
-      showLoading('Logging out...');
-      await signOut(auth);
-      hideLoading();
-      // The onAuthStateChanged listener will handle redirecting to auth section
-    });
-
-    // Add contact
-    addContactBtn.addEventListener('click', () => {
-      const contactId = prompt("Enter the user's ID you want to add:");
-      if (contactId) {
-        if (contactId === currentUser.uid) {
-          alert("You can't add yourself as a contact!");
-        } else {
-          addContact(contactId);
-        }
-      }
-    });
-
-    // Load user profile
-    async function loadUserProfile() {
-      if (!currentUser || !currentUser.uid) return;
-      
-      const snapshot = await get(child(ref(db), `users/${currentUser.uid}`));
-      if (snapshot.exists()) {
-        userData = snapshot.val();
-        document.getElementById('profile-username').value = userData.username || '';
-        document.getElementById('profile-status').value = userData.status || '';
-        userIdText.textContent = currentUser.uid;
-        
-        if (userData.avatarUrl) {
-          profileAvatarPreview.innerHTML = `<img src="${userData.avatarUrl}" alt="Profile" />`;
-        } else {
-          profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
-          profileAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
-          profileAvatarPreview.style.color = 'white';
-          profileAvatarPreview.style.display = 'flex';
-          profileAvatarPreview.style.alignItems = 'center';
-          profileAvatarPreview.style.justifyContent = 'center';
-          profileAvatarPreview.style.fontSize = '2em';
-        }
-      }
-    }
-
-    // Load group settings
-    async function loadGroupSettings() {
-      if (!currentGroup) return;
-      
-      const snapshot = await get(child(ref(db), `groups/${currentGroup}`));
-      if (snapshot.exists()) {
-        const groupData = snapshot.val();
-        document.getElementById('group-name-setting').value = currentGroup;
-        document.getElementById('group-password-setting').value = groupData.password;
-        document.getElementById('group-desc-setting').value = groupData.description || '';
-        
-        if (groupData.avatarUrl) {
-          groupAvatarPreview.innerHTML = `<img src="${groupData.avatarUrl}" alt="Group" />`;
-        } else {
-          groupAvatarPreview.innerHTML = `<div>${currentGroup.charAt(0).toUpperCase()}</div>`;
-          groupAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
-          groupAvatarPreview.style.color = 'white';
-          groupAvatarPreview.style.display = 'flex';
-          groupAvatarPreview.style.alignItems = 'center';
-          groupAvatarPreview.style.justifyContent = 'center';
-          groupAvatarPreview.style.fontSize = '2em';
-        }
-      }
-    }
-
-    // Add contact function
-    async function addContact(contactId) {
-      showLoading('Adding contact...');
-      
-      // Check if user exists
-      const contactSnapshot = await get(child(ref(db), `users/${contactId}`));
-      if (!contactSnapshot.exists()) {
-        hideLoading();
-        alert('User not found!');
-        return;
-      }
-      
-      // Check if already in contacts
-      const contactsSnapshot = await get(child(ref(db), `userContacts/${currentUser.uid}`));
-      if (contactsSnapshot.exists() && contactsSnapshot.val()[contactId]) {
-        hideLoading();
-        alert('This user is already in your contacts!');
-        return;
-      }
-      
-      // Add to contacts
-      await set(ref(db, `userContacts/${currentUser.uid}/${contactId}`), {
-        addedAt: Date.now()
-      });
-      
-      // Optionally, add reverse contact
-      // This creates a mutual connection. Decide if this is desired behavior.
-      await set(ref(db, `userContacts/${contactId}/${currentUser.uid}`), {
-        addedAt: Date.now()
-      });
-      
-      hideLoading();
-      loadUserContacts();
-      alert('Contact added successfully!');
-    }
-
-    // Load user contacts
-    async function loadUserContacts() {
-      if (!currentUser) return;
-      
-      try {
-        const snapshot = await get(child(ref(db), `userContacts/${currentUser.uid}`));
-        if (snapshot.exists()) {
-          const contacts = snapshot.val();
-          const contactIds = Object.keys(contacts);
-          
-          // Get details for each contact
-          userContacts = [];
-          for (const contactId of contactIds) {
-            const userSnapshot = await get(child(ref(db), `users/${contactId}`));
-            if (userSnapshot.exists()) {
-              userContacts.push({
-                id: contactId,
-                ...userSnapshot.val(),
-                ...contacts[contactId]
-              });
-            }
-          }
-          
-          renderContactsList();
-        } else {
-          userContacts = [];
-          renderContactsList();
-        }
-      } catch (error) {
-        console.error("Error loading contacts:", error);
-        userContacts = [];
-        renderContactsList();
-      }
-    }
-
-    // Render contacts list
-    function renderContactsList() {
-      if (userContacts.length === 0) {
-        contactsList.innerHTML = '<div class="no-contacts">You don\'t have any contacts yet</div>';
-        return;
-      }
-      
-      contactsList.innerHTML = userContacts.map(contact => `
-        <div class="contact-item" data-contact="${contact.id}">
-          <div class="contact-avatar">
-            ${contact.avatarUrl ? 
-              `<img src="${contact.avatarUrl}" alt="${contact.username}" />` : 
-              `<div>${contact.username?.charAt(0).toUpperCase() || 'U'}</div>`}
-          </div>
-          <div class="contact-info">
-            <div class="contact-name">${contact.username || 'Unknown User'}</div>
-            <div class="contact-status">${contact.status || 'No status'}</div>
-          </div>
-        </div>
-      `).join('');
-
-      // Apply styles for fallback avatars
-      document.querySelectorAll('.contact-avatar div').forEach(div => {
-        div.style.backgroundColor = '#06b6d4';
-        div.style.color = 'white';
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.justifyContent = 'center';
-        div.style.width = '100%';
-        div.style.height = '100%';
-        div.style.fontSize = '1.2em';
-      });
-      
-      // Add click event to contacts
-      document.querySelectorAll('.contact-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const contactId = item.getAttribute('data-contact');
-          const contact = userContacts.find(c => c.id === contactId);
-          if (contact) {
-            enterPrivateChat(contact);
-          }
-        });
-      });
-    }
-
-    // Enter private chat
-    function enterPrivateChat(contact) {
-      currentContact = contact.id;
-      contactsSection.style.display = 'none';
-      privateChatSection.style.display = 'flex';
-      contactNameDisplay.textContent = contact.username || 'Unknown User';
-      privateMessagesDiv.innerHTML = '';
-      
-      // Load messages - make sure to detach previous listener if switching contacts frequently
-      // For a full solution, consider using a global variable for off() or
-      // passing listener functions. For simplicity, this example just adds new listeners.
-      const chatId = [currentUser.uid, contact.id].sort().join('_');
-      const chatRef = ref(db, `privateMessages/${chatId}`);
-      
-      // Clear existing listeners for private messages to prevent duplicates
-      // This is a crucial improvement for dynamic chat rooms.
-      // You'd typically store the unsubscribe function from onChildAdded
-      // and call it before attaching a new listener.
-      // For this example, we'll assume a single private chat at a time.
-      // In a real app, you'd manage these listeners more carefully.
-      // For now, we'll just clear the div.
-
-      onChildAdded(chatRef, async (data) => {
-        const msgData = data.val();
-        const msg = document.createElement('div');
-        msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
-        
-        // Fetch sender's username and avatar for display
-        let senderUsername = 'Unknown';
-        let senderAvatar = '';
-        try {
-          const senderSnapshot = await get(child(ref(db), `users/${msgData.senderId}`));
-          if (senderSnapshot.exists()) {
-            const senderInfo = senderSnapshot.val();
-            senderUsername = senderInfo.username || 'Unknown';
-            senderAvatar = senderInfo.avatarUrl || '';
-          }
-        } catch (e) {
-          console.error("Error fetching sender info:", e);
-        }
-
-        msg.innerHTML = `
-          <div class="sender">${senderUsername}</div>
-          <div class="text">${msgData.text}</div>
-          <div class="timestamp">${formatTime(msgData.timestamp)}</div>
-        `;
-        
-        privateMessagesDiv.appendChild(msg);
-        privateMessagesDiv.scrollTop = privateMessagesDiv.scrollHeight;
-      });
-    }
-
-    // Back button for private chat
-    document.getElementById('back-private-btn').addEventListener('click', () => {
-      privateChatSection.style.display = 'none';
-      contactsSection.style.display = 'flex';
-      currentContact = "";
-      // You might want to detach the listener here as well
-    });
-
-    // Send private message
-    document.getElementById('send-private-btn').addEventListener('click', sendPrivateMessage);
-    document.getElementById('private-msg-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent default Enter key behavior (e.g., new line in textarea)
-        sendPrivateMessage();
-      }
-    });
-
-    function sendPrivateMessage() {
-      const input = document.getElementById('private-msg-input');
-      const text = input.value.trim();
-      
-      if (text && currentContact && currentUser) {
-        const chatId = [currentUser.uid, currentContact].sort().join('_');
-        const chatRef = ref(db, `privateMessages/${chatId}`);
-        
-        push(chatRef, {
-          text: text,
-          sender: currentUser.username || currentUser.email, // Use username if available
-          senderId: currentUser.uid,
-          timestamp: Date.now()
-        });
-        
-        input.value = "";
-      }
-    }
-
-
-    // --- Group Functionality (Existing, slightly modified for clarity) ---
-
-    // Create Group
-    document.getElementById('create-group-btn').addEventListener('click', async () => {
-      const groupName = prompt("Enter new group name:");
-      if (!groupName) return;
-      
-      const groupPassword = prompt("Enter group password (optional):");
-
-      showLoading('Creating group...');
-      try {
-        const groupRef = ref(db, `groups/${groupName}`);
-        const snapshot = await get(groupRef);
-        
-        if (snapshot.exists()) {
-          alert('Group name already exists!');
-          hideLoading();
-          return;
-        }
-        
-        await set(groupRef, {
-          name: groupName,
-          password: groupPassword || null,
-          createdAt: Date.now(),
-          admin: currentUser.uid,
-          description: '',
-          avatarUrl: ''
-        });
-
-        // Add user to group members
-        await set(ref(db, `groupMembers/${groupName}/${currentUser.uid}`), {
-          joinedAt: Date.now()
-        });
-
-        // Add group to user's joined groups
-        await set(ref(db, `userGroups/${currentUser.uid}/${groupName}`), {
-          joinedAt: Date.now()
-        });
-
-        hideLoading();
-        alert('Group created and joined successfully!');
-        loadUserGroups(); // Reload groups after creation
-      } catch (error) {
-        hideLoading();
-        console.error("Error creating group:", error);
-        alert(`Failed to create group: ${error.message}`);
-      }
-    });
-
-    // Join New Group
-    document.getElementById('join-group-btn').addEventListener('click', async () => {
-      const groupName = prompt("Enter group name to join:");
-      if (!groupName) return;
-      
-      showLoading('Joining group...');
-      try {
-        const groupRef = ref(db, `groups/${groupName}`);
-        const snapshot = await get(groupRef);
-        
-        if (!snapshot.exists()) {
-          alert('Group does not exist!');
-          hideLoading();
-          return;
-        }
-        
-        const groupData = snapshot.val();
-        if (groupData.password) {
-          const enteredPassword = prompt("Enter group password:");
-          if (enteredPassword !== groupData.password) {
-            alert('Incorrect password!');
-            hideLoading();
-            return;
-          }
-        }
-
-        // Check if already a member
-        const memberSnapshot = await get(child(ref(db), `groupMembers/${groupName}/${currentUser.uid}`));
-        if (memberSnapshot.exists()) {
-          alert('You are already a member of this group!');
-          hideLoading();
-          return;
-        }
-        
-        await set(ref(db, `groupMembers/${groupName}/${currentUser.uid}`), {
-          joinedAt: Date.now()
-        });
-        await set(ref(db, `userGroups/${currentUser.uid}/${groupName}`), {
-          joinedAt: Date.now()
-        });
-        
-        hideLoading();
-        alert('Joined group successfully!');
-        loadUserGroups(); // Reload groups after joining
-      } catch (error) {
-        hideLoading();
-        console.error("Error joining group:", error);
-        alert(`Failed to join group: ${error.message}`);
-      }
-    });
-
-    // Load User Groups
-    async function loadUserGroups() {
-      if (!currentUser) return;
-      
-      try {
-        const snapshot = await get(child(ref(db), `userGroups/${currentUser.uid}`));
-        if (snapshot.exists()) {
-          const groups = snapshot.val();
-          const groupNames = Object.keys(groups);
-          userGroups = [];
-          for (const groupName of groupNames) {
-            const groupSnapshot = await get(child(ref(db), `groups/${groupName}`));
-            if (groupSnapshot.exists()) {
-              userGroups.push({
-                id: groupName,
-                ...groupSnapshot.val()
-              });
-            }
-          }
-          renderGroupsList();
-        } else {
-          userGroups = [];
-          renderGroupsList();
-        }
-      } catch (error) {
-        console.error("Error loading groups:", error);
-        userGroups = [];
-        renderGroupsList();
-      }
-    }
-
-    // Render Groups List
-    function renderGroupsList() {
-      groupsCount.textContent = userGroups.length;
-      if (userGroups.length === 0) {
-        joinedGroupsList.innerHTML = '<div class="no-groups">You haven\'t joined any groups yet</div>';
-        return;
-      }
-      
-      joinedGroupsList.innerHTML = userGroups.map(group => `
-        <div class="group-item" data-group="${group.id}">
-          <div class="group-avatar">
-            ${group.avatarUrl ? 
-              `<img src="${group.avatarUrl}" alt="${group.name}" />` : 
-              `<div>${group.name.charAt(0).toUpperCase()}</div>`}
-          </div>
-          <div class="group-info">
-            <div class="group-name">${group.name}</div>
-            <div class="group-desc">${group.description || 'No description'}</div>
-          </div>
-        </div>
-      `).join('');
-
-      // Apply styles for fallback avatars
-      document.querySelectorAll('.group-avatar div').forEach(div => {
-        div.style.backgroundColor = '#06b6d4';
-        div.style.color = 'white';
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.justifyContent = 'center';
-        div.style.width = '100%';
-        div.style.height = '100%';
-        div.style.fontSize = '1.2em';
-      });
-
-      // Add click event to each group item
-      document.querySelectorAll('.group-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const groupId = item.getAttribute('data-group');
-          enterGroupChat(groupId);
-        });
-      });
-    }
-
-    // Enter Group Chat
-    function enterGroupChat(groupId) {
-      currentGroup = groupId;
-      groupOptions.style.display = 'none';
-      chatSection.style.display = 'flex';
-      groupNameDisplay.textContent = groupId;
-      messagesDiv.innerHTML = ''; // Clear previous messages
-      
-      const messagesRef = ref(db, `groupMessages/${groupId}`);
-      
-      // Listen for new messages
-      onChildAdded(messagesRef, async (data) => {
-        const msgData = data.val();
-        const msg = document.createElement('div');
-        msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
-        
-        // Fetch sender's username and avatar for display
-        let senderUsername = 'Unknown';
-        let senderAvatar = '';
-        try {
-          const senderSnapshot = await get(child(ref(db), `users/${msgData.senderId}`));
-          if (senderSnapshot.exists()) {
-            const senderInfo = senderSnapshot.val();
-            senderUsername = senderInfo.username || 'Unknown';
-            senderAvatar = senderInfo.avatarUrl || '';
-          }
-        } catch (e) {
-          console.error("Error fetching sender info:", e);
-        }
-
-        msg.innerHTML = `
-          <div class="sender">${senderUsername}</div>
-          <div class="text">${msgData.text}</div>
-          <div class="timestamp">${formatTime(msgData.timestamp)}</div>
-        `;
-        
-        messagesDiv.appendChild(msg);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      });
-    }
-
-    // Back button for group chat
-    document.getElementById('back-btn').addEventListener('click', () => {
-      chatSection.style.display = 'none';
-      groupOptions.style.display = 'flex';
-      currentGroup = "";
-      // You might want to detach the listener here as well
-    });
-
-    // Send Group Message
-    document.getElementById('send-btn').addEventListener('click', sendGroupMessage);
-    document.getElementById('msg-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent default Enter key behavior
-        sendGroupMessage();
-      }
-    });
-
-    function sendGroupMessage() {
-      const input = document.getElementById('msg-input');
-      const text = input.value.trim();
-      
-      if (text && currentGroup && currentUser) {
-        const messagesRef = ref(db, `groupMessages/${currentGroup}`);
-        push(messagesRef, {
-          text: text,
-          sender: currentUser.username || currentUser.email, // Use username from updated currentUser
-          senderId: currentUser.uid,
-          timestamp: Date.now()
-        });
-        input.value = "";
-      }
-    }
-
-
-    // Helper functions
-    function formatTime(timestamp) {
-      return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function showLoading(message = 'Loading...') {
-      loadingScreen.style.display = 'flex';
-      loadingScreen.querySelector('.loading-text').textContent = message;
-    }
-
-    function hideLoading() {
-      loadingScreen.style.display = 'none';
-    }
-  </script>
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading ThunderChat...</div>
+    </div>
+
+    <header>
+        <h1>ThunderChat</h1>
+        <div class="header-tabs">
+            <button id="groups-tab" class="tab-btn active">Groups</button>
+            <button id="contacts-tab" class="tab-btn">Contacts</button>
+            <button id="settings-tab" class="tab-btn">Settings</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="auth-section" class="auth-form">
+            <div id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" type="email" placeholder="Enter your email" />
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input id="login-password" type="password" placeholder="Enter your password" />
+                </div>
+                <button id="login-btn">Login</button>
+                <div id="toggle-to-register" class="toggle-form">Don't have an account? Register</div>
+            </div>
+
+            <div id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input id="reg-username" type="text" placeholder="Choose a username" />
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input id="reg-email" type="email" placeholder="Enter your email" />
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input id="reg-password" type="password" placeholder="Create a password" />
+                </div>
+                <button id="register-btn">Register</button>
+                <div id="toggle-to-login" class="toggle-form">Already have an account? Login</div>
+            </div>
+        </div>
+
+        <div id="group-options" class="group-options">
+            <h2>Welcome, <span id="username-display"></span></h2>
+            <button id="create-group-btn">Create Group</button>
+            <button id="join-group-btn">Join New Group</button>
+            
+            <div class="groups-list">
+                <h3>Your Groups (<span id="groups-count">0</span>)</h3>
+                <div id="joined-groups-list">
+                    <div class="no-groups">You haven't joined any groups yet</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="chat-section" class="chat-section">
+            <div class="chat-header">
+                <button class="back-btn" id="back-btn">←</button>
+                <h2 id="group-name-display"></h2>
+                <button class="group-settings-btn" id="group-settings-btn">⚙️</button>
+            </div>
+            <div id="messages"></div>
+            <footer>
+                <input id="msg-input" type="text" placeholder="Type a message..." />
+                <button id="send-btn">Send</button>
+            </footer>
+        </div>
+
+        <div id="contacts-section" class="contacts-section">
+            <div class="contacts-list">
+                <h2>Your Contacts</h2>
+                <button id="add-contact-btn">Add Contact</button>
+                
+                <div class="contacts-container">
+                    <div id="contacts-list">
+                        <div class="no-contacts">You don't have any contacts yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="private-chat-section" class="chat-section">
+                <div class="private-chat-header">
+                    <button class="back-btn" id="back-private-btn">←</button>
+                    <h2 id="contact-name-display"></h2>
+                </div>
+                <div id="private-messages"></div>
+                <footer>
+                    <input id="private-msg-input" type="text" placeholder="Type a message..." />
+                    <button id="send-private-btn">Send</button>
+                </footer>
+            </div>
+        </div>
+
+        <div id="settings-section" class="settings-section">
+            <h2>Your Profile</h2>
+            
+            <div class="avatar-upload">
+                <div class="avatar-preview" id="profile-avatar-preview">
+                    
+                </div>
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" />
+                <button id="upload-avatar-btn" class="secondary">Change Profile Picture</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="profile-username">Username</label>
+                <input id="profile-username" type="text" placeholder="Your username" />
+                </div>
+            
+            <div class="form-group">
+                <label for="profile-status">Status</label>
+                <input id="profile-status" type="text" placeholder="Your status" />
+            </div>
+            
+            <div class="user-id-display">
+                <strong>Your ID:</strong>
+                <div id="user-id-text">Loading...</div>
+                <button id="copy-id-btn" class="copy-id">Copy ID</button>
+            </div>
+            
+            <button id="save-profile-btn">Save Changes</button>
+            <button id="logout-btn" class="secondary">Logout</button>
+        </div>
+    </main>
+
+    <div id="group-settings-menu" class="settings-menu">
+        <div class="settings-header">
+            <h3>Group Settings</h3>
+            <button class="close-settings" id="close-group-settings">×</button>
+        </div>
+        
+        <div class="avatar-upload">
+            <div class="avatar-preview" id="group-avatar-preview">
+                
+            </div>
+            <input type="file" id="group-avatar-upload" accept="image/*" style="display: none;" />
+            <button id="upload-group-avatar-btn" class="secondary">Change Group Picture</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Group Name</label>
+            <input id="group-name-setting" type="text" readonly />
+            <small>Note: Group name cannot be changed.</small>
+        </div>
+        
+        <div class="form-group">
+            <label>Group Password</label>
+            <input id="group-password-setting" type="text" readonly />
+            <small>Note: Group password cannot be changed.</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="group-desc-setting">Group Description</label>
+            <textarea id="group-desc-setting" placeholder="Enter group description"></textarea>
+        </div>
+        
+        <button id="save-group-settings-btn">Save Changes</button>
+    </div>
+
+    <div id="custom-alert-modal" class="custom-alert-modal">
+        <div class="custom-alert-content">
+            <span id="close-alert-btn" class="close-alert-btn">&times;</span>
+            <p id="custom-alert-message"></p>
+            <button id="custom-alert-ok-btn">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { 
+            getDatabase, 
+            ref, 
+            set, 
+            push, 
+            onChildAdded, 
+            get, 
+            child,
+            update,
+            onValue,
+            off // Import off to detach listeners
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { 
+            getStorage,
+            ref as storageRef,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
+            authDomain: "thunderboundthunderchat.firebaseapp.com",
+            databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "thunderboundthunderchat",
+            storageBucket: "thunderboundthunderchat.appspot.com",
+            messagingSenderId: "79690962383",
+            appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const authSection = document.getElementById('auth-section');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const groupOptions = document.getElementById('group-options');
+        const chatSection = document.getElementById('chat-section');
+        const contactsSection = document.getElementById('contacts-section');
+        const privateChatSection = document.getElementById('private-chat-section');
+        const settingsSection = document.getElementById('settings-section');
+        const messagesDiv = document.getElementById('messages');
+        const privateMessagesDiv = document.getElementById('private-messages');
+        const usernameDisplay = document.getElementById('username-display');
+        const groupNameDisplay = document.getElementById('group-name-display');
+        const contactNameDisplay = document.getElementById('contact-name-display');
+        const joinedGroupsList = document.getElementById('joined-groups-list');
+        const groupsCount = document.getElementById('groups-count');
+        const contactsList = document.getElementById('contacts-list');
+        const groupsTab = document.getElementById('groups-tab');
+        const contactsTab = document.getElementById('contacts-tab');
+        const settingsTab = document.getElementById('settings-tab');
+        const groupSettingsMenu = document.getElementById('group-settings-menu');
+        const closeGroupSettings = document.getElementById('close-group-settings');
+        const groupSettingsBtn = document.getElementById('group-settings-btn');
+        const addContactBtn = document.getElementById('add-contact-btn');
+        const profileAvatarPreview = document.getElementById('profile-avatar-preview');
+        const groupAvatarPreview = document.getElementById('group-avatar-preview');
+        const uploadAvatarBtn = document.getElementById('upload-avatar-btn');
+        const avatarUpload = document.getElementById('avatar-upload');
+        const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn');
+        const groupAvatarUpload = document.getElementById('group-avatar-upload');
+        const userIdText = document.getElementById('user-id-text');
+        const copyIdBtn = document.getElementById('copy-id-btn');
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const saveGroupSettingsBtn = document.getElementById('save-group-settings-btn');
+
+        // Auth specific elements
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const regUsernameInput = document.getElementById('reg-username');
+        const regEmailInput = document.getElementById('reg-email');
+        const regPasswordInput = document.getElementById('reg-password');
+        const registerBtn = document.getElementById('register-btn');
+        const toggleToRegister = document.getElementById('toggle-to-register');
+        const toggleToLogin = document.getElementById('toggle-to-login');
+
+        // Custom Alert Modal elements
+        const customAlertModal = document.getElementById('custom-alert-modal');
+        const customAlertMessage = document.getElementById('custom-alert-message');
+        const customAlertOkBtn = document.getElementById('custom-alert-ok-btn');
+        const closeAlertBtn = document.getElementById('close-alert-btn');
+
+
+        let currentGroup = "";
+        let currentContact = "";
+        let currentUser = null;
+        let userGroups = [];
+        let userContacts = [];
+        let userData = {}; // Stores additional user profile data from Realtime DB
+
+        // Listener references for cleanup
+        let currentGroupChatListener = null;
+        let currentPrivateChatListener = null;
+
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                // Display auth section by default if no user is logged in, handled by onAuthStateChanged
+            }, 2000);
+        });
+
+        // Custom Alert Modal functions
+        function showAlert(message) {
+            customAlertMessage.textContent = message;
+            customAlertModal.style.display = 'flex'; // Use flex to center
+        }
+
+        function hideAlert() {
+            customAlertModal.style.display = 'none';
+        }
+
+        customAlertOkBtn.addEventListener('click', hideAlert);
+        closeAlertBtn.addEventListener('click', hideAlert);
+
+        // --- Auth Functionality ---
+
+        // Toggle between login and register forms
+        toggleToRegister.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+
+        toggleToLogin.addEventListener('click', () => {
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+
+        // Register User
+        registerBtn.addEventListener('click', async () => {
+            const email = regEmailInput.value;
+            const password = regPasswordInput.value;
+            const username = regUsernameInput.value;
+
+            if (!email || !password || !username) {
+                showAlert('Please fill in all registration fields.');
+                return;
+            }
+
+            showLoading('Registering...');
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Store user data in Realtime Database
+                await set(ref(db, `users/${user.uid}`), {
+                    username: username,
+                    email: email,
+                    status: 'Online',
+                    avatarUrl: '' // Default empty avatar URL
+                });
+
+                hideLoading();
+                showAlert('Registration successful! You are now logged in.');
+                // onAuthStateChanged will handle UI update
+            } catch (error) {
+                hideLoading();
+                console.error("Error during registration:", error);
+                showAlert(`Registration failed: ${error.message}`);
+            }
+        });
+
+        // Login User
+        loginBtn.addEventListener('click', async () => {
+            const email = loginEmailInput.value;
+            const password = loginPasswordInput.value;
+
+            if (!email || !password) {
+                showAlert('Please enter your email and password.');
+                return;
+            }
+
+            showLoading('Logging in...');
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                hideLoading();
+                showAlert('Login successful!');
+                // onAuthStateChanged will handle UI update
+            } catch (error) {
+                hideLoading();
+                console.error("Error during login:", error);
+                showAlert(`Login failed: ${error.message}`);
+            }
+        });
+
+        // Auth state handler
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                showLoading('Loading your data...');
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                if (snapshot.exists()) {
+                    currentUser = { ...user, ...snapshot.val() }; // Merge Firebase Auth user with Realtime DB data
+                    userData = snapshot.val(); // Keep userData for other profile updates
+                    hideLoading();
+                    
+                    authSection.style.display = 'none';
+                    groupOptions.style.display = 'flex'; // Show groups by default
+                    usernameDisplay.textContent = currentUser.username;
+                    
+                    // Initialize sections after login
+                    loadUserGroups();
+                    loadUserContacts();
+                    loadUserProfile();
+                } else {
+                    // This case might happen if user registered but data wasn't saved (e.g., error)
+                    hideLoading();
+                    showAlert('User data not found in database. Please contact support or try registering again.');
+                    signOut(auth); // Force logout if user data is missing
+                }
+            } else {
+                hideLoading();
+                authSection.style.display = 'flex';
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                groupOptions.style.display = 'none';
+                chatSection.style.display = 'none';
+                contactsSection.style.display = 'none';
+                privateChatSection.style.display = 'none';
+                settingsSection.style.display = 'none';
+                // Reset current user info on logout
+                currentUser = null;
+                userData = {};
+                userGroups = [];
+                userContacts = [];
+            }
+        });
+
+
+        // Tab switching
+        groupsTab.addEventListener('click', () => {
+            if (!currentUser) return;
+            groupsTab.classList.add('active');
+            contactsTab.classList.remove('active');
+            settingsTab.classList.remove('active');
+            groupOptions.style.display = 'flex';
+            contactsSection.style.display = 'none';
+            settingsSection.style.display = 'none';
+            chatSection.style.display = 'none'; // Ensure chat is hidden
+            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+        });
+
+        contactsTab.addEventListener('click', () => {
+            if (!currentUser) return;
+            contactsTab.classList.add('active');
+            groupsTab.classList.remove('active');
+            settingsTab.classList.remove('active');
+            contactsSection.style.display = 'flex';
+            groupOptions.style.display = 'none';
+            settingsSection.style.display = 'none';
+            chatSection.style.display = 'none'; // Ensure chat is hidden
+            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+            loadUserContacts(); // Reload contacts when tab is clicked
+        });
+
+        settingsTab.addEventListener('click', () => {
+            if (!currentUser) return;
+            settingsTab.classList.add('active');
+            groupsTab.classList.remove('active');
+            contactsTab.classList.remove('active');
+            settingsSection.style.display = 'flex';
+            groupOptions.style.display = 'none';
+            contactsSection.style.display = 'none';
+            chatSection.style.display = 'none'; // Ensure chat is hidden
+            privateChatSection.style.display = 'none'; // Ensure private chat is hidden
+            loadUserProfile();
+        });
+
+        // Group settings
+        groupSettingsBtn.addEventListener('click', () => {
+            groupSettingsMenu.classList.add('open');
+            loadGroupSettings();
+        });
+
+        closeGroupSettings.addEventListener('click', () => {
+            groupSettingsMenu.classList.remove('open');
+        });
+
+        // Avatar upload
+        uploadAvatarBtn.addEventListener('click', () => {
+            avatarUpload.click();
+        });
+
+        avatarUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    profileAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Profile" />`;
+                    profileAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
+                    profileAvatarPreview.style.color = 'inherit';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        uploadGroupAvatarBtn.addEventListener('click', () => {
+            groupAvatarUpload.click();
+        });
+
+        groupAvatarUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    groupAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Group" />`;
+                    groupAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
+                    groupAvatarPreview.style.color = 'inherit';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Copy ID button
+        copyIdBtn.addEventListener('click', () => {
+            document.execCommand('copy'); // Use this for clipboard access in some iFrame environments
+            showAlert('User ID copied to clipboard!');
+        });
+
+        // Event listener for copy ID button (using a fallback for navigator.clipboard)
+        copyIdBtn.addEventListener('copy', (event) => {
+            if (currentUser && currentUser.uid) {
+                event.clipboardData.setData('text/plain', currentUser.uid);
+                event.preventDefault();
+            }
+        });
+
+        // Save profile
+        saveProfileBtn.addEventListener('click', async () => {
+            const username = document.getElementById('profile-username').value;
+            const status = document.getElementById('profile-status').value;
+            const file = avatarUpload.files[0];
+            
+            let avatarUrl = userData.avatarUrl || '';
+            
+            if (file) {
+                showLoading('Uploading profile picture...');
+                const storageReference = storageRef(storage, `avatars/${currentUser.uid}`);
+                await uploadBytes(storageReference, file);
+                avatarUrl = await getDownloadURL(storageReference);
+                hideLoading();
+            }
+            
+            showLoading('Saving profile...');
+            await update(ref(db, `users/${currentUser.uid}`), {
+                username,
+                status,
+                avatarUrl
+            });
+            
+            // Update local data and display
+            userData = { ...userData, username, status, avatarUrl };
+            currentUser.username = username; // Update currentUser's username
+            usernameDisplay.textContent = username;
+            
+            hideLoading();
+            showAlert('Profile saved successfully!');
+            loadUserProfile(); // Reload profile to ensure avatar is updated
+        });
+
+        // Save group settings
+        saveGroupSettingsBtn.addEventListener('click', async () => {
+            const description = document.getElementById('group-desc-setting').value;
+            const file = groupAvatarUpload.files[0];
+            
+            let groupAvatarUrl = '';
+            
+            if (file) {
+                showLoading('Uploading group picture...');
+                const storageReference = storageRef(storage, `groupAvatars/${currentGroup}`);
+                await uploadBytes(storageReference, file);
+                groupAvatarUrl = await getDownloadURL(storageReference);
+                hideLoading();
+            }
+            
+            showLoading('Saving group settings...');
+            await update(ref(db, `groups/${currentGroup}`), {
+                description,
+                ...(groupAvatarUrl && { avatarUrl: groupAvatarUrl })
+            });
+            
+            hideLoading();
+            groupSettingsMenu.classList.remove('open');
+            showAlert('Group settings saved!');
+            loadUserGroups(); // Reload groups to reflect changes
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            showLoading('Logging out...');
+            await signOut(auth);
+            hideLoading();
+            // The onAuthStateChanged listener will handle redirecting to auth section
+        });
+
+        // Add contact
+        addContactBtn.addEventListener('click', () => {
+            const contactId = prompt("Enter the user's ID you want to add:");
+            if (contactId) {
+                if (contactId === currentUser.uid) {
+                    showAlert("You can't add yourself as a contact!");
+                } else {
+                    addContact(contactId);
+                }
+            }
+        });
+
+        // Load user profile
+        async function loadUserProfile() {
+            if (!currentUser || !currentUser.uid) return;
+            
+            const snapshot = await get(child(ref(db), `users/${currentUser.uid}`));
+            if (snapshot.exists()) {
+                userData = snapshot.val();
+                document.getElementById('profile-username').value = userData.username || '';
+                document.getElementById('profile-status').value = userData.status || '';
+                userIdText.textContent = currentUser.uid;
+                
+                if (userData.avatarUrl) {
+                    profileAvatarPreview.innerHTML = `<img src="${userData.avatarUrl}" alt="Profile" />`;
+                    profileAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
+                    profileAvatarPreview.style.color = 'inherit';
+                } else {
+                    profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
+                    profileAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
+                    profileAvatarPreview.style.color = 'white';
+                }
+            }
+        }
+
+        // Load group settings
+        async function loadGroupSettings() {
+            if (!currentGroup) return;
+            
+            const snapshot = await get(child(ref(db), `groups/${currentGroup}`));
+            if (snapshot.exists()) {
+                const groupData = snapshot.val();
+                document.getElementById('group-name-setting').value = currentGroup;
+                document.getElementById('group-password-setting').value = groupData.password || 'No password set';
+                document.getElementById('group-desc-setting').value = groupData.description || '';
+                
+                if (groupData.avatarUrl) {
+                    groupAvatarPreview.innerHTML = `<img src="${groupData.avatarUrl}" alt="Group" />`;
+                    groupAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
+                    groupAvatarPreview.style.color = 'inherit';
+                } else {
+                    groupAvatarPreview.innerHTML = `<div>${currentGroup.charAt(0).toUpperCase()}</div>`;
+                    groupAvatarPreview.style.backgroundColor = '#06b6d4'; // Fallback background
+                    groupAvatarPreview.style.color = 'white';
+                }
+            }
+        }
+
+        // Add contact function
+        async function addContact(contactId) {
+            showLoading('Adding contact...');
+            
+            // Check if user exists
+            const contactSnapshot = await get(child(ref(db), `users/${contactId}`));
+            if (!contactSnapshot.exists()) {
+                hideLoading();
+                showAlert('User not found!');
+                return;
+            }
+            
+            // Check if already in contacts
+            const contactsSnapshot = await get(child(ref(db), `userContacts/${currentUser.uid}`));
+            if (contactsSnapshot.exists() && contactsSnapshot.val()[contactId]) {
+                hideLoading();
+                showAlert('This user is already in your contacts!');
+                return;
+            }
+            
+            // Add to contacts
+            await set(ref(db, `userContacts/${currentUser.uid}/${contactId}`), {
+                addedAt: Date.now()
+            });
+            
+            // Optionally, add reverse contact
+            // This creates a mutual connection. Decide if this is desired behavior.
+            await set(ref(db, `userContacts/${contactId}/${currentUser.uid}`), {
+                addedAt: Date.now()
+            });
+            
+            hideLoading();
+            loadUserContacts();
+            showAlert('Contact added successfully!');
+        }
+
+        // Load user contacts
+        async function loadUserContacts() {
+            if (!currentUser) return;
+            
+            try {
+                const snapshot = await get(child(ref(db), `userContacts/${currentUser.uid}`));
+                if (snapshot.exists()) {
+                    const contacts = snapshot.val();
+                    const contactIds = Object.keys(contacts);
+                    
+                    // Get details for each contact
+                    userContacts = [];
+                    for (const contactId of contactIds) {
+                        const userSnapshot = await get(child(ref(db), `users/${contactId}`));
+                        if (userSnapshot.exists()) {
+                            userContacts.push({
+                                id: contactId,
+                                ...userSnapshot.val(),
+                                ...contacts[contactId]
+                            });
+                        }
+                    }
+                    
+                    renderContactsList();
+                } else {
+                    userContacts = [];
+                    renderContactsList();
+                }
+            } catch (error) {
+                console.error("Error loading contacts:", error);
+                userContacts = [];
+                renderContactsList();
+            }
+        }
+
+        // Render contacts list
+        function renderContactsList() {
+            if (userContacts.length === 0) {
+                contactsList.innerHTML = '<div class="no-contacts">You don\'t have any contacts yet</div>';
+                return;
+            }
+            
+            contactsList.innerHTML = userContacts.map(contact => `
+                <div class="contact-item" data-contact="${contact.id}">
+                    <div class="contact-avatar">
+                        ${contact.avatarUrl ? 
+                            `<img src="${contact.avatarUrl}" alt="${contact.username}" />` : 
+                            `<div>${contact.username?.charAt(0).toUpperCase() || 'U'}</div>`}
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.username || 'Unknown User'}</div>
+                        <div class="contact-status">${contact.status || 'No status'}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Apply styles for fallback avatars (initials)
+            document.querySelectorAll('.contact-avatar div').forEach(div => {
+                div.style.backgroundColor = '#00bcd4'; /* Use the primary cyan */
+                div.style.color = 'white';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.fontSize = '1.8em'; /* Larger initials */
+            });
+            
+            // Add click event to contacts
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const contactId = item.getAttribute('data-contact');
+                    const contact = userContacts.find(c => c.id === contactId);
+                    if (contact) {
+                        enterPrivateChat(contact);
+                    }
+                });
+            });
+        }
+
+        // Enter private chat
+        function enterPrivateChat(contact) {
+            currentContact = contact.id;
+            contactsSection.style.display = 'none';
+            privateChatSection.style.display = 'flex';
+            contactNameDisplay.textContent = contact.username || 'Unknown User';
+            privateMessagesDiv.innerHTML = '';
+            
+            // Detach previous listener if exists
+            if (currentPrivateChatListener) {
+                off(currentPrivateChatListener);
+                currentPrivateChatListener = null;
+            }
+
+            const chatId = [currentUser.uid, contact.id].sort().join('_');
+            const chatRef = ref(db, `privateMessages/${chatId}`);
+            
+            // Attach new listener and store its reference
+            currentPrivateChatListener = onChildAdded(chatRef, async (data) => {
+                const msgData = data.val();
+                const msg = document.createElement('div');
+                msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
+                
+                // Fetch sender's username and avatar for display
+                let senderUsername = 'Unknown';
+                try {
+                    const senderSnapshot = await get(child(ref(db), `users/${msgData.senderId}`));
+                    if (senderSnapshot.exists()) {
+                        const senderInfo = senderSnapshot.val();
+                        senderUsername = senderInfo.username || 'Unknown';
+                    }
+                } catch (e) {
+                    console.error("Error fetching sender info:", e);
+                }
+
+                msg.innerHTML = `
+                    <div class="sender">${senderUsername}</div>
+                    <div class="text">${msgData.text}</div>
+                    <div class="timestamp">${formatTime(msgData.timestamp)}</div>
+                `;
+                
+                privateMessagesDiv.appendChild(msg);
+                privateMessagesDiv.scrollTop = privateMessagesDiv.scrollHeight;
+            });
+        }
+
+        // Back button for private chat
+        document.getElementById('back-private-btn').addEventListener('click', () => {
+            privateChatSection.style.display = 'none';
+            contactsSection.style.display = 'flex';
+            currentContact = "";
+            // Detach the listener when leaving private chat
+            if (currentPrivateChatListener) {
+                off(currentPrivateChatListener);
+                currentPrivateChatListener = null;
+            }
+        });
+
+        // Send private message
+        document.getElementById('send-private-btn').addEventListener('click', sendPrivateMessage);
+        document.getElementById('private-msg-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent default Enter key behavior (e.g., new line in textarea)
+                sendPrivateMessage();
+            }
+        });
+
+        function sendPrivateMessage() {
+            const input = document.getElementById('private-msg-input');
+            const text = input.value.trim();
+            
+            if (text && currentContact && currentUser) {
+                const chatId = [currentUser.uid, currentContact].sort().join('_');
+                const chatRef = ref(db, `privateMessages/${chatId}`);
+                
+                push(chatRef, {
+                    text: text,
+                    sender: currentUser.username || currentUser.email,
+                    senderId: currentUser.uid,
+                    timestamp: Date.now()
+                });
+                
+                input.value = "";
+            }
+        }
+
+
+        // --- Group Functionality (Existing, slightly modified for clarity) ---
+
+        // Create Group
+        document.getElementById('create-group-btn').addEventListener('click', async () => {
+            const groupName = prompt("Enter new group name:");
+            if (!groupName) return;
+            
+            const groupPassword = prompt("Enter group password (optional):");
+
+            showLoading('Creating group...');
+            try {
+                const groupRef = ref(db, `groups/${groupName}`);
+                const snapshot = await get(groupRef);
+                
+                if (snapshot.exists()) {
+                    showAlert('Group name already exists!');
+                    hideLoading();
+                    return;
+                }
+                
+                await set(groupRef, {
+                    name: groupName,
+                    password: groupPassword || null,
+                    createdAt: Date.now(),
+                    admin: currentUser.uid,
+                    description: '',
+                    avatarUrl: ''
+                });
+
+                // Add user to group members
+                await set(ref(db, `groupMembers/${groupName}/${currentUser.uid}`), {
+                    joinedAt: Date.now()
+                });
+
+                // Add group to user's joined groups
+                await set(ref(db, `userGroups/${currentUser.uid}/${groupName}`), {
+                    joinedAt: Date.now()
+                });
+
+                hideLoading();
+                showAlert('Group created and joined successfully!');
+                loadUserGroups(); // Reload groups after creation
+            } catch (error) {
+                hideLoading();
+                console.error("Error creating group:", error);
+                showAlert(`Failed to create group: ${error.message}`);
+            }
+        });
+
+        // Join New Group
+        document.getElementById('join-group-btn').addEventListener('click', async () => {
+            const groupName = prompt("Enter group name to join:");
+            if (!groupName) return;
+            
+            showLoading('Joining group...');
+            try {
+                const groupRef = ref(db, `groups/${groupName}`);
+                const snapshot = await get(groupRef);
+                
+                if (!snapshot.exists()) {
+                    showAlert('Group does not exist!');
+                    hideLoading();
+                    return;
+                }
+                
+                const groupData = snapshot.val();
+                if (groupData.password) {
+                    const enteredPassword = prompt("Enter group password:");
+                    if (enteredPassword !== groupData.password) {
+                        showAlert('Incorrect password!');
+                        hideLoading();
+                        return;
+                    }
+                }
+
+                // Check if already a member
+                const memberSnapshot = await get(child(ref(db), `groupMembers/${groupName}/${currentUser.uid}`));
+                if (memberSnapshot.exists()) {
+                    showAlert('You are already a member of this group!');
+                    hideLoading();
+                    return;
+                }
+                
+                await set(ref(db, `groupMembers/${groupName}/${currentUser.uid}`), {
+                    joinedAt: Date.now()
+                });
+                await set(ref(db, `userGroups/${currentUser.uid}/${groupName}`), {
+                    joinedAt: Date.now()
+                });
+                
+                hideLoading();
+                showAlert('Joined group successfully!');
+                loadUserGroups(); // Reload groups after joining
+            } catch (error) {
+                hideLoading();
+                console.error("Error joining group:", error);
+                showAlert(`Failed to join group: ${error.message}`);
+            }
+        });
+
+        // Load User Groups
+        async function loadUserGroups() {
+            if (!currentUser) return;
+            
+            try {
+                const snapshot = await get(child(ref(db), `userGroups/${currentUser.uid}`));
+                if (snapshot.exists()) {
+                    const groups = snapshot.val();
+                    const groupNames = Object.keys(groups);
+                    userGroups = [];
+                    for (const groupName of groupNames) {
+                        const groupSnapshot = await get(child(ref(db), `groups/${groupName}`));
+                        if (groupSnapshot.exists()) {
+                            userGroups.push({
+                                id: groupName,
+                                ...groupSnapshot.val()
+                            });
+                        }
+                    }
+                    renderGroupsList();
+                } else {
+                    userGroups = [];
+                    renderGroupsList();
+                }
+            } catch (error) {
+                console.error("Error loading groups:", error);
+                userGroups = [];
+                renderGroupsList();
+            }
+        }
+
+        // Render Groups List
+        function renderGroupsList() {
+            groupsCount.textContent = userGroups.length;
+            if (userGroups.length === 0) {
+                joinedGroupsList.innerHTML = '<div class="no-groups">You haven\'t joined any groups yet</div>';
+                return;
+            }
+            
+            joinedGroupsList.innerHTML = userGroups.map(group => `
+                <div class="group-item" data-group="${group.id}">
+                    <div class="group-avatar">
+                        ${group.avatarUrl ? 
+                            `<img src="${group.avatarUrl}" alt="${group.name}" />` : 
+                            `<div>${group.name.charAt(0).toUpperCase()}</div>`}
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-desc">${group.description || 'No description'}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Apply styles for fallback avatars (initials)
+            document.querySelectorAll('.group-avatar div').forEach(div => {
+                div.style.backgroundColor = '#00bcd4'; /* Use the primary cyan */
+                div.style.color = 'white';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.fontSize = '1.8em'; /* Larger initials */
+            });
+
+            // Add click event to each group item
+            document.querySelectorAll('.group-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const groupId = item.getAttribute('data-group');
+                    enterGroupChat(groupId);
+                });
+            });
+        }
+
+        // Enter Group Chat
+        function enterGroupChat(groupId) {
+            currentGroup = groupId;
+            groupOptions.style.display = 'none';
+            chatSection.style.display = 'flex';
+            groupNameDisplay.textContent = groupId;
+            messagesDiv.innerHTML = ''; // Clear previous messages
+            
+            // Detach previous listener if exists
+            if (currentGroupChatListener) {
+                off(currentGroupChatListener);
+                currentGroupChatListener = null;
+            }
+
+            const messagesRef = ref(db, `groupMessages/${groupId}`);
+            
+            // Attach new listener and store its reference
+            currentGroupChatListener = onChildAdded(messagesRef, async (data) => {
+                const msgData = data.val();
+                const msg = document.createElement('div');
+                msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
+                
+                // Fetch sender's username and avatar for display
+                let senderUsername = 'Unknown';
+                try {
+                    const senderSnapshot = await get(child(ref(db), `users/${msgData.senderId}`));
+                    if (senderSnapshot.exists()) {
+                        const senderInfo = senderSnapshot.val();
+                        senderUsername = senderInfo.username || 'Unknown';
+                    }
+                } catch (e) {
+                    console.error("Error fetching sender info:", e);
+                }
+
+                msg.innerHTML = `
+                    <div class="sender">${senderUsername}</div>
+                    <div class="text">${msgData.text}</div>
+                    <div class="timestamp">${formatTime(msgData.timestamp)}</div>
+                `;
+                
+                messagesDiv.appendChild(msg);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+        }
+
+        // Back button for group chat
+        document.getElementById('back-btn').addEventListener('click', () => {
+            chatSection.style.display = 'none';
+            groupOptions.style.display = 'flex';
+            currentGroup = "";
+            // Detach the listener when leaving group chat
+            if (currentGroupChatListener) {
+                off(currentGroupChatListener);
+                currentGroupChatListener = null;
+            }
+        });
+
+        // Send Group Message
+        document.getElementById('send-btn').addEventListener('click', sendGroupMessage);
+        document.getElementById('msg-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent default Enter key behavior
+                sendGroupMessage();
+            }
+        });
+
+        function sendGroupMessage() {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            
+            if (text && currentGroup && currentUser) {
+                const messagesRef = ref(db, `groupMessages/${currentGroup}`);
+                push(messagesRef, {
+                    text: text,
+                    sender: currentUser.username || currentUser.email, // Use username from updated currentUser
+                    senderId: currentUser.uid,
+                    timestamp: Date.now()
+                });
+                input.value = "";
+            }
+        }
+
+
+        // Helper functions
+        function formatTime(timestamp) {
+            return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function showLoading(message = 'Loading...') {
+            loadingScreen.style.display = 'flex';
+            loadingScreen.querySelector('.loading-text').textContent = message;
+        }
+
+        function hideLoading() {
+            loadingScreen.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
