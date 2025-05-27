@@ -978,8 +978,10 @@
                 <div class="avatar-preview" id="profile-avatar-preview">
                     
                 </div>
-                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" />
-                <button id="upload-avatar-btn" class="secondary">Change Profile Picture</button>
+                <div class="form-group" style="width: 100%;">
+                    <label for="profile-avatar-url">Profile Picture URL</label>
+                    <input type="text" id="profile-avatar-url" placeholder="Enter image URL" />
+                </div>
             </div>
             
             <div class="form-group">
@@ -1020,8 +1022,10 @@
             <div class="avatar-preview" id="group-avatar-preview">
                 
             </div>
-            <input type="file" id="group-avatar-upload" accept="image/*" style="display: none;" />
-            <button id="upload-group-avatar-btn" class="secondary">Change Group Picture</button>
+            <div class="form-group" style="width: 100%;">
+                <label for="group-avatar-url">Group Picture URL</label>
+                <input type="text" id="group-avatar-url" placeholder="Enter image URL" />
+            </div>
         </div>
         
         <div class="form-group">
@@ -1122,12 +1126,17 @@
         const addContactBtn = document.getElementById('add-contact-btn');
         const profileAvatarPreview = document.getElementById('profile-avatar-preview');
         const groupAvatarPreview = document.getElementById('group-avatar-preview');
-        const uploadAvatarBtn = document.getElementById('upload-avatar-btn');
-        const avatarUpload = document.getElementById('avatar-upload');
-        const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn');
-        const groupAvatarUpload = document.getElementById('group-avatar-upload');
+        // const uploadAvatarBtn = document.getElementById('upload-avatar-btn'); // Removed
+        // const avatarUpload = document.getElementById('avatar-upload'); // Removed
+        // const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn'); // Removed
+        // const groupAvatarUpload = document.getElementById('group-avatar-upload'); // Removed
+
+        // New URL input fields
+        const profileAvatarUrlInput = document.getElementById('profile-avatar-url');
+        const groupAvatarUrlInput = document.getElementById('group-avatar-url');
+
+
         const userIdText = document.getElementById('user-id-text');
-        // const copyIdBtn = document.getElementById('copy-id-btn'); // Removed this element
         const saveProfileBtn = document.getElementById('save-profile-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const saveGroupSettingsBtn = document.getElementById('save-group-settings-btn');
@@ -1394,77 +1403,17 @@
             groupSettingsMenu.classList.remove('open');
         });
 
-        // Avatar upload
-        uploadAvatarBtn.addEventListener('click', () => {
-            avatarUpload.click();
-        });
-
-        avatarUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    profileAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Profile" />`;
-                    profileAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
-                    profileAvatarPreview.style.color = 'inherit';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        uploadGroupAvatarBtn.addEventListener('click', () => {
-            groupAvatarUpload.click();
-        });
-
-        groupAvatarUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    groupAvatarPreview.innerHTML = `<img src="${event.target.result}" alt="Group" />`;
-                    groupAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
-                    groupAvatarPreview.style.color = 'inherit';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Copy ID button - REMOVED
-        // copyIdBtn.addEventListener('click', () => {
-        //     const idToCopy = userData.memorableId || currentUser.uid;
-        //     document.execCommand('copy');
-        //     showAlert(`ID "${idToCopy}" copied to clipboard!`);
-        // });
-
-        // Event listener for copy ID button (using a fallback for navigator.clipboard) - REMOVED
-        // copyIdBtn.addEventListener('copy', (event) => {
-        //     if (currentUser && currentUser.uid) {
-        //         event.clipboardData.setData('text/plain', userData.memorableId || currentUser.uid);
-        //         event.preventDefault();
-        //     }
-        // });
-
         // Save profile
         saveProfileBtn.addEventListener('click', async () => {
             const username = document.getElementById('profile-username').value;
             const status = document.getElementById('profile-status').value;
-            const file = avatarUpload.files[0];
-            
-            let avatarUrl = userData.avatarUrl || '';
-            
-            if (file) {
-                showLoading('Uploading profile picture...');
-                const storageReference = storageRef(storage, `avatars/${currentUser.uid}`);
-                await uploadBytes(storageReference, file);
-                avatarUrl = await getDownloadURL(storageReference);
-                hideLoading();
-            }
+            const avatarUrl = profileAvatarUrlInput.value.trim(); // Get URL from input
             
             showLoading('Saving profile...');
             await update(ref(db, `users/${currentUser.uid}`), {
                 username,
                 status,
-                avatarUrl
+                avatarUrl // Use the URL directly
             });
             
             // Update local data and display
@@ -1480,22 +1429,12 @@
         // Save group settings
         saveGroupSettingsBtn.addEventListener('click', async () => {
             const description = document.getElementById('group-desc-setting').value;
-            const file = groupAvatarUpload.files[0];
-            
-            let groupAvatarUrl = '';
-            
-            if (file) {
-                showLoading('Uploading group picture...');
-                const storageReference = storageRef(storage, `groupAvatars/${currentGroup}`);
-                await uploadBytes(storageReference, file);
-                groupAvatarUrl = await getDownloadURL(storageReference);
-                hideLoading();
-            }
+            const groupAvatarUrl = groupAvatarUrlInput.value.trim(); // Get URL from input
             
             showLoading('Saving group settings...');
             await update(ref(db, `groups/${currentGroup}`), {
                 description,
-                ...(groupAvatarUrl && { avatarUrl: groupAvatarUrl })
+                avatarUrl: groupAvatarUrl // Use the URL directly
             });
             
             hideLoading();
@@ -1516,7 +1455,7 @@
         addContactBtn.addEventListener('click', () => {
             const contactId = prompt("Enter the user's ID you want to add:");
             if (contactId) {
-                if (contactId === currentUser.uid) {
+                if (contactId === currentUser.memorableId) { // Check against memorableId
                     showAlert("You can't add yourself as a contact!");
                 } else {
                     addContact(contactId);
@@ -1533,11 +1472,13 @@
                 userData = snapshot.val();
                 document.getElementById('profile-username').value = userData.username || '';
                 document.getElementById('profile-status').value = userData.status || '';
+                profileAvatarUrlInput.value = userData.avatarUrl || ''; // Populate URL input
+                
                 // Display the memorable ID if available, otherwise fallback to Firebase UID
                 userIdText.textContent = userData.memorableId || currentUser.uid;
                 
                 if (userData.avatarUrl) {
-                    profileAvatarPreview.innerHTML = `<img src="${userData.avatarUrl}" alt="Profile" />`;
+                    profileAvatarPreview.innerHTML = `<img src="${userData.avatarUrl}" alt="Profile" onerror="this.onerror=null;this.src='https://placehold.co/140x140/00bcd4/ffffff?text=${userData.username?.charAt(0).toUpperCase() || 'U'}'" />`;
                     profileAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
                     profileAvatarPreview.style.color = 'inherit';
                 } else {
@@ -1558,9 +1499,10 @@
                 document.getElementById('group-name-setting').value = currentGroup;
                 document.getElementById('group-password-setting').value = groupData.password || 'No password set';
                 document.getElementById('group-desc-setting').value = groupData.description || '';
+                groupAvatarUrlInput.value = groupData.avatarUrl || ''; // Populate URL input
                 
                 if (groupData.avatarUrl) {
-                    groupAvatarPreview.innerHTML = `<img src="${groupData.avatarUrl}" alt="Group" />`;
+                    groupAvatarPreview.innerHTML = `<img src="${groupData.avatarUrl}" alt="Group" onerror="this.onerror=null;this.src='https://placehold.co/140x140/00bcd4/ffffff?text=${currentGroup.charAt(0).toUpperCase()}'" />`;
                     groupAvatarPreview.style.backgroundColor = 'transparent'; // Reset background for image
                     groupAvatarPreview.style.color = 'inherit';
                 } else {
@@ -1672,7 +1614,7 @@
                 <div class="contact-item" data-contact="${contact.id}">
                     <div class="contact-avatar">
                         ${contact.avatarUrl ? 
-                            `<img src="${contact.avatarUrl}" alt="${contact.username}" />` : 
+                            `<img src="${contact.avatarUrl}" alt="${contact.username}" onerror="this.onerror=null;this.src='https://placehold.co/60x60/00bcd4/ffffff?text=${contact.username?.charAt(0).toUpperCase() || 'U'}'" />` : 
                             `<div>${contact.username?.charAt(0).toUpperCase() || 'U'}</div>`}
                     </div>
                     <div class="contact-info">
@@ -1936,7 +1878,7 @@
                 <div class="group-item" data-group="${group.id}">
                     <div class="group-avatar">
                         ${group.avatarUrl ? 
-                            `<img src="${group.avatarUrl}" alt="${group.name}" />` : 
+                            `<img src="${group.avatarUrl}" alt="${group.name}" onerror="this.onerror=null;this.src='https://placehold.co/60x60/00bcd4/ffffff?text=${group.name.charAt(0).toUpperCase()}'" />` : 
                             `<div>${group.name.charAt(0).toUpperCase()}</div>`}
                     </div>
                     <div class="group-info">
