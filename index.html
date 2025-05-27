@@ -2,51 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ThunderChat</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>ThunderChat Real-time Group Chat</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="app" class="app-container">
-    <h1>⚡ ThunderChat</h1>
-
-    <div id="auth">
-      <input type="email" id="email" placeholder="Email"/>
-      <input type="password" id="password" placeholder="Password"/>
-      <div id="captcha-box">
-        <label>Solve: <span id="captcha-question"></span></label>
-        <input type="text" id="captcha-answer" placeholder="Answer" />
-      </div>
-      <button id="register">Register</button>
-      <button id="login">Login</button>
+  <div class="app-container">
+    <!-- Auth Section -->
+    <div id="auth-section">
+      <h2>ThunderChat Login / Register</h2>
+      <input type="email" id="email" placeholder="Email" autocomplete="username" />
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
+      <button id="login-btn">Login</button>
+      <button id="register-btn">Register</button>
+      <p id="auth-message" class="message"></p>
     </div>
 
-    <div id="group-selection" class="hidden">
-      <button id="createGroupBtn">Create Group</button>
-      <button id="joinGroupBtn">Join Group</button>
-      <p class="group-warning">Inactive groups will be deleted after 1 week.</p>
+    <!-- Group Selection Section -->
+    <div id="group-section" class="hidden">
+      <h2>Create or Join a Group</h2>
+      <input type="text" id="group-name" placeholder="Enter group name" />
+      <button id="join-group-btn">Join Group</button>
+      <button id="logout-btn" class="logout">Logout</button>
     </div>
 
-    <div id="create-group-form" class="hidden">
-      <input type="text" id="groupName" placeholder="Group Name"/>
-      <button id="submitCreateGroup">Create Group</button>
-    </div>
-
-    <div id="join-group-form" class="hidden">
-      <input type="text" id="joinGroupId" placeholder="Group Password"/>
-      <button id="submitJoinGroup">Join Group</button>
-    </div>
-
-    <div id="chat" class="hidden">
-      <div id="groupInfo">Group Password: <span id="groupPassword"></span></div>
-      <div id="messages"></div>
-      <input type="text" id="messageInput" placeholder="Type a message" />
-      <button id="send">Send</button>
-      <button id="logout">Logout</button>
+    <!-- Chat Section -->
+    <div id="chat-section" class="hidden">
+      <header>
+        <h2 id="group-title"></h2>
+        <button id="leave-group-btn" class="leave">Leave Group</button>
+      </header>
+      <div id="messages" class="messages"></div>
+      <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
     </div>
   </div>
 
+  <!-- Firebase SDKs and main.js -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
