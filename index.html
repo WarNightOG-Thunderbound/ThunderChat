@@ -5,248 +5,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThunderChat</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-:root {
-  --primary: #2563eb;
-  --secondary: #059669;
-  --accent: #3b82f6;
-  --light: #ffffff;
-  --dark: #1e293b;
-  --gray: #e2e8f0;
-  --text: #334155;
-}
+    body {
+      background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      animation: fadeIn 1.5s ease-in;
+    }
 
-body {
-  background-color: #f8fafc;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  min-height: 100vh;
-  color: var(--text);
-  line-height: 1.5;
-  padding: 0;
-  margin: 0;
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
 
-/* Mobile-first container */
-#auth-section, #chat-section {
-  width: 100%;
-  max-width: 100%;
-  padding: 1.5rem;
-  background-color: var(--light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border-radius: 0;
-  margin: 0;
-}
+    .input {
+      @apply w-full p-3 rounded-lg border border-cyan-400 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300;
+    }
 
-/* Header styles */
-h2, h3 {
-  color: var(--dark);
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
+    .button {
+      @apply w-full py-3 rounded-lg text-white bg-cyan-600 hover:bg-blue-700 transition duration-300 shadow-lg;
+    }
 
-/* Input fields */
-.input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--gray);
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  background-color: var(--light);
-  transition: all 0.2s ease;
-}
+    .chat-bubble {
+      @apply bg-cyan-200 text-black p-3 rounded-xl shadow-lg mb-2 max-w-xs;
+    }
 
-.input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* Buttons */
-.button {
-  width: 100%;
-  padding: 0.875rem;
-  margin-bottom: 0.75rem;
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-#loginBtn {
-  background-color: var(--primary);
-  color: white;
-}
-
-#registerBtn {
-  background-color: var(--secondary);
-  color: white;
-}
-
-#logoutBtn {
-  background-color: #ef4444;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-}
-
-#sendBtn {
-  background-color: var(--primary);
-  color: white;
-  padding: 0.75rem 1rem;
-}
-
-/* Chat box */
-#chat-box {
-  height: 60vh;
-  max-height: 500px;
-  background-color: var(--light);
-  border: 1px solid var(--gray);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Message bubbles */
-.msg {
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.75rem;
-  background-color: #f1f5f9;
-  border-radius: 0.75rem;
-  max-width: 80%;
-  word-wrap: break-word;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.sender {
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 0.25rem;
-  font-size: 0.875rem;
-}
-
-/* Message input area */
-#message-input-area {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-#messageInput {
-  flex: 1;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Safe area for notches */
-@supports (padding: max(0px)) {
-  body {
-    padding-left: max(0.75rem, env(safe-area-inset-left));
-    padding-right: max(0.75rem, env(safe-area-inset-right));
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  }
-}
-
-/* Responsive adjustments */
-@media (min-width: 400px) {
-  #auth-section, #chat-section {
-    max-width: 400px;
-    margin: 1rem auto;
-    border-radius: 1rem;
-  }
-}
-
-/* iPhone X/11/12/13/14/15 specific optimizations */
-@media only screen 
-  and (device-width: 375px) 
-  and (device-height: 812px) 
-  and (-webkit-device-pixel-ratio: 3),
-  only screen 
-  and (device-width: 414px) 
-  and (device-height: 896px) 
-  and (-webkit-device-pixel-ratio: 2),
-  only screen 
-  and (device-width: 414px) 
-  and (device-height: 896px) 
-  and (-webkit-device-pixel-ratio: 3),
-  only screen 
-  and (device-width: 390px) 
-  and (device-height: 844px) 
-  and (-webkit-device-pixel-ratio: 3),
-  only screen 
-  and (device-width: 428px) 
-  and (device-height: 926px) 
-  and (-webkit-device-pixel-ratio: 3) {
-  #chat-box {
-    height: 55vh;
-  }
-}
-
-/* Redmi/Oppo specific optimizations */
-@media (max-width: 360px) {
-  .input, .button {
-    padding: 0.75rem;
-    font-size: 0.9375rem;
-  }
-  
-  h2, h3 {
-    font-size: 1.25rem;
-  }
-}
-   .button.bg-yellow-400 {
-  background-color: #facc15;
-  color: #1f2937;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.button.bg-yellow-400:hover {
-  background-color: #fbbf24;
-  transform: scale(1.05);
-}
-
-
- 
-   </style>
+    .chat-bubble.self {
+      @apply bg-blue-300 text-black ml-auto;
+    }
+  </style>
 </head>
 
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
-  <div id="auth-section" class="w-full max-w-sm">
-    <h2 class="text-2xl font-bold mb-4 text-center">ThunderChat</h2>
-    <input id="email" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" type="email" placeholder="Email">
-    <input id="password" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" type="password" placeholder="Password">
-    <button id="loginBtn" class="w-full p-2 mb-2 bg-blue-600 hover:bg-blue-700 rounded">Login</button>
-    <button id="registerBtn" class="w-full p-2 mb-4 bg-green-600 hover:bg-green-700 rounded">Register</button>
+<body class="min-h-screen flex items-center justify-center px-4">
+  <div id="app" class="max-w-md w-full bg-white p-6 rounded-2xl shadow-2xl">
+    <h1 class="text-3xl font-bold text-center text-cyan-700 mb-6">⚡ ThunderChat</h1>
+
+    <div id="auth" class="space-y-4">
+      <input type="email" id="email" class="input" placeholder="Email">
+      <input type="password" id="password" class="input" placeholder="Password">
+      <div class="g-recaptcha" data-sitekey="your-site-key"></div>
+      <button id="register" class="button">Register</button>
+      <button id="login" class="button bg-blue-600">Login</button>
+    </div>
+
+    <div id="group-selection" class="hidden space-y-4">
+      <button id="createGroupBtn" class="button bg-green-500">Create Group</button>
+      <button id="joinGroupBtn" class="button bg-purple-600">Join Group</button>
+      <p class="text-sm text-gray-600 mt-2">Inactive groups will be deleted after 1 week of no messages.</p>
+    </div>
+
+    <div id="create-group-form" class="hidden space-y-4">
+      <input type="text" id="groupName" class="input" placeholder="Enter Group Name">
+      <button id="submitCreateGroup" class="button bg-green-600">Create Private Group</button>
+    </div>
+
+    <div id="join-group-form" class="hidden space-y-4">
+      <input type="text" id="joinGroupId" class="input" placeholder="Enter Group Password">
+      <button id="submitJoinGroup" class="button bg-purple-700">Join Group</button>
+    </div>
+
+    <div id="chat" class="hidden mt-6">
+      <div id="groupInfo" class="text-sm text-gray-600 mb-2">Group Password: <span id="groupPassword"></span></div>
+      <div id="messages" class="h-64 overflow-y-auto bg-gray-100 p-4 rounded-lg space-y-2 mb-4"></div>
+      <input type="text" id="messageInput" class="input mb-2" placeholder="Type a message">
+      <button id="send" class="button">Send</button>
+      <button id="logout" class="button bg-red-600 mt-2">Logout</button>
+    </div>
   </div>
 
-  <div id="chat-section" class="hidden w-full max-w-md">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-xl font-semibold">Group Chat</h3>
-      <button id="logoutBtn" class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
-    </div>
-    
-    <div id="chat-box" class="chat-box bg-gray-800 p-2 rounded overflow-y-auto h-80 mb-2"></div>
-    <div class="flex gap-2">
-      <button id="clearHistory" class="button bg-yellow-400 hover:bg-yellow-500 text-black mt-2">🧹 Clear History</button>
-
-
-      <input id="messageInput" class="flex-1 p-2 rounded bg-gray-700 text-white" type="text" placeholder="Type a message...">
-      <button id="sendBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Send</button>
-    </div>
-  </div>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
@@ -267,72 +98,8 @@ h2, h3 {
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
-    const registerBtn = document.getElementById("registerBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const chatSection = document.getElementById("chat-section");
-    const authSection = document.getElementById("auth-section");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const chatBox = document.getElementById("chat-box");
-
-    loginBtn.onclick = () => {
-      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(() => console.log("Logged in"))
-        .catch(err => alert(err.message));
-    };
-
-    registerBtn.onclick = () => {
-      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(() => console.log("Registered"))
-        .catch(err => alert(err.message));
-    };
-
-    logoutBtn.onclick = () => {
-      signOut(auth);
-    };
-
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        authSection.classList.add("hidden");
-        chatSection.classList.remove("hidden");
-      } else {
-        authSection.classList.remove("hidden");
-        chatSection.classList.add("hidden");
-      }
-    });
-
-    sendBtn.onclick = () => {
-      const msg = messageInput.value.trim();
-      if (msg) {
-        push(ref(db, "messages"), {
-          sender: auth.currentUser.email,
-          text: msg
-        });
-        messageInput.value = "";
-      }
-    };
-
-    onChildAdded(ref(db, "messages"), snapshot => {
-      const { sender, text } = snapshot.val();
-      const div = document.createElement("div");
-      div.className = "msg";
-      div.innerHTML = `<div class="sender">${sender}</div><div>${text}</div>`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-    
-    document.getElementById("clearHistory").addEventListener("click", () => {
-  const messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = ""; // Just clears the visible messages
-});
-
+    // Additional logic can be added here
   </script>
-
-
-
 </body>
 
 </html>
