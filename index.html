@@ -621,19 +621,16 @@
         .close-settings {
             background: none;
             border: none;
-            font-size: 1.5em; /* Smaller close icon */
+            font-size: 1.8em; /* Slightly larger close icon */
             cursor: pointer;
-            color: white; /* Changed to white for better visibility in header */
+            color: var(--color-text-secondary); /* Softer grey */
             transition: color 0.3s, transform 0.3s;
-            padding: 0.5em; /* Added padding for easier click */
-            border-radius: 50%; /* Rounded button */
-            background: rgba(255,255,255,0.2); /* Semi-transparent background */
+            padding: 0.2em; /* Smaller padding */
         }
 
         .close-settings:hover {
-            color: white; /* Keep white on hover */
+            color: var(--color-text-primary); /* Darker on hover */
             transform: rotate(180deg) scale(1.1); /* Full spin and scale */
-            background: rgba(255,255,255,0.4);
         }
 
         .avatar-upload {
@@ -687,30 +684,11 @@
             margin-bottom: 0.8em;
         }
 
-        .copy-id {
-            background: linear-gradient(45deg, var(--color-cyan-gradient-start), var(--color-cyan-gradient-end)); /* Use CSS variables */
-            color: white;
-            border: none;
-            padding: 0.8em 1.5em; /* More padding */
-            border-radius: 10px; /* More rounded */
-            cursor: pointer;
-            margin-top: 1em;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 3px 10px var(--shadow-strong); /* Use CSS variable */
-        }
-
-        .copy-id:hover {
-            background: linear-gradient(45deg, var(--color-cyan-gradient-end), var(--color-cyan-gradient-start)); /* Use CSS variables */
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--shadow-strong); /* Use CSS variable */
-        }
-
         /* Custom Alert Modal */
         .custom-alert-modal {
             display: none; /* Hidden by default, controlled by JS */
             position: fixed;
-            z-index: 2001;
+            z-index: 2001; /* Ensure it's on top */
             left: 0;
             top: 0;
             width: 100%;
@@ -720,6 +698,12 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(8px); /* More intense blur */
+            animation: fadeInOverlay 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeInOverlay {
+            from { background-color: rgba(0,0,0,0); }
+            to { background-color: rgba(0,0,0,0.7); }
         }
 
         .custom-alert-content {
@@ -1077,12 +1061,13 @@
             onAuthStateChanged,
             signOut
         } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { 
-            getStorage,
-            ref as storageRef,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+        // No longer need getStorage, ref as storageRef, uploadBytes, getDownloadURL
+        // import { 
+        //     getStorage,
+        //     ref as storageRef,
+        //     uploadBytes,
+        //     getDownloadURL
+        // } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
@@ -1097,7 +1082,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const storage = getStorage(app);
+        // const storage = getStorage(app); // No longer needed
 
         // DOM Elements
         const loadingScreen = document.getElementById('loading-screen');
@@ -1126,11 +1111,7 @@
         const addContactBtn = document.getElementById('add-contact-btn');
         const profileAvatarPreview = document.getElementById('profile-avatar-preview');
         const groupAvatarPreview = document.getElementById('group-avatar-preview');
-        // const uploadAvatarBtn = document.getElementById('upload-avatar-btn'); // Removed
-        // const avatarUpload = document.getElementById('avatar-upload'); // Removed
-        // const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn'); // Removed
-        // const groupAvatarUpload = document.getElementById('group-avatar-upload'); // Removed
-
+        
         // New URL input fields
         const profileAvatarUrlInput = document.getElementById('profile-avatar-url');
         const groupAvatarUrlInput = document.getElementById('group-avatar-url');
@@ -1173,19 +1154,20 @@
         // Listener references for cleanup
         let currentGroupChatListener = null;
         let currentPrivateChatListener = null;
+        let alertTimeoutId = null; // To manage alert auto-hide
 
         // Initialize the app
         window.addEventListener('DOMContentLoaded', () => {
-            // No artificial timeout, rely on Firebase load times
             loadingScreen.style.display = 'none';
-            // Display auth section by default if no user is logged in, handled by onAuthStateChanged
             loadUserTheme(); // Load theme as soon as possible
         });
 
         // Custom Alert Modal functions
-        function showAlert(message) {
+        function showAlert(message, duration = 3000) { // Default duration 3 seconds
             customAlertMessage.textContent = message;
             customAlertModal.style.display = 'flex'; // Use flex to center
+            clearTimeout(alertTimeoutId); // Clear any existing timeout
+            alertTimeoutId = setTimeout(hideAlert, duration);
         }
 
         function hideAlert() {
