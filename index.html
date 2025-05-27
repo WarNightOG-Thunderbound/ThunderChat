@@ -3,181 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Group Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <title>ThunderChat</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
-    }
-
     body {
       margin: 0;
-      background: #0f0f0f;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
       color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 1rem;
+      height: 100vh;
     }
-
-    h1 {
-      color: cyan;
+    header, footer {
+      padding: 1em;
+      background: #1e293b;
+      text-align: center;
     }
-
-    .container {
-      max-width: 400px;
-      width: 100%;
-      background: #1e1e1e;
-      padding: 1rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 10px cyan;
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1em;
     }
-
-    .form-group {
-      margin-bottom: 1rem;
+    .message {
+      margin: 0.5em 0;
+      padding: 0.5em;
+      background: #334155;
+      border-radius: 10px;
     }
-
     input, button {
-      width: 100%;
-      padding: 0.75rem;
+      padding: 0.7em;
       border: none;
-      border-radius: 0.5rem;
-      margin-top: 0.5rem;
+      margin: 0.2em;
+      border-radius: 8px;
     }
-
-    input {
-      background: #2e2e2e;
+    button {
+      background: #06b6d4;
       color: white;
     }
-
-    button {
-      background: cyan;
-      color: black;
-      font-weight: bold;
-    }
-
-    #chat-section {
-      margin-top: 1rem;
+    #group-form, #chat-section {
       display: none;
+      flex-direction: column;
+      align-items: center;
     }
-
-    #messages {
-      max-height: 300px;
-      overflow-y: auto;
-      background: #111;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .message {
-      margin-bottom: 0.5rem;
-      background: #222;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
+    .chat-box {
+      width: 100%;
+      max-width: 600px;
     }
   </style>
-</head>
-<body>
-  <h1>ThunderChat</h1>
-  <div class="container">
-    <div class="form-group">
-      <button onclick="showCreateGroup()">Create Group</button>
-      <button onclick="showJoinGroup()">Join Group</button>
-    </div>
-    <div id="create-group" class="form-group" style="display: none;">
-      <input type="text" id="create-group-name" placeholder="Group Name" />
-      <input type="password" id="create-group-password" placeholder="Group Password" />
-      <button onclick="createGroup()">Create</button>
-    </div>
-    <div id="join-group" class="form-group" style="display: none;">
-      <input type="text" id="join-group-name" placeholder="Group Name" />
-      <input type="password" id="join-group-password" placeholder="Group Password" />
-      <button onclick="joinGroup()">Join</button>
-    </div>
-  </div>
-
-  <div class="container" id="chat-section">
-    <div id="messages"></div>
-    <input type="text" id="messageInput" placeholder="Type your message" />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, set, push, onChildAdded, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, set, push, onChildAdded, get, child } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
+      authDomain: "thunderboundthunderchat.firebaseapp.com",
+      databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "thunderboundthunderchat",
+      storageBucket: "thunderboundthunderchat.firebasestorage.app",
+      messagingSenderId: "79690962383",
+      appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    const groupForm = document.getElementById('group-form');
+    const chatSection = document.getElementById('chat-section');
+    const messagesDiv = document.getElementById('messages');
+
     let currentGroup = "";
 
-    window.showCreateGroup = () => {
-      document.getElementById("create-group").style.display = "block";
-      document.getElementById("join-group").style.display = "none";
-    };
-
-    window.showJoinGroup = () => {
-      document.getElementById("create-group").style.display = "none";
-      document.getElementById("join-group").style.display = "block";
-    };
-
-    window.createGroup = () => {
-      const name = document.getElementById("create-group-name").value;
-      const pass = document.getElementById("create-group-password").value;
-      if (!name || !pass) return alert("Fill in both fields");
-
-      const groupRef = ref(db, `groups/${name}`);
-      set(groupRef, { password: pass, messages: {} });
-      currentGroup = name;
-      enterChat(name);
-    };
-
-    window.joinGroup = async () => {
-      const name = document.getElementById("join-group-name").value;
-      const pass = document.getElementById("join-group-password").value;
-
-      const groupRef = ref(db, `groups/${name}`);
-      const snap = await get(groupRef);
-
-      if (snap.exists() && snap.val().password === pass) {
-        currentGroup = name;
+    document.getElementById('create-btn').onclick = () => {
+      const name = prompt("Enter group name:");
+      const password = prompt("Enter password:");
+      if (name && password) {
+        set(ref(db, `groups/${name}`), { password });
         enterChat(name);
-      } else {
-        alert("Group doesn't exist or password is wrong");
+      }
+    };
+
+    document.getElementById('join-btn').onclick = async () => {
+      const name = prompt("Enter group name:");
+      const password = prompt("Enter password:");
+      if (name && password) {
+        const snapshot = await get(child(ref(db), `groups/${name}`));
+        if (snapshot.exists() && snapshot.val().password === password) {
+          enterChat(name);
+        } else {
+          alert("No group exists with that name and password.");
+        }
       }
     };
 
     function enterChat(groupName) {
-      document.querySelector(".container").style.display = "none";
-      document.getElementById("chat-section").style.display = "block";
-      const messagesRef = ref(db, `groups/${groupName}/messages`);
-      onChildAdded(messagesRef, (data) => {
-        const msg = document.createElement("div");
-        msg.classList.add("message");
-        msg.textContent = data.val().text;
-        document.getElementById("messages").appendChild(msg);
+      currentGroup = groupName;
+      groupForm.style.display = 'none';
+      chatSection.style.display = 'flex';
+      const groupRef = ref(db, `messages/${groupName}`);
+      onChildAdded(groupRef, (data) => {
+        const msg = document.createElement('div');
+        msg.className = 'message';
+        msg.textContent = data.val();
+        messagesDiv.appendChild(msg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
 
-    window.sendMessage = () => {
-      const text = document.getElementById("messageInput").value;
-      if (!text || !currentGroup) return;
-      const msgRef = ref(db, `groups/${currentGroup}/messages`);
-      push(msgRef, { text });
-      document.getElementById("messageInput").value = "";
+    document.getElementById('send-btn').onclick = () => {
+      const input = document.getElementById('msg-input');
+      const text = input.value.trim();
+      if (text && currentGroup) {
+        const groupRef = ref(db, `messages/${currentGroup}`);
+        push(groupRef, text);
+        input.value = "";
+      }
     };
+  </script>
+</head>
+<body>
+  <header>
+    <h1>ThunderChat</h1>
+    <p>Create or Join a Group</p>
+  </header>
+  <div id="group-form">
+    <button id="create-btn">Create Group</button>
+    <button id="join-btn">Join Group</button>
+  </div>
+  <div id="chat-section" class="chat-box">
+    <main id="messages"></main>
+    <footer>
+      <input id="msg-input" type="text" placeholder="Type a message..." />
+      <button id="send-btn">Send</button>
+    </footer>
+  </div>
+  <script>
+    // Show group form on load
+    document.getElementById('group-form').style.display = 'flex';
   </script>
 </body>
 </html>
