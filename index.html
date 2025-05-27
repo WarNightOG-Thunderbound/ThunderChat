@@ -621,15 +621,19 @@
         .close-settings {
             background: none;
             border: none;
-            font-size: 2em; /* Smaller close icon */
+            font-size: 1.5em; /* Smaller close icon */
             cursor: pointer;
-            color: var(--color-text-secondary); /* Use CSS variable */
+            color: white; /* Changed to white for better visibility in header */
             transition: color 0.3s, transform 0.3s;
+            padding: 0.5em; /* Added padding for easier click */
+            border-radius: 50%; /* Rounded button */
+            background: rgba(255,255,255,0.2); /* Semi-transparent background */
         }
 
         .close-settings:hover {
-            color: var(--color-text-primary); /* Use CSS variable */
+            color: white; /* Keep white on hover */
             transform: rotate(180deg) scale(1.1); /* Full spin and scale */
+            background: rgba(255,255,255,0.4);
         }
 
         .avatar-upload {
@@ -999,8 +1003,7 @@
             <div class="user-id-display">
                 <strong>Your ID:</strong>
                 <div id="user-id-text">Loading...</div>
-                <button id="copy-id-btn" class="copy-id">Copy ID</button>
-            </div>
+                </div>
             
             <button id="save-profile-btn">Save Changes</button>
             <button id="logout-btn" class="secondary">Logout</button>
@@ -1124,7 +1127,7 @@
         const uploadGroupAvatarBtn = document.getElementById('upload-group-avatar-btn');
         const groupAvatarUpload = document.getElementById('group-avatar-upload');
         const userIdText = document.getElementById('user-id-text');
-        const copyIdBtn = document.getElementById('copy-id-btn');
+        // const copyIdBtn = document.getElementById('copy-id-btn'); // Removed this element
         const saveProfileBtn = document.getElementById('save-profile-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const saveGroupSettingsBtn = document.getElementById('save-group-settings-btn');
@@ -1426,21 +1429,20 @@
             }
         });
 
-        // Copy ID button
-        copyIdBtn.addEventListener('click', () => {
-            // Use userData.memorableId if available, otherwise fallback to currentUser.uid
-            const idToCopy = userData.memorableId || currentUser.uid;
-            document.execCommand('copy'); // Use this for clipboard access in some iFrame environments
-            showAlert(`ID "${idToCopy}" copied to clipboard!`);
-        });
+        // Copy ID button - REMOVED
+        // copyIdBtn.addEventListener('click', () => {
+        //     const idToCopy = userData.memorableId || currentUser.uid;
+        //     document.execCommand('copy');
+        //     showAlert(`ID "${idToCopy}" copied to clipboard!`);
+        // });
 
-        // Event listener for copy ID button (using a fallback for navigator.clipboard)
-        copyIdBtn.addEventListener('copy', (event) => {
-            if (currentUser && currentUser.uid) {
-                event.clipboardData.setData('text/plain', userData.memorableId || currentUser.uid);
-                event.preventDefault();
-            }
-        });
+        // Event listener for copy ID button (using a fallback for navigator.clipboard) - REMOVED
+        // copyIdBtn.addEventListener('copy', (event) => {
+        //     if (currentUser && currentUser.uid) {
+        //         event.clipboardData.setData('text/plain', userData.memorableId || currentUser.uid);
+        //         event.preventDefault();
+        //     }
+        // });
 
         // Save profile
         saveProfileBtn.addEventListener('click', async () => {
