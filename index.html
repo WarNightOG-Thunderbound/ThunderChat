@@ -6,169 +6,137 @@
   <title>ThunderChat</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0f172a;
+      padding: 0;
+      background: #111;
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
-    header, footer {
-      padding: 1em;
-      background: #1e293b;
-      text-align: center;
-    }
-    main {
+
+    #chatContainer {
       flex: 1;
       overflow-y: auto;
-      padding: 1em;
-    }
-    .message {
-      margin: 0.5em 0;
-      padding: 0.5em;
-      background: #334155;
-      border-radius: 10px;
-    }
-    input, button {
-      padding: 0.7em;
-      border: none;
-      margin: 0.2em;
-      border-radius: 8px;
-    }
-    button {
-      background: #06b6d4;
-      color: white;
-    }
-    #group-form, #chat-section {
-      display: none;
+      padding: 10px;
+      display: flex;
       flex-direction: column;
-      align-items: center;
     }
-    .chat-box {
-      width: 100%;
-      max-width: 600px;
+
+    .message {
+      padding: 10px;
+      border-radius: 10px;
+      margin: 5px;
+      max-width: 70%;
+      word-wrap: break-word;
     }
-    .leave-btn {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: background 0.3s ease;
-  width: 90%;
-  max-width: 300px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3);
-}
 
-.leave-btn:hover {
-  background: #e60000;
-}
+    .my-message {
+      align-self: flex-end;
+      background-color: #0f0c29;
+      color: #fff;
+    }
 
+    .other-message {
+      align-self: flex-start;
+      background-color: #2c3e50;
+      color: #fff;
+    }
+
+    .username {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    #messageInput {
+      padding: 10px;
+      border: none;
+      width: 80%;
+      border-radius: 5px;
+    }
+
+    #sendBtn {
+      padding: 10px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #messageForm {
+      display: flex;
+      padding: 10px;
+      background: #222;
+    }
   </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getDatabase, ref, set, push, onChildAdded, get, child } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
-      authDomain: "thunderboundthunderchat.firebaseapp.com",
-      databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "thunderboundthunderchat",
-      storageBucket: "thunderboundthunderchat.firebasestorage.app",
-      messagingSenderId: "79690962383",
-      appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const groupForm = document.getElementById('group-form');
-    const chatSection = document.getElementById('chat-section');
-    const messagesDiv = document.getElementById('messages');
-
-    let currentGroup = "";
-
-    document.getElementById('create-btn').onclick = () => {
-      const name = prompt("Enter group name:");
-      const password = prompt("Enter password:");
-      if (name && password) {
-        set(ref(db, `groups/${name}`), { password });
-        enterChat(name);
-      }
-    };
-
-    document.getElementById('join-btn').onclick = async () => {
-      const name = prompt("Enter group name:");
-      const password = prompt("Enter password:");
-      if (name && password) {
-        const snapshot = await get(child(ref(db), `groups/${name}`));
-        if (snapshot.exists() && snapshot.val().password === password) {
-          enterChat(name);
-        } else {
-          alert("No group exists with that name and password.");
-        }
-      }
-    };
-
-    function enterChat(groupName) {
-      currentGroup = groupName;
-      groupForm.style.display = 'none';
-      chatSection.style.display = 'flex';
-      const groupRef = ref(db, `messages/${groupName}`);
-      onChildAdded(groupRef, (data) => {
-        const msg = document.createElement('div');
-        msg.className = 'message';
-        msg.textContent = data.val();
-        messagesDiv.appendChild(msg);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      });
-    }
-
-    document.getElementById('send-btn').onclick = () => {
-      const input = document.getElementById('msg-input');
-      const text = input.value.trim();
-      if (text && currentGroup) {
-        const groupRef = ref(db, `messages/${currentGroup}`);
-        push(groupRef, text);
-        input.value = "";
-      }
-    };
-    document.getElementById("leaveGroupBtn").addEventListener("click", () => {
-  localStorage.removeItem("groupName");
-  localStorage.removeItem("groupPassword");
-  location.reload(); // Refresh page to go back to main screen
-});
-
-  </script>
 </head>
 <body>
-  <header>
-    <h1>ThunderChat</h1>
-    <p>Create or Join a Group</p>
-  </header>
-  <div id="group-form">
-    <button id="create-btn">Create Group</button>
-    <button id="join-btn">Join Group</button>
-  </div>
-  <div id="chat-section" class="chat-box">
-    <main id="messages"></main>
-    <button id="leaveGroupBtn" class="leave-btn">Leave Group</button>
 
-    <footer>
-      <input id="msg-input" type="text" placeholder="Type a message..." />
-      <button id="send-btn">Send</button>
-    </footer>
-  </div>
-  <script>
-    // Show group form on load
-    document.getElementById('group-form').style.display = 'flex';
-  </script>
+<div id="chatContainer"></div>
+
+<form id="messageForm">
+  <input type="text" id="messageInput" placeholder="Type a message" required />
+  <button type="submit" id="sendBtn">Send</button>
+</form>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
+    authDomain: "thunderboundthunderchat.firebaseapp.com",
+    databaseURL: "https://thunderboundthunderchat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "thunderboundthunderchat",
+    storageBucket: "thunderboundthunderchat.appspot.com",
+    messagingSenderId: "79690962383",
+    appId: "1:79690962383:web:fecf12881a13a4fdf22eba"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const username = localStorage.getItem("username") || prompt("Enter your username:");
+  localStorage.setItem("username", username);
+
+  const groupName = localStorage.getItem("groupName");
+  const groupPassword = localStorage.getItem("groupPassword");
+
+  const messageRef = ref(db, `groups/${groupName}_${groupPassword}`);
+
+  const messageForm = document.getElementById("messageForm");
+  const messageInput = document.getElementById("messageInput");
+  const chatContainer = document.getElementById("chatContainer");
+
+  messageForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = messageInput.value.trim();
+    if (text !== "") {
+      push(messageRef, {
+        username: username,
+        text: text,
+        timestamp: Date.now()
+      });
+      messageInput.value = "";
+    }
+  });
+
+  onChildAdded(messageRef, (snapshot) => {
+    const data = snapshot.val();
+    const messageElement = document.createElement("div");
+    const userClass = data.username === username ? "my-message" : "other-message";
+
+    messageElement.classList.add("message", userClass);
+    messageElement.innerHTML = `
+      <div class="username">${data.username}</div>
+      <div>${data.text}</div>
+    `;
+    chatContainer.appendChild(messageElement);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  });
+</script>
+
 </body>
 </html>
