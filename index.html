@@ -317,8 +317,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* Section Containers (Auth, Groups, Contacts, Settings, Posts) */
-        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section {
+        /* Section Containers (Auth, Groups, Contacts, Settings, Posts, Welcome) */
+        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
             display: none; /* Controlled by JS */
             flex-direction: column;
             align-items: center;
@@ -414,7 +414,7 @@
         }
 
         /* Group/Contact Options & Lists */
-        .group-options h2, .contacts-list h2, .posts-section h2 {
+        .group-options h2, .contacts-list h2, .posts-section h2, .welcome-section h2 {
             font-size: 2.2em; /* Larger headings */
             margin-bottom: 1.5em;
             color: var(--color-cyan-dark); /* Darker cyan */
@@ -1027,7 +1027,95 @@
             margin-top: 1.5em;
             align-self: center; /* Center the button */
         }
+
+        .emoji-input-group {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+            margin-top: 0.5em;
+        }
+
+        .emoji-input-group input {
+            flex-grow: 1;
+        }
+
+        .emoji-input-group button {
+            width: auto;
+            padding: 0.5em 1em;
+            font-size: 1.2em;
+            border-radius: 10px;
+            box-shadow: none;
+            background: var(--color-border-light);
+            color: var(--color-text-primary);
+        }
+        .emoji-input-group button:hover {
+            background: var(--color-cyan-light);
+        }
+
+        .template-selector {
+            margin-top: 1.5em;
+            margin-bottom: 1.5em;
+        }
+
+        .template-selector select {
+            width: 100%;
+            padding: 1em;
+            border-radius: 15px;
+            border: 1px solid var(--color-input-border);
+            background-color: var(--color-white);
+            color: var(--color-text-primary);
+            font-size: 1.05em;
+        }
         
+        /* Welcome Section Specific Styles */
+        .welcome-section {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .welcome-section p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 1.5em;
+            color: var(--color-text-primary);
+        }
+
+        .welcome-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 2em 0;
+            text-align: left;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .welcome-section li {
+            background: var(--color-light-blue-bg);
+            padding: 1em 1.5em;
+            border-radius: 15px;
+            margin-bottom: 1em;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--color-border-light);
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .welcome-section li strong {
+            color: var(--color-cyan-dark);
+            font-size: 1.1em;
+        }
+
+        .welcome-section .get-started-btn {
+            margin-top: 2em;
+            padding: 1em 2em;
+            font-size: 1.2em;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .post-item {
@@ -1063,6 +1151,15 @@
             .create-post-content h3 {
                 font-size: 1.5em;
             }
+            .welcome-section h2 {
+                font-size: 1.8em;
+            }
+            .welcome-section p {
+                font-size: 1em;
+            }
+            .welcome-section li {
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -1075,7 +1172,7 @@
     <header>
         <h1>ThunderChat</h1>
         <div class="header-tabs">
-            <button id="groups-tab" class="tab-btn active">Groups</button>
+            <button id="welcome-tab" class="tab-btn active">Welcome</button> <button id="groups-tab" class="tab-btn">Groups</button>
             <button id="contacts-tab" class="tab-btn">Contacts</button>
             <button id="posts-tab" class="tab-btn">Posts</button>
             <button id="settings-tab" class="tab-btn">Settings</button>
@@ -1113,6 +1210,18 @@
                 <button id="register-btn">Register</button>
                 <div id="toggle-to-login" class="toggle-form">Already have an account? Login</div>
             </div>
+        </div>
+
+        <div id="welcome-section" class="welcome-section"> <h2>Welcome to ThunderChat! ⚡</h2>
+            <p>Your all-in-one platform for seamless communication and community engagement. Connect with friends, family, and new people through secure group chats, private messages, and engaging community posts.</p>
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Groups:</strong> Create or join private and public groups to chat with multiple people.</li>
+                <li><strong>Contacts:</strong> Easily add and manage your contacts for one-on-one private conversations.</li>
+                <li><strong>Posts:</strong> Share images and text with the community, like and comment on others' posts, and discover new content in "New" and "Trending" feeds.</li>
+                <li><strong>Settings:</strong> Customize your profile, update your status, change your avatar, and switch between light and dark themes.</li>
+            </ul>
+            <button id="get-started-btn" class="get-started-btn">Get Started!</button>
         </div>
 
         <div id="group-options" class="group-options">
@@ -1261,13 +1370,27 @@
         <div class="create-post-content">
             <span id="close-create-post-modal" class="close-alert-btn">&times;</span>
             <h3>Create New Post</h3>
+            <div class="form-group template-selector">
+                <label for="post-template-select">Choose a Template</label>
+                <select id="post-template-select">
+                    <option value="">-- Select a template --</option>
+                    <option value="announcement">📢 Announcement</option>
+                    <option value="inspiration">✨ Daily Inspiration</option>
+                    <option value="question">❓ Question of the Day</option>
+                    <option value="sale">💰 Item for Sale</option>
+                </select>
+            </div>
             <div class="form-group">
-                <label for="post-image-url">Image URL</label>
+                <label for="post-image-url">Image URL (Optional)</label>
                 <input type="text" id="post-image-url" placeholder="Enter image URL" />
             </div>
             <div class="form-group">
-                <label for="post-description">Description</label>
+                <label for="post-description">Post Content</label>
                 <textarea id="post-description" placeholder="What's on your mind?"></textarea>
+                <div class="emoji-input-group">
+                    <input type="text" id="emoji-input" placeholder="Type emoji (e.g., 😊)" maxlength="2" />
+                    <button id="add-emoji-btn">Add Emoji</button>
+                </div>
             </div>
             <button id="submit-post-btn">Post It! 🚀</button>
         </div>
@@ -1323,11 +1446,12 @@
         const authSection = document.getElementById('auth-section');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
+        const welcomeSection = document.getElementById('welcome-section'); // New
         const groupOptions = document.getElementById('group-options');
         const chatSection = document.getElementById('chat-section');
         const contactsSection = document.getElementById('contacts-section');
         const privateChatSection = document.getElementById('private-chat-section');
-        const postsSection = document.getElementById('posts-section'); // New
+        const postsSection = document.getElementById('posts-section'); 
         const settingsSection = document.getElementById('settings-section');
         const messagesDiv = document.getElementById('messages');
         const privateMessagesDiv = document.getElementById('private-messages');
@@ -1337,10 +1461,11 @@
         const joinedGroupsList = document.getElementById('joined-groups-list');
         const groupsCount = document.getElementById('groups-count');
         const contactsList = document.getElementById('contacts-list');
-        const postsContainer = document.getElementById('posts-container'); // New
+        const postsContainer = document.getElementById('posts-container'); 
+        const welcomeTab = document.getElementById('welcome-tab'); // New
         const groupsTab = document.getElementById('groups-tab');
         const contactsTab = document.getElementById('contacts-tab');
-        const postsTab = document.getElementById('posts-tab'); // New
+        const postsTab = document.getElementById('posts-tab'); 
         const settingsTab = document.getElementById('settings-tab');
         const groupSettingsMenu = document.getElementById('group-settings-menu');
         const closeGroupSettings = document.getElementById('close-group-settings');
@@ -1388,6 +1513,12 @@
         const postImageUrlInput = document.getElementById('post-image-url');
         const postDescriptionInput = document.getElementById('post-description');
         const submitPostBtn = document.getElementById('submit-post-btn');
+        const postTemplateSelect = document.getElementById('post-template-select'); // New
+        const emojiInput = document.getElementById('emoji-input'); // New
+        const addEmojiBtn = document.getElementById('add-emoji-btn'); // New
+
+        // Welcome section elements
+        const getStartedBtn = document.getElementById('get-started-btn'); // New
 
 
         let currentGroup = "";
@@ -1409,6 +1540,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadingScreen.style.display = 'none';
             loadUserTheme(); // Load theme as soon as possible
+            showSection('welcome-section'); // Show welcome section by default
         });
 
         // Custom Alert Modal functions
@@ -1554,7 +1686,9 @@
                     hideLoading();
                     
                     authSection.style.display = 'none';
-                    groupOptions.style.display = 'flex'; // Show groups by default
+                    welcomeSection.style.display = 'none'; // Hide welcome section after login
+                    groupOptions.style.display = 'flex'; // Show groups by default after login
+                    groupsTab.classList.add('active'); // Set groups tab as active
                     usernameDisplay.textContent = currentUser.username;
                     
                     // Initialize sections after login
@@ -1571,14 +1705,15 @@
                 }
             } else {
                 hideLoading();
-                authSection.style.display = 'flex';
+                authSection.style.display = 'flex'; // Show auth section
                 loginForm.style.display = 'block';
                 registerForm.style.display = 'none';
+                welcomeSection.style.display = 'none'; // Hide welcome section on logout
                 groupOptions.style.display = 'none';
                 chatSection.style.display = 'none';
                 contactsSection.style.display = 'none';
                 privateChatSection.style.display = 'none';
-                postsSection.style.display = 'none'; // Hide posts section on logout
+                postsSection.style.display = 'none'; 
                 settingsSection.style.display = 'none';
                 // Reset current user info on logout
                 currentUser = null;
@@ -1587,13 +1722,14 @@
                 userContacts = [];
                 allPosts = []; // Clear posts on logout
                 applyTheme('light'); // Revert to default theme on logout
+                showSection('welcome-section'); // Show welcome section again on logout
             }
         });
 
 
         // Tab switching
         function showSection(sectionId) {
-            const sections = [groupOptions, chatSection, contactsSection, privateChatSection, postsSection, settingsSection];
+            const sections = [welcomeSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, settingsSection];
             sections.forEach(section => {
                 if (section.id === sectionId) {
                     section.style.display = 'flex';
@@ -1603,11 +1739,13 @@
             });
 
             // Update active tab button
-            const tabs = [groupsTab, contactsTab, postsTab, settingsTab];
+            const tabs = [welcomeTab, groupsTab, contactsTab, postsTab, settingsTab];
             tabs.forEach(tab => {
                 if (tab.id.includes(sectionId.replace('-section', ''))) { // Simple mapping
                     tab.classList.add('active');
                 } else if (tab.id.includes('groups') && sectionId === 'group-options') {
+                    tab.classList.add('active');
+                } else if (tab.id.includes('welcome') && sectionId === 'welcome-section') { // Handle welcome tab
                     tab.classList.add('active');
                 } else {
                     tab.classList.remove('active');
@@ -1615,25 +1753,37 @@
             });
         }
 
+        welcomeTab.addEventListener('click', () => { // New Welcome Tab Listener
+            showSection('welcome-section');
+        });
+
+        getStartedBtn.addEventListener('click', () => { // Get Started button on Welcome page
+            if (currentUser) {
+                showSection('group-options');
+            } else {
+                showSection('auth-section');
+            }
+        });
+
         groupsTab.addEventListener('click', () => {
-            if (!currentUser) return;
+            if (!currentUser) { showAlert("Please log in to access groups."); return; }
             showSection('group-options');
         });
 
         contactsTab.addEventListener('click', () => {
-            if (!currentUser) return;
+            if (!currentUser) { showAlert("Please log in to access contacts."); return; }
             showSection('contacts-section');
             loadUserContacts(); // Reload contacts when tab is clicked
         });
 
-        postsTab.addEventListener('click', () => { // New Posts Tab
-            if (!currentUser) return;
+        postsTab.addEventListener('click', () => { 
+            if (!currentUser) { showAlert("Please log in to access posts."); return; }
             showSection('posts-section');
             loadPosts(); // Load posts when tab is clicked
         });
 
         settingsTab.addEventListener('click', () => {
-            if (!currentUser) return;
+            if (!currentUser) { showAlert("Please log in to access settings."); return; }
             showSection('settings-section');
             loadUserProfile();
         });
@@ -2262,11 +2412,49 @@
             createPostModal.style.display = 'flex';
             postImageUrlInput.value = '';
             postDescriptionInput.value = '';
+            postTemplateSelect.value = ''; // Reset template selection
+            emojiInput.value = ''; // Reset emoji input
         });
 
         // Close Create Post Modal
         closeCreatePostModal.addEventListener('click', () => {
             createPostModal.style.display = 'none';
+        });
+
+        // Handle Template Selection
+        postTemplateSelect.addEventListener('change', () => {
+            const selectedTemplate = postTemplateSelect.value;
+            switch (selectedTemplate) {
+                case 'announcement':
+                    postImageUrlInput.value = 'https://placehold.co/600x300/00bcd4/ffffff?text=Announcement';
+                    postDescriptionInput.value = 'Important Announcement: [Your message here]';
+                    break;
+                case 'inspiration':
+                    postImageUrlInput.value = 'https://placehold.co/600x300/80deea/263238?text=Inspiration';
+                    postDescriptionInput.value = 'Daily Dose of Inspiration: "The only way to do great work is to love what you do." - Steve Jobs ✨';
+                    break;
+                case 'question':
+                    postImageUrlInput.value = 'https://placehold.co/600x300/e0f7fa/00838f?text=Question';
+                    postDescriptionInput.value = 'Question of the Day: What\'s your favorite book and why? 🤔';
+                    break;
+                case 'sale':
+                    postImageUrlInput.value = 'https://placehold.co/600x300/ffcc80/263238?text=Item+for+Sale';
+                    postDescriptionInput.value = 'For Sale: [Item Name] - [Price]. DM me for details! 💸';
+                    break;
+                default:
+                    postImageUrlInput.value = '';
+                    postDescriptionInput.value = '';
+                    break;
+            }
+        });
+
+        // Add Emoji to Post Description
+        addEmojiBtn.addEventListener('click', () => {
+            const emoji = emojiInput.value.trim();
+            if (emoji) {
+                postDescriptionInput.value += ` ${emoji}`; // Append emoji to description
+                emojiInput.value = ''; // Clear emoji input
+            }
         });
 
         // Submit New Post
