@@ -1881,7 +1881,6 @@
             child,
             update,
             onValue,
-            off, // Import off to detach listeners
             remove // Import remove for deleting posts
         } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
         import { 
@@ -2010,11 +2009,11 @@
         let userPosts = []; // Store only current user's posts for Posts Studio
         let editingPostId = null; // To keep track of the post being edited
 
-        // Listener references for cleanup
-        let currentGroupChatListener = null;
-        let currentPrivateChatListener = null;
-        let currentCommunityPostsListener = null; // Listener for all posts
-        let currentUserPostsListener = null; // Listener for user's own posts
+        // Listener references for cleanup - these will now store unsubscribe functions
+        let currentGroupChatUnsubscribe = null;
+        let currentPrivateChatUnsubscribe = null;
+        let currentCommunityPostsUnsubscribe = null;
+        let currentUserPostsUnsubscribe = null;
         let alertTimeoutId = null; // To manage alert auto-hide
 
         // Initialize the app
@@ -2395,7 +2394,7 @@
                 } else {
                     profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
                     profileAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
-                    div.style.color = 'white';
+                    profileAvatarPreview.style.color = 'white';
                 }
             }
         }
@@ -2567,16 +2566,16 @@
             privateMessagesDiv.innerHTML = '';
             
             // Detach previous listener if exists
-            if (currentPrivateChatListener) {
-                off(currentPrivateChatListener);
-                currentPrivateChatListener = null;
+            if (currentPrivateChatUnsubscribe) {
+                currentPrivateChatUnsubscribe(); // Call the unsubscribe function
+                currentPrivateChatUnsubscribe = null;
             }
 
             const chatId = [currentUser.uid, contact.id].sort().join('_');
             const chatRef = ref(db, `privateMessages/${chatId}`);
             
             // Attach new listener and store its reference
-            currentPrivateChatListener = onChildAdded(chatRef, async (data) => {
+            currentPrivateChatUnsubscribe = onChildAdded(chatRef, async (data) => {
                 const msgData = data.val();
                 const msg = document.createElement('div');
                 msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
@@ -2610,9 +2609,9 @@
             showSection('contacts-section'); // Use showSection
             currentContact = "";
             // Detach the listener when leaving private chat
-            if (currentPrivateChatListener) {
-                off(currentPrivateChatListener);
-                currentPrivateChatListener = null;
+            if (currentPrivateChatUnsubscribe) {
+                currentPrivateChatUnsubscribe(); // Call the unsubscribe function
+                currentPrivateChatUnsubscribe = null;
             }
         });
 
@@ -2827,15 +2826,15 @@
             messagesDiv.innerHTML = ''; // Clear previous messages
             
             // Detach previous listener if exists
-            if (currentGroupChatListener) {
-                off(currentGroupChatListener);
-                currentGroupChatListener = null;
+            if (currentGroupChatUnsubscribe) {
+                currentGroupChatUnsubscribe(); // Call the unsubscribe function
+                currentGroupChatUnsubscribe = null;
             }
 
             const messagesRef = ref(db, `groupMessages/${groupId}`);
             
             // Attach new listener and store its reference
-            currentGroupChatListener = onChildAdded(messagesRef, async (data) => {
+            currentGroupChatUnsubscribe = onChildAdded(messagesRef, async (data) => {
                 const msgData = data.val();
                 const msg = document.createElement('div');
                 msg.className = `message ${msgData.senderId === currentUser?.uid ? 'sent' : 'received'}`;
@@ -2868,9 +2867,9 @@
             showSection('group-options'); // Use showSection
             currentGroup = "";
             // Detach the listener when leaving group chat
-            if (currentGroupChatListener) {
-                off(currentGroupChatListener);
-                currentGroupChatListener = null;
+            if (currentGroupChatUnsubscribe) {
+                currentGroupChatUnsubscribe(); // Call the unsubscribe function
+                currentGroupChatUnsubscribe = null;
             }
         });
 
@@ -3006,13 +3005,13 @@
             if (!currentUser) return;
 
             // Detach previous listener if exists
-            if (currentCommunityPostsListener) {
-                off(currentCommunityPostsListener);
-                currentCommunityPostsListener = null;
+            if (currentCommunityPostsUnsubscribe) {
+                currentCommunityPostsUnsubscribe();
+                currentCommunityPostsUnsubscribe = null;
             }
 
             const postsRef = ref(db, 'posts');
-            currentCommunityPostsListener = onValue(postsRef, (snapshot) => {
+            currentCommunityPostsUnsubscribe = onValue(postsRef, (snapshot) => {
                 allPosts = [];
                 snapshot.forEach((childSnapshot) => {
                     allPosts.push({
@@ -3234,13 +3233,13 @@
             if (!currentUser) return;
 
             // Detach previous listener if exists
-            if (currentUserPostsListener) {
-                off(currentUserPostsListener);
-                currentUserPostsListener = null;
+            if (currentUserPostsUnsubscribe) {
+                currentUserPostsUnsubscribe();
+                currentUserPostsUnsubscribe = null;
             }
 
             const postsRef = ref(db, 'posts');
-            currentUserPostsListener = onValue(postsRef, async (snapshot) => {
+            currentUserPostsUnsubscribe = onValue(postsRef, async (snapshot) => {
                 userPosts = [];
                 let totalLikes = 0;
                 let totalComments = 0;
@@ -3358,7 +3357,7 @@
                 div.style.fontSize = '1.5em';
             });
 
-            // Attach event listeners for edit, delete, pin, and share buttons
+            // Attach event listeners for edit and delete buttons
             document.querySelectorAll('.user-post-item .edit-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const postId = e.currentTarget.getAttribute('data-post-id');
