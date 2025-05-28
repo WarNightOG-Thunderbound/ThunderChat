@@ -2828,7 +2828,7 @@
                         ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post Image" class="post-image" onerror="this.onerror=null;this.style.display='none';">` : ''}
                         <p class="post-description">${post.description || ''}</p>
                         <div class="post-actions">
-                            <button class="like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">❤️</button>
+                            <button class="like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">Like</button>
                             <span class="like-count">${likeCount} Likes</span>
                         </div>
                         <div class="comment-section">
@@ -2966,10 +2966,8 @@
                 return `${diffDays}d ago`;
             } else if (diffWeeks < 4) {
                 return `${diffWeeks}w ago`;
-            } else if (diffMonths < 12) {
-                return `${diffMonths}mo ago`;
             } else {
-                return `${diffYears}y ago`;
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             }
         }
 
