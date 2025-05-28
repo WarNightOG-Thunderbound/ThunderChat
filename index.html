@@ -907,6 +907,8 @@
             transition: color 0.2s, transform 0.2s;
             padding: 0.3em 0.6em; /* Reduced padding */
             border-radius: 10px;
+            width: auto; /* Allow button to shrink to content */
+            flex-shrink: 0; /* Prevent button from growing */
         }
 
         .like-btn:hover {
@@ -2158,7 +2160,7 @@
                 } else {
                     profileAvatarPreview.innerHTML = `<div>${userData.username?.charAt(0).toUpperCase() || 'U'}</div>`;
                     profileAvatarPreview.style.backgroundColor = 'var(--color-cyan-primary)'; // Fallback background
-                    profileAvatarPreview.style.color = 'white';
+                    div.style.color = 'white';
                 }
             }
         }
@@ -2733,6 +2735,13 @@
                 return;
             }
 
+            // New: Post content limit
+            const MAX_POST_CHARS = 7500; // Approximately 1500 words
+            if (description.length > MAX_POST_CHARS) {
+                showAlert(`Post content cannot exceed ${MAX_POST_CHARS} characters.`);
+                return;
+            }
+
             showLoading('Creating post...');
             try {
                 const newPostRef = push(ref(db, 'posts'));
@@ -2816,6 +2825,18 @@
                     </div>
                 `).join('') : '';
 
+                const originalDescription = post.description || '';
+                const TRUNCATE_LENGTH = 300; // Characters for "show less"
+                let displayDescription = originalDescription;
+                let showMoreLessButton = '';
+
+                if (originalDescription.length > TRUNCATE_LENGTH) {
+                    displayDescription = originalDescription.substring(0, TRUNCATE_LENGTH) + '...';
+                    showMoreLessButton = `
+                        <button class="show-more-less-btn secondary" data-post-id="${post.id}" data-action="show-more">Show More</button>
+                    `;
+                }
+
                 return `
                     <div class="post-item" data-post-id="${post.id}">
                         <div class="post-header">
@@ -2828,7 +2849,10 @@
                             <div class="post-timestamp">${formatTime(post.timestamp)}</div>
                         </div>
                         ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post Image" class="post-image" onerror="this.onerror=null;this.style.display='none';">` : ''}
-                        <p class="post-description">${post.description || ''}</p>
+                        <p class="post-description" data-full-text="${originalDescription}" data-truncated-text="${displayDescription}">
+                            ${displayDescription}
+                        </p>
+                        ${showMoreLessButton}
                         <div class="post-actions">
                             <button class="like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">Like</button>
                             <span class="like-count">${likeCount} Likes</span>
@@ -2871,6 +2895,13 @@
                         addComment(postId, e.currentTarget.value);
                         e.currentTarget.value = '';
                     }
+                });
+            });
+
+            document.querySelectorAll('.show-more-less-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    togglePostDescription(postId, e.currentTarget);
                 });
             });
 
@@ -2928,6 +2959,25 @@
             // loadPosts() will automatically re-render with new comment
         }
 
+        // Toggle Post Description (Show More/Less)
+        function togglePostDescription(postId, buttonElement) {
+            const postItem = document.querySelector(`.post-item[data-post-id="${postId}"]`);
+            const descriptionElement = postItem.querySelector('.post-description');
+            
+            const fullText = descriptionElement.getAttribute('data-full-text');
+            const truncatedText = descriptionElement.getAttribute('data-truncated-text');
+
+            if (buttonElement.getAttribute('data-action') === 'show-more') {
+                descriptionElement.textContent = fullText;
+                buttonElement.textContent = 'Show Less';
+                buttonElement.setAttribute('data-action', 'show-less');
+            } else {
+                descriptionElement.textContent = truncatedText;
+                buttonElement.textContent = 'Show More';
+                buttonElement.setAttribute('data-action', 'show-more');
+            }
+        }
+
         // Event listeners for post categories
         newPostsBtn.addEventListener('click', () => {
             currentPostCategory = 'new';
@@ -2972,7 +3022,6 @@
                 return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             }
         }
-
         function showLoading(message = 'Loading...') {
             loadingScreen.style.display = 'flex';
             loadingScreen.querySelector('.loading-text').textContent = message;
