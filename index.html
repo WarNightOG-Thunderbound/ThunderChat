@@ -155,7 +155,7 @@
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 2em; /* Increased padding */
+            padding: 1em; /* Optimized padding for smaller screens */
             width: 100%;
             display: flex; /* Use flex for centering content */
             justify-content: center;
@@ -290,7 +290,8 @@
             flex-shrink: 0;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            max-width: 300px; /* Default max-width for buttons */
+            width: 100%; /* Ensures buttons take full available width in their container */
+            max-width: 250px; /* Optimized max-width for mobile comfort */
         }
 
         button:hover {
@@ -323,9 +324,9 @@
             display: none; /* Controlled by JS */
             flex-direction: column;
             align-items: center;
-            padding: 3em; /* Very generous padding */
+            padding: 1.5em; /* Optimized padding for mobile */
             width: 100%; /* Full width on mobile */
-            max-width: 650px; /* Wider containers on desktop */
+            max-width: 100%; /* Ensure full width on smaller screens */
             margin: 2em auto; /* More vertical margin */
             background: var(--color-white); /* Use CSS variable */
             border-radius: 25px; /* Very rounded container */
@@ -426,9 +427,10 @@
         .group-options button, .contacts-list button, .posts-section button, .posts-studio-section button {
             padding: 1.3em; /* More padding */
             margin: 0.8em 0; /* More margin */
-            max-width: 300px; /* Adjusted max-width for these buttons */
+            max-width: 280px; /* Optimized max-width for mobile */
             border-radius: 18px; /* More rounded */
             font-size: 1.1em;
+            width: 100%; /* Ensure they fill their container */
         }
 
         .loading-screen {
@@ -815,19 +817,22 @@
 
         .post-categories {
             display: flex;
+            flex-direction: row; /* Default: horizontal for wider screens */
             justify-content: center;
             gap: 1em;
             margin-top: 1.5em;
             margin-bottom: 2em;
             width: 100%;
+            flex-wrap: wrap; /* Important: Allows wrapping if space is tight */
         }
 
         .post-categories button {
-            flex-grow: 1;
-            max-width: 180px;
+            flex-grow: 1; /* Allows buttons to grow */
+            max-width: 180px; /* Max width when in a row for wider screens */
             font-size: 1em;
             padding: 0.8em 1.5em;
             border-radius: 25px;
+            box-sizing: border-box; /* Essential to include padding/border in width */
         }
 
         .post-categories button.active {
@@ -953,8 +958,8 @@
             text-transform: none;
             letter-spacing: normal;
             box-shadow: none;
-            flex-shrink: 0; /* Prevent button from growing */
-            width: auto; /* Allow button to shrink to content */
+            flex-shrink: 1; /* Allow button to shrink if needed */
+            min-width: 50px; /* Ensure it doesn't get too small */
         }
 
         .comment-list {
@@ -1268,6 +1273,26 @@
 
 
         /* Responsive adjustments */
+        @media (min-width: 600px) { /* Restore larger padding for tablets and desktops */
+            main {
+                padding: 2em;
+            }
+        }
+
+        @media (min-width: 480px) { /* Slightly more padding for medium-sized phones */
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section,
+            .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
+                padding: 2em;
+            }
+        }
+
+        @media (min-width: 650px) { /* Apply wider max-width on larger screens */
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section,
+            .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
+                max-width: 650px;
+            }
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2.5em;
@@ -1280,13 +1305,8 @@
                 font-size: 1em;
                 max-width: 150px;
             }
-            main {
-                padding: 1em;
-            }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
-                padding: 2em;
-                margin: 1em auto;
-            }
+            /* Main padding already adjusted above for mobile */
+            /* Section padding already adjusted above for mobile */
             .group-options button, .contacts-list button, .posts-section button, .posts-studio-section button {
                 padding: 1em;
                 margin: 0.6em 0;
@@ -1385,6 +1405,21 @@
             }
         }
 
+        @media (max-width: 600px) { /* Styles for screens up to 600px wide (most mobiles) */
+            .post-categories {
+                flex-direction: column; /* Stack buttons vertically */
+                align-items: center; /* Center the stacked buttons */
+                gap: 0.8em; /* Adjusted gap for vertical stacking */
+            }
+
+            .post-categories button {
+                width: 90%; /* Take up most of the screen width when stacked */
+                max-width: 300px; /* Limit max-width even when stacked for aesthetics */
+                padding: 1em; /* Slightly more padding for stacked buttons */
+                font-size: 1.1em; /* Slightly larger text for stacked buttons */
+            }
+        }
+
         @media (max-width: 480px) {
             header {
                 padding: 1em 0.5em;
@@ -1402,13 +1437,8 @@
                 font-size: 0.9em;
                 max-width: 100%;
             }
-            main {
-                padding: 0.5em;
-            }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
-                padding: 1.5em;
-                margin: 0.5em auto;
-            }
+            /* Main padding already adjusted above for mobile */
+            /* Section padding already adjusted above for mobile */
             .form-group {
                 margin-bottom: 1em;
             }
@@ -1467,14 +1497,19 @@
             footer {
                 padding: 0.8em;
                 gap: 0.5em;
+                flex-direction: column; /* Stack input and button */
             }
             #msg-input, #private-msg-input {
                 padding: 0.7em;
                 font-size: 0.85em;
+                width: 100%; /* Take full width when stacked */
+                max-width: unset; /* Remove max-width when stacked */
             }
             #send-btn, #send-private-btn {
                 padding: 0.7em 1em;
                 font-size: 0.85em;
+                width: 100%; /* Take full width when stacked */
+                max-width: unset; /* Remove max-width when stacked */
             }
             .chat-header h2, .private-chat-header h2, .posts-studio-header h2 {
                 font-size: 1.2em;
@@ -1542,6 +1577,11 @@
             .comment-input-group input, .comment-input-group button {
                 font-size: 0.8em;
                 padding: 0.6em;
+                width: 100%; /* Take full width when stacked */
+                max-width: unset; /* Remove max-width when stacked */
+            }
+            .comment-input-group {
+                flex-direction: column; /* Stack input and button */
             }
             .comment-item {
                 font-size: 0.8em;
@@ -1578,6 +1618,21 @@
             .welcome-section .get-started-btn {
                 padding: 0.7em 1.5em;
                 font-size: 1em;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .tab-btn {
+                padding: 0.7em 1.2em; /* Slightly reduced padding */
+                font-size: 0.9em; /* Slightly reduced font size */
+            }
+            .comment-input-group {
+                flex-direction: column; /* Stack input and button */
+            }
+            .comment-input-group input,
+            .comment-input-group button {
+                width: 100%; /* Each takes full width when stacked */
+                max-width: unset; /* Remove max-width when stacked */
             }
         }
     </style>
