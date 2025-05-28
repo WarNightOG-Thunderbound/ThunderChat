@@ -318,7 +318,7 @@
         }
 
         /* Section Containers (Auth, Groups, Contacts, Settings, Posts, Welcome) */
-        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
+        .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
             display: none; /* Controlled by JS */
             flex-direction: column;
             align-items: center;
@@ -414,7 +414,7 @@
         }
 
         /* Group/Contact Options & Lists */
-        .group-options h2, .contacts-list h2, .posts-section h2, .welcome-section h2 {
+        .group-options h2, .contacts-list h2, .posts-section h2, .welcome-section h2, .posts-studio-section h2 {
             font-size: 2.2em; /* Larger headings */
             margin-bottom: 1.5em;
             color: var(--color-cyan-dark); /* Darker cyan */
@@ -422,7 +422,7 @@
             font-weight: 800;
         }
 
-        .group-options button, .contacts-list button, .posts-section button {
+        .group-options button, .contacts-list button, .posts-section button, .posts-studio-section button {
             padding: 1.3em; /* More padding */
             margin: 0.8em 0; /* More margin */
             max-width: 400px; /* Wider buttons */
@@ -467,7 +467,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
-        .groups-list, .contacts-container, .posts-container {
+        .groups-list, .contacts-container, .posts-container, .user-posts-list {
             width: 100%;
             max-width: 550px; /* Wider lists */
             margin: 2em auto;
@@ -478,7 +478,7 @@
             border: 1px solid var(--color-border-light); /* Use CSS variable */
         }
 
-        .groups-list h3, .contacts-container h3, .posts-container h3 {
+        .groups-list h3, .contacts-container h3, .posts-container h3, .user-posts-list h3 {
             font-size: 1.5em;
             color: var(--color-cyan-dark); /* Darker cyan */
             margin-bottom: 1.2em;
@@ -557,7 +557,7 @@
             text-overflow: ellipsis;
         }
 
-        .no-groups, .no-contacts, .no-posts {
+        .no-groups, .no-contacts, .no-posts, .no-user-posts {
             text-align: center;
             color: var(--color-text-secondary); /* Use CSS variable */
             padding: 2em;
@@ -638,7 +638,7 @@
 
         .close-settings:hover {
             color: var(--color-text-primary); /* Darker on hover */
-            transform: rotate(180deg) scale(1.1); /* Full spin and scale */
+            transform: rotate(180deg);
         }
 
         .avatar-upload {
@@ -990,7 +990,7 @@
         }
 
         /* Create Post Modal */
-        #create-post-modal {
+        #create-post-modal, #edit-post-modal {
             display: none; /* Hidden by default */
             position: fixed;
             z-index: 2002;
@@ -1005,7 +1005,7 @@
             backdrop-filter: blur(8px);
         }
 
-        .create-post-content {
+        .create-post-content, .edit-post-content {
             background-color: var(--color-modal-bg);
             margin: auto;
             padding: 30px;
@@ -1020,18 +1020,18 @@
             gap: 1em; /* Space between form groups */
         }
 
-        .create-post-content h3 {
+        .create-post-content h3, .edit-post-content h3 {
             font-size: 2em;
             color: var(--color-cyan-dark);
             margin-bottom: 0.5em; /* Adjusted margin */
             text-align: center;
         }
 
-        .create-post-content .form-group {
+        .create-post-content .form-group, .edit-post-content .form-group {
             margin-bottom: 0; /* Remove default margin as gap handles it */
         }
 
-        .create-post-content button {
+        .create-post-content button, .edit-post-content button {
             width: auto;
             min-width: 150px;
             margin-top: 1em; /* Adjusted margin */
@@ -1126,6 +1126,115 @@
             font-size: 1.2em;
         }
 
+        /* Posts Studio Specific Styles */
+        .posts-studio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+            margin-bottom: 2em;
+            width: 100%;
+            max-width: 550px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .posts-studio-controls input,
+        .posts-studio-controls select {
+            flex-grow: 1;
+            min-width: 150px;
+            padding: 0.8em;
+            border-radius: 10px;
+            font-size: 0.95em;
+        }
+
+        .posts-studio-analytics {
+            background: var(--color-light-blue-bg);
+            padding: 1em;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 550px;
+            margin-top: 1em;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--color-border-light);
+            color: var(--color-text-primary);
+        }
+
+        .posts-studio-analytics p {
+            margin: 0.5em 0;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .posts-studio-analytics span {
+            color: var(--color-cyan-dark);
+            font-weight: 700;
+        }
+
+        .user-post-item {
+            background: var(--color-white);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px var(--shadow-light);
+            margin-bottom: 1em;
+            padding: 1em;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out forwards;
+            border: 1px solid var(--color-border-light);
+            position: relative; /* For action buttons */
+        }
+
+        .user-post-item .post-header {
+            margin-bottom: 0.8em;
+        }
+
+        .user-post-item .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 250px; /* Slightly smaller for studio view */
+            object-fit: contain;
+            border-radius: 15px;
+            margin-bottom: 0.8em;
+            border: 1px solid var(--color-border-light);
+        }
+
+        .user-post-item .post-description {
+            font-size: 0.95em;
+            margin-bottom: 1em;
+            line-height: 1.6;
+            color: var(--color-text-primary);
+            word-wrap: break-word;
+        }
+
+        .user-post-actions {
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            gap: 0.8em;
+            padding-top: 0.8em;
+            border-top: 1px solid var(--color-border-light);
+            margin-top: 1em;
+        }
+
+        .user-post-actions button {
+            padding: 0.6em 1.2em;
+            font-size: 0.9em;
+            border-radius: 12px;
+            text-transform: none;
+            letter-spacing: normal;
+            box-shadow: none;
+            flex-shrink: 0;
+            width: auto;
+        }
+
+        .user-post-actions .edit-btn {
+            background: var(--color-cyan-primary);
+            color: white;
+        }
+
+        .user-post-actions .delete-btn {
+            background: #ff4d4d; /* Red for delete */
+            color: white;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             header h1 {
@@ -1142,11 +1251,11 @@
             main {
                 padding: 1em;
             }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
                 padding: 2em;
                 margin: 1em auto;
             }
-            .group-options button, .contacts-list button, .posts-section button {
+            .group-options button, .contacts-list button, .posts-section button, .posts-studio-section button {
                 padding: 1em;
                 margin: 0.6em 0;
                 font-size: 1em;
@@ -1196,14 +1305,15 @@
                 padding: 12px 25px;
                 font-size: 1.1em;
             }
-            .create-post-content {
+            .create-post-content, .edit-post-content {
                 padding: 20px;
                 gap: 0.8em;
             }
-            .create-post-content h3 {
+            .create-post-content h3, .edit-post-content h3 {
                 font-size: 1.8em;
             }
-            .create-post-content input, .create-post-content textarea, .create-post-content select {
+            .create-post-content input, .create-post-content textarea, .create-post-content select,
+            .edit-post-content input, .edit-post-content textarea {
                 font-size: 0.95em;
                 padding: 0.8em;
             }
@@ -1228,6 +1338,18 @@
                 padding: 0.8em 1.8em;
                 font-size: 1.1em;
             }
+            .posts-studio-controls {
+                flex-direction: column;
+                max-width: 100%;
+            }
+            .posts-studio-controls input,
+            .posts-studio-controls select {
+                min-width: unset;
+            }
+            .user-post-actions button {
+                padding: 0.5em 1em;
+                font-size: 0.8em;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1250,7 +1372,7 @@
             main {
                 padding: 0.5em;
             }
-            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section, .posts-studio-section {
                 padding: 1.5em;
                 margin: 0.5em auto;
             }
@@ -1269,7 +1391,7 @@
                 padding: 1em;
                 font-size: 1em;
             }
-            .group-options button, .contacts-list button, .posts-section button {
+            .group-options button, .contacts-list button, .posts-section button, .posts-studio-section button {
                 padding: 0.8em;
                 margin: 0.5em 0;
                 font-size: 0.9em;
@@ -1389,14 +1511,15 @@
             .comment-item {
                 font-size: 0.8em;
             }
-            .create-post-content {
+            .create-post-content, .edit-post-content {
                 padding: 15px;
                 gap: 0.6em;
             }
-            .create-post-content h3 {
+            .create-post-content h3, .edit-post-content h3 {
                 font-size: 1.5em;
             }
-            .create-post-content input, .create-post-content textarea, .create-post-content select {
+            .create-post-content input, .create-post-content textarea, .create-post-content select,
+            .edit-post-content input, .edit-post-content textarea {
                 font-size: 0.85em;
                 padding: 0.7em;
             }
@@ -1437,7 +1560,7 @@
             <button id="groups-tab" class="tab-btn">Groups</button>
             <button id="contacts-tab" class="tab-btn">Contacts</button>
             <button id="posts-tab" class="tab-btn">Posts</button>
-            <button id="settings-tab" class="tab-btn">Settings</button>
+            <button id="posts-studio-tab" class="tab-btn">Posts Studio</button> <button id="settings-tab" class="tab-btn">Settings</button>
         </div>
     </header>
 
@@ -1552,6 +1675,27 @@
             </div>
         </div>
 
+        <div id="posts-studio-section" class="posts-studio-section"> <h2>Your Posts Studio</h2>
+            <div class="posts-studio-controls">
+                <input type="text" id="post-studio-search" placeholder="Search your posts..." />
+                <select id="post-studio-sort">
+                    <option value="newest">Sort by: Newest</option>
+                    <option value="oldest">Sort by: Oldest</option>
+                    <option value="most-likes">Sort by: Most Likes</option>
+                    <option value="most-comments">Sort by: Most Comments</option>
+                </select>
+            </div>
+            <div class="posts-studio-analytics">
+                <p>Total Posts: <span id="total-posts-count">0</span></p>
+                <p>Total Likes Received: <span id="total-likes-received">0</span></p>
+                <p>Total Comments Received: <span id="total-comments-received">0</span></p>
+            </div>
+            <div id="user-posts-list" class="user-posts-list">
+                <h3>Your Uploaded Posts</h3>
+                <div class="no-user-posts">You haven't uploaded any posts yet.</div>
+            </div>
+        </div>
+
         <div id="settings-section" class="settings-section">
             <h2>Your Profile</h2>
             
@@ -1659,6 +1803,25 @@
         </div>
     </div>
 
+    <div id="edit-post-modal" class="custom-alert-modal"> <div class="edit-post-content">
+            <span id="close-edit-post-modal" class="close-alert-btn">&times;</span>
+            <h3>Edit Post</h3>
+            <div class="form-group">
+                <label for="edit-post-image-url">Image URL (Optional)</label>
+                <input type="text" id="edit-post-image-url" placeholder="Enter image URL" />
+            </div>
+            <div class="form-group">
+                <label for="edit-post-description">Post Content</label>
+                <textarea id="edit-post-description" placeholder="Edit your post content"></textarea>
+                <div class="emoji-input-group">
+                    <input type="text" id="edit-emoji-input" placeholder="Type emoji (e.g., 😊)" maxlength="2" />
+                    <button id="add-edit-emoji-btn">Add Emoji</button>
+                </div>
+            </div>
+            <button id="save-edited-post-btn">Save Changes ✅</button>
+        </div>
+    </div>
+
     <div id="custom-alert-modal" class="custom-alert-modal">
         <div class="custom-alert-content">
             <span id="close-alert-btn" class="close-alert-btn">&times;</span>
@@ -1679,7 +1842,8 @@
             child,
             update,
             onValue,
-            off // Import off to detach listeners
+            off, // Import off to detach listeners
+            remove // Import remove for deleting posts
         } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
         import { 
             getAuth, 
@@ -1688,7 +1852,6 @@
             onAuthStateChanged,
             signOut
         } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        // No longer need getStorage, ref as storageRef, uploadBytes, getDownloadURL
 
         const firebaseConfig = {
             apiKey: "AIzaSyBD4bDQgVtMd9cwq9Hfdz54NYSBcQvPr1Y",
@@ -1709,12 +1872,13 @@
         const authSection = document.getElementById('auth-section');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
-        const welcomeSection = document.getElementById('welcome-section'); // New
+        const welcomeSection = document.getElementById('welcome-section');
         const groupOptions = document.getElementById('group-options');
         const chatSection = document.getElementById('chat-section');
         const contactsSection = document.getElementById('contacts-section');
         const privateChatSection = document.getElementById('private-chat-section');
         const postsSection = document.getElementById('posts-section'); 
+        const postsStudioSection = document.getElementById('posts-studio-section'); // New
         const settingsSection = document.getElementById('settings-section');
         const messagesDiv = document.getElementById('messages');
         const privateMessagesDiv = document.getElementById('private-messages');
@@ -1725,10 +1889,12 @@
         const groupsCount = document.getElementById('groups-count');
         const contactsList = document.getElementById('contacts-list');
         const postsContainer = document.getElementById('posts-container'); 
-        const welcomeTab = document.getElementById('welcome-tab'); // New
+        const userPostsList = document.getElementById('user-posts-list'); // New
+        const welcomeTab = document.getElementById('welcome-tab');
         const groupsTab = document.getElementById('groups-tab');
         const contactsTab = document.getElementById('contacts-tab');
         const postsTab = document.getElementById('posts-tab'); 
+        const postsStudioTab = document.getElementById('posts-studio-tab'); // New
         const settingsTab = document.getElementById('settings-tab');
         const groupSettingsMenu = document.getElementById('group-settings-menu');
         const closeGroupSettings = document.getElementById('close-group-settings');
@@ -1737,7 +1903,6 @@
         const profileAvatarPreview = document.getElementById('profile-avatar-preview');
         const groupAvatarPreview = document.getElementById('group-avatar-preview');
         
-        // New URL input fields
         const profileAvatarUrlInput = document.getElementById('profile-avatar-url');
         const groupAvatarUrlInput = document.getElementById('group-avatar-url');
 
@@ -1746,7 +1911,6 @@
         const logoutBtn = document.getElementById('logout-btn');
         const saveGroupSettingsBtn = document.getElementById('save-group-settings-btn');
 
-        // Auth specific elements
         const loginEmailInput = document.getElementById('login-email');
         const loginPasswordInput = document.getElementById('login-password');
         const loginBtn = document.getElementById('login-btn');
@@ -1757,17 +1921,14 @@
         const toggleToRegister = document.getElementById('toggle-to-register');
         const toggleToLogin = document.getElementById('toggle-to-login');
 
-        // Custom Alert Modal elements
         const customAlertModal = document.getElementById('custom-alert-modal');
         const customAlertMessage = document.getElementById('custom-alert-message');
         const customAlertOkBtn = document.getElementById('custom-alert-ok-btn');
         const closeAlertBtn = document.getElementById('close-alert-btn');
 
-        // Theme switcher elements
         const lightThemeBtn = document.getElementById('light-theme-btn');
         const darkThemeBtn = document.getElementById('dark-theme-btn');
 
-        // Posts specific elements
         const createPostBtn = document.getElementById('create-post-btn');
         const newPostsBtn = document.getElementById('new-posts-btn');
         const trendingPostsBtn = document.getElementById('trending-posts-btn');
@@ -1776,27 +1937,44 @@
         const postImageUrlInput = document.getElementById('post-image-url');
         const postDescriptionInput = document.getElementById('post-description');
         const submitPostBtn = document.getElementById('submit-post-btn');
-        const postTemplateSelect = document.getElementById('post-template-select'); // New
-        const emojiInput = document.getElementById('emoji-input'); // New
-        const addEmojiBtn = document.getElementById('add-emoji-btn'); // New
+        const postTemplateSelect = document.getElementById('post-template-select');
+        const emojiInput = document.getElementById('emoji-input');
+        const addEmojiBtn = document.getElementById('add-emoji-btn');
 
-        // Welcome section elements
-        const getStartedBtn = document.getElementById('get-started-btn'); // New
+        const getStartedBtn = document.getElementById('get-started-btn');
 
+        // New Posts Studio elements
+        const postStudioSearchInput = document.getElementById('post-studio-search');
+        const postStudioSortSelect = document.getElementById('post-studio-sort');
+        const totalPostsCountSpan = document.getElementById('total-posts-count');
+        const totalLikesReceivedSpan = document.getElementById('total-likes-received');
+        const totalCommentsReceivedSpan = document.getElementById('total-comments-received');
+
+        // New Edit Post Modal elements
+        const editPostModal = document.getElementById('edit-post-modal');
+        const closeEditPostModal = document.getElementById('close-edit-post-modal');
+        const editPostImageUrlInput = document.getElementById('edit-post-image-url');
+        const editPostDescriptionInput = document.getElementById('edit-post-description');
+        const editEmojiInput = document.getElementById('edit-emoji-input');
+        const addEditEmojiBtn = document.getElementById('add-edit-emoji-btn');
+        const saveEditedPostBtn = document.getElementById('save-edited-post-btn');
 
         let currentGroup = "";
         let currentContact = "";
-        let currentPostCategory = "new"; // Default post category
+        let currentPostCategory = "new"; // Default post category for community posts
         let currentUser = null;
         let userGroups = [];
         let userContacts = [];
         let userData = {}; // Stores additional user profile data from Realtime DB
-        let allPosts = []; // Store all posts for sorting
+        let allPosts = []; // Store all community posts for sorting
+        let userPosts = []; // Store only current user's posts for Posts Studio
+        let editingPostId = null; // To keep track of the post being edited
 
         // Listener references for cleanup
         let currentGroupChatListener = null;
         let currentPrivateChatListener = null;
-        let currentPostsListener = null; // New listener for posts
+        let currentCommunityPostsListener = null; // Listener for all posts
+        let currentUserPostsListener = null; // Listener for user's own posts
         let alertTimeoutId = null; // To manage alert auto-hide
 
         // Initialize the app
@@ -1957,7 +2135,8 @@
                     // Initialize sections after login
                     loadUserGroups();
                     loadUserContacts();
-                    loadPosts(); // Load posts after login
+                    loadPosts(); // Load community posts after login
+                    loadUserPostsForStudio(); // Load user's own posts for studio
                     loadUserProfile();
                     loadUserTheme(); // Re-load theme after user data is available
                 } else {
@@ -1977,13 +2156,15 @@
                 contactsSection.style.display = 'none';
                 privateChatSection.style.display = 'none';
                 postsSection.style.display = 'none'; 
+                postsStudioSection.style.display = 'none'; // Hide posts studio on logout
                 settingsSection.style.display = 'none';
                 // Reset current user info on logout
                 currentUser = null;
                 userData = {};
                 userGroups = [];
                 userContacts = [];
-                allPosts = []; // Clear posts on logout
+                allPosts = []; // Clear community posts on logout
+                userPosts = []; // Clear user's own posts on logout
                 applyTheme('light'); // Revert to default theme on logout
                 showSection('welcome-section'); // Show welcome section again on logout
             }
@@ -1992,7 +2173,7 @@
 
         // Tab switching
         function showSection(sectionId) {
-            const sections = [welcomeSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, settingsSection];
+            const sections = [welcomeSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, postsStudioSection, settingsSection];
             sections.forEach(section => {
                 if (section.id === sectionId) {
                     section.style.display = 'flex';
@@ -2002,7 +2183,7 @@
             });
 
             // Update active tab button
-            const tabs = [welcomeTab, groupsTab, contactsTab, postsTab, settingsTab];
+            const tabs = [welcomeTab, groupsTab, contactsTab, postsTab, postsStudioTab, settingsTab];
             tabs.forEach(tab => {
                 if (tab.id.includes(sectionId.replace('-section', ''))) { // Simple mapping
                     tab.classList.add('active');
@@ -2042,7 +2223,13 @@
         postsTab.addEventListener('click', () => { 
             if (!currentUser) { showAlert("Please log in to access posts."); return; }
             showSection('posts-section');
-            loadPosts(); // Load posts when tab is clicked
+            loadPosts(); // Load community posts when tab is clicked
+        });
+
+        postsStudioTab.addEventListener('click', () => { // New Posts Studio Tab Listener
+            if (!currentUser) { showAlert("Please log in to access Posts Studio."); return; }
+            showSection('posts-studio-section');
+            loadUserPostsForStudio(); // Load user's posts for studio
         });
 
         settingsTab.addEventListener('click', () => {
@@ -2664,7 +2851,7 @@
             }
         }
 
-        // --- Posts Functionality ---
+        // --- Community Posts Functionality ---
 
         // Open Create Post Modal
         createPostBtn.addEventListener('click', () => {
@@ -2742,7 +2929,6 @@
             }
 
             showLoading('Creating post...');
-            let success = false; // Flag to track success
             try {
                 const newPostRef = push(ref(db, 'posts'));
                 await set(newPostRef, {
@@ -2755,32 +2941,30 @@
                     likes: {},
                     comments: {}
                 });
-                success = true; // Set success flag
-            } catch (error) {
-                console.error("Error creating post:", error);
-                showAlert(`Failed to create post: ${error.message}`);
-            } finally {
                 hideLoading();
                 createPostModal.style.display = 'none';
-                if (success) { // Only show success alert if the flag is true
-                    showAlert('Post created successfully!');
-                    loadPosts(); // Reload posts only on confirmed success
-                }
+                showAlert('Post created successfully!');
+                loadPosts(); // Reload community posts to show the new one
+                loadUserPostsForStudio(); // Also reload user's posts for the studio
+            } catch (error) {
+                hideLoading();
+                console.error("Error creating post:", error);
+                showAlert(`Failed to create post: ${error.message}`);
             }
         });
 
-        // Load Posts
+        // Load Community Posts
         function loadPosts() {
             if (!currentUser) return;
 
             // Detach previous listener if exists
-            if (currentPostsListener) {
-                off(currentPostsListener);
-                currentPostsListener = null;
+            if (currentCommunityPostsListener) {
+                off(currentCommunityPostsListener);
+                currentCommunityPostsListener = null;
             }
 
             const postsRef = ref(db, 'posts');
-            currentPostsListener = onValue(postsRef, (snapshot) => {
+            currentCommunityPostsListener = onValue(postsRef, (snapshot) => {
                 allPosts = [];
                 snapshot.forEach((childSnapshot) => {
                     allPosts.push({
@@ -2788,16 +2972,16 @@
                         ...childSnapshot.val()
                     });
                 });
-                renderPosts(); // Render posts whenever data changes
+                renderPosts(); // Render community posts whenever data changes
             }, (error) => {
-                console.error("Error loading posts:", error);
-                showAlert("Failed to load posts.");
+                console.error("Error loading community posts:", error);
+                showAlert("Failed to load community posts.");
                 allPosts = [];
                 renderPosts();
             });
         }
 
-        // Render Posts
+        // Render Community Posts
         function renderPosts() {
             let postsToDisplay = [...allPosts]; // Create a copy to sort
 
@@ -2994,6 +3178,220 @@
             newPostsBtn.classList.remove('active');
             renderPosts();
         });
+
+        // --- Posts Studio Functionality ---
+
+        // Load User's Posts for Studio
+        function loadUserPostsForStudio() {
+            if (!currentUser) return;
+
+            // Detach previous listener if exists
+            if (currentUserPostsListener) {
+                off(currentUserPostsListener);
+                currentUserPostsListener = null;
+            }
+
+            const postsRef = ref(db, 'posts');
+            currentUserPostsListener = onValue(postsRef, (snapshot) => {
+                userPosts = [];
+                let totalLikes = 0;
+                let totalComments = 0;
+
+                snapshot.forEach((childSnapshot) => {
+                    const post = {
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    };
+                    if (post.userId === currentUser.uid) {
+                        userPosts.push(post);
+                        totalLikes += Object.keys(post.likes || {}).length;
+                        totalComments += Object.keys(post.comments || {}).length;
+                    }
+                });
+                
+                totalPostsCountSpan.textContent = userPosts.length;
+                totalLikesReceivedSpan.textContent = totalLikes;
+                totalCommentsReceivedSpan.textContent = totalComments;
+
+                renderUserPostsForStudio(); // Render user's posts whenever data changes
+            }, (error) => {
+                console.error("Error loading user posts for studio:", error);
+                showAlert("Failed to load your posts for the studio.");
+                userPosts = [];
+                renderUserPostsForStudio();
+            });
+        }
+
+        // Render User's Posts for Studio
+        function renderUserPostsForStudio() {
+            let postsToDisplay = [...userPosts]; // Create a copy to sort and filter
+
+            const searchTerm = postStudioSearchInput.value.toLowerCase();
+            if (searchTerm) {
+                postsToDisplay = postsToDisplay.filter(post => 
+                    (post.description && post.description.toLowerCase().includes(searchTerm)) ||
+                    (post.imageUrl && post.imageUrl.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            const sortOption = postStudioSortSelect.value;
+            if (sortOption === 'newest') {
+                postsToDisplay.sort((a, b) => b.timestamp - a.timestamp);
+            } else if (sortOption === 'oldest') {
+                postsToDisplay.sort((a, b) => a.timestamp - b.timestamp);
+            } else if (sortOption === 'most-likes') {
+                postsToDisplay.sort((a, b) => {
+                    const likesA = Object.keys(a.likes || {}).length;
+                    const likesB = Object.keys(b.likes || {}).length;
+                    return likesB - likesA;
+                });
+            } else if (sortOption === 'most-comments') {
+                postsToDisplay.sort((a, b) => {
+                    const commentsA = Object.keys(a.comments || {}).length;
+                    const commentsB = Object.keys(b.comments || {}).length;
+                    return commentsB - commentsA;
+                });
+            }
+
+            if (postsToDisplay.length === 0) {
+                userPostsList.innerHTML = '<div class="no-user-posts">You haven\'t uploaded any posts yet.</div>';
+                return;
+            }
+
+            userPostsList.innerHTML = `<h3>Your Uploaded Posts</h3>` + postsToDisplay.map(post => `
+                <div class="user-post-item" data-post-id="${post.id}">
+                    <div class="post-header">
+                        <div class="post-avatar">
+                            ${post.avatarUrl ? 
+                                `<img src="${post.avatarUrl}" alt="${post.username}" onerror="this.onerror=null;this.src='https://placehold.co/50x50/00bcd4/ffffff?text=${post.username?.charAt(0).toUpperCase() || 'U'}'" />` : 
+                                `<div>${post.username?.charAt(0).toUpperCase() || 'U'}</div>`}
+                        </div>
+                        <div class="post-username">${post.username || 'Anonymous'}</div>
+                        <div class="post-timestamp">${formatTime(post.timestamp)}</div>
+                    </div>
+                    ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post Image" class="post-image" onerror="this.onerror=null;this.style.display='none';">` : ''}
+                    <p class="post-description">${post.description || ''}</p>
+                    <div class="user-post-actions">
+                        <button class="edit-btn" data-post-id="${post.id}">Edit</button>
+                        <button class="delete-btn" data-post-id="${post.id}">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Apply styles for fallback avatars (initials) for posts
+            document.querySelectorAll('.user-post-item .post-avatar div').forEach(div => {
+                div.style.backgroundColor = 'var(--color-cyan-primary)';
+                div.style.color = 'white';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.fontSize = '1.5em';
+            });
+
+            // Attach event listeners for edit and delete buttons
+            document.querySelectorAll('.user-post-item .edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    const postToEdit = userPosts.find(p => p.id === postId);
+                    if (postToEdit) {
+                        openEditPostModal(postToEdit);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.user-post-item .delete-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    deletePost(postId);
+                });
+            });
+        }
+
+        // Event listeners for Posts Studio controls
+        postStudioSearchInput.addEventListener('input', renderUserPostsForStudio);
+        postStudioSortSelect.addEventListener('change', renderUserPostsForStudio);
+
+        // Open Edit Post Modal
+        function openEditPostModal(post) {
+            editingPostId = post.id;
+            editPostImageUrlInput.value = post.imageUrl || '';
+            editPostDescriptionInput.value = post.description || '';
+            editPostModal.style.display = 'flex';
+        }
+
+        // Close Edit Post Modal
+        closeEditPostModal.addEventListener('click', () => {
+            editPostModal.style.display = 'none';
+            editingPostId = null;
+        });
+
+        // Add Emoji to Edit Post Description
+        addEditEmojiBtn.addEventListener('click', () => {
+            const emoji = editEmojiInput.value.trim();
+            if (emoji) {
+                editPostDescriptionInput.value += ` ${emoji}`;
+                editEmojiInput.value = '';
+            }
+        });
+
+        // Save Edited Post
+        saveEditedPostBtn.addEventListener('click', async () => {
+            if (!editingPostId) return;
+
+            const newImageUrl = editPostImageUrlInput.value.trim();
+            const newDescription = editPostDescriptionInput.value.trim();
+
+            if (!newImageUrl && !newDescription) {
+                showAlert('Please provide an image URL or a description for your post.');
+                return;
+            }
+
+            const MAX_POST_CHARS = 7500;
+            if (newDescription.length > MAX_POST_CHARS) {
+                showAlert(`Post content cannot exceed ${MAX_POST_CHARS} characters.`);
+                return;
+            }
+
+            showLoading('Saving changes...');
+            try {
+                await update(ref(db, `posts/${editingPostId}`), {
+                    imageUrl: newImageUrl,
+                    description: newDescription,
+                    lastEdited: Date.now() // Add a last edited timestamp
+                });
+                hideLoading();
+                editPostModal.style.display = 'none';
+                showAlert('Post updated successfully!');
+                // loadUserPostsForStudio() will be triggered by the onValue listener
+                // loadPosts() will also be triggered for community view
+            } catch (error) {
+                hideLoading();
+                console.error("Error saving edited post:", error);
+                showAlert(`Failed to save changes: ${error.message}`);
+            } finally {
+                editingPostId = null;
+            }
+        });
+
+        // Delete Post
+        async function deletePost(postId) {
+            const confirmDelete = confirm("Are you sure you want to delete this post? This action cannot be undone.");
+            if (!confirmDelete) return;
+
+            showLoading('Deleting post...');
+            try {
+                await remove(ref(db, `posts/${postId}`));
+                hideLoading();
+                showAlert('Post deleted successfully!');
+                // loadUserPostsForStudio() and loadPosts() will be triggered by onValue listeners
+            } catch (error) {
+                hideLoading();
+                console.error("Error deleting post:", error);
+                showAlert(`Failed to delete post: ${error.message}`);
+            }
+        }
 
 
         // Helper functions
