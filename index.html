@@ -2735,14 +2735,14 @@
                 return;
             }
 
-            // New: Post content limit
-            const MAX_POST_CHARS = 7500; // Approximately 1500 words
+            const MAX_POST_CHARS = 7500;
             if (description.length > MAX_POST_CHARS) {
                 showAlert(`Post content cannot exceed ${MAX_POST_CHARS} characters.`);
                 return;
             }
 
             showLoading('Creating post...');
+            let success = false; // Flag to track success
             try {
                 const newPostRef = push(ref(db, 'posts'));
                 await set(newPostRef, {
@@ -2752,18 +2752,20 @@
                     imageUrl: imageUrl,
                     description: description,
                     timestamp: Date.now(),
-                    likes: {}, // Initialize with no likes
-                    comments: {} // Initialize with no comments
+                    likes: {},
+                    comments: {}
                 });
-
-                hideLoading();
-                createPostModal.style.display = 'none';
-                showAlert('Post created successfully!');
-                loadPosts(); // Reload posts to show the new one
+                success = true; // Set success flag
             } catch (error) {
-                hideLoading();
                 console.error("Error creating post:", error);
                 showAlert(`Failed to create post: ${error.message}`);
+            } finally {
+                hideLoading();
+                createPostModal.style.display = 'none';
+                if (success) { // Only show success alert if the flag is true
+                    showAlert('Post created successfully!');
+                    loadPosts(); // Reload posts only on confirmed success
+                }
             }
         });
 
