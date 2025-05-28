@@ -902,10 +902,10 @@
             background: none;
             border: none;
             color: var(--color-text-secondary);
-            font-size: 1.2em;
+            font-size: 1em; /* Reduced font size */
             cursor: pointer;
             transition: color 0.2s, transform 0.2s;
-            padding: 0.5em; /* Increase clickable area */
+            padding: 0.3em 0.6em; /* Reduced padding */
             border-radius: 10px;
         }
 
@@ -944,12 +944,14 @@
         }
 
         .comment-input-group button {
-            padding: 0.6em 1em; /* Reduced padding */
-            font-size: 0.9em; /* Reduced font size */
+            padding: 0.4em 0.8em; /* Reduced padding */
+            font-size: 0.8em; /* Reduced font size */
             border-radius: 10px;
             text-transform: none;
             letter-spacing: normal;
             box-shadow: none;
+            flex-shrink: 0; /* Prevent button from growing */
+            width: auto; /* Allow button to shrink to content */
         }
 
         .comment-list {
