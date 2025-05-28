@@ -809,6 +809,7 @@
             align-items: center;
             width: 100%;
             max-width: 700px; /* Make posts section wider */
+            padding: 1em; /* Add padding for mobile */
         }
 
         .post-categories {
@@ -840,7 +841,7 @@
             box-shadow: 0 8px 25px var(--shadow-light);
             margin-bottom: 2em;
             padding: 1.5em;
-            width: 100%;
+            width: 100%; /* Ensure it takes full width */
             animation: fadeIn 0.6s ease-out forwards;
             border: 1px solid var(--color-border-light);
         }
@@ -885,6 +886,7 @@
             margin-bottom: 1.5em;
             line-height: 1.6;
             color: var(--color-text-primary);
+            word-wrap: break-word; /* Ensure long text wraps */
         }
 
         .post-actions {
@@ -936,14 +938,14 @@
 
         .comment-input-group input {
             flex-grow: 1;
-            padding: 0.8em;
+            padding: 0.6em; /* Reduced padding */
             border-radius: 10px;
-            font-size: 0.9em;
+            font-size: 0.9em; /* Reduced font size */
         }
 
         .comment-input-group button {
-            padding: 0.8em 1.2em;
-            font-size: 0.9em;
+            padding: 0.6em 1em; /* Reduced padding */
+            font-size: 0.9em; /* Reduced font size */
             border-radius: 10px;
             text-transform: none;
             letter-spacing: normal;
@@ -951,7 +953,7 @@
         }
 
         .comment-list {
-            max-height: 200px; /* Limit height for comments */
+            max-height: 150px; /* Reduced max-height for comments */
             overflow-y: auto;
             padding-right: 10px; /* Space for scrollbar */
         }
@@ -959,9 +961,9 @@
         .comment-item {
             background: var(--color-light-blue-bg);
             border-radius: 12px;
-            padding: 0.8em 1em;
+            padding: 0.7em 1em; /* Reduced padding */
             margin-bottom: 0.5em;
-            font-size: 0.9em;
+            font-size: 0.85em; /* Reduced font size */
             border: 1px solid var(--color-border-light);
         }
 
@@ -973,6 +975,7 @@
 
         .comment-item .comment-text {
             color: var(--color-text-primary);
+            word-wrap: break-word;
         }
 
         .comment-item .comment-timestamp {
@@ -1008,23 +1011,26 @@
             max-width: 600px;
             position: relative;
             animation: fadeInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            display: flex; /* Use flexbox for layout */
+            flex-direction: column;
+            gap: 1em; /* Space between form groups */
         }
 
         .create-post-content h3 {
             font-size: 2em;
             color: var(--color-cyan-dark);
-            margin-bottom: 1.5em;
+            margin-bottom: 0.5em; /* Adjusted margin */
             text-align: center;
         }
 
         .create-post-content .form-group {
-            margin-bottom: 1.2em;
+            margin-bottom: 0; /* Remove default margin as gap handles it */
         }
 
         .create-post-content button {
             width: auto;
             min-width: 150px;
-            margin-top: 1.5em;
+            margin-top: 1em; /* Adjusted margin */
             align-self: center; /* Center the button */
         }
 
@@ -1053,8 +1059,8 @@
         }
 
         .template-selector {
-            margin-top: 1.5em;
-            margin-bottom: 1.5em;
+            margin-top: 1em; /* Adjusted margin */
+            margin-bottom: 1em; /* Adjusted margin */
         }
 
         .template-selector select {
@@ -1117,7 +1123,241 @@
         }
 
         /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+            .header-tabs {
+                gap: 0.8em;
+            }
+            .tab-btn {
+                padding: 0.7em 1.5em;
+                font-size: 1em;
+                max-width: 150px;
+            }
+            main {
+                padding: 1em;
+            }
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
+                padding: 2em;
+                margin: 1em auto;
+            }
+            .group-options button, .contacts-list button, .posts-section button {
+                padding: 1em;
+                margin: 0.6em 0;
+                font-size: 1em;
+            }
+            .group-item, .contact-item {
+                padding: 1em;
+                margin: 0.6em 0;
+            }
+            .group-avatar, .contact-avatar, .profile-avatar, .post-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+                margin-right: 1em;
+            }
+            .group-name, .contact-name {
+                font-size: 1.1em;
+            }
+            .group-desc, .contact-status {
+                font-size: 0.85em;
+            }
+            .message {
+                padding: 1em 1.2em;
+                font-size: 0.95em;
+            }
+            .chat-header h2, .private-chat-header h2 {
+                font-size: 1.5em;
+            }
+            .settings-menu {
+                width: 300px;
+            }
+            .avatar-preview {
+                width: 120px;
+                height: 120px;
+                font-size: 3em;
+            }
+            .user-id-display {
+                padding: 1em;
+                font-size: 0.9em;
+            }
+            .custom-alert-content {
+                padding: 30px;
+            }
+            #custom-alert-message {
+                font-size: 1.1em;
+            }
+            #custom-alert-ok-btn {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+            .create-post-content {
+                padding: 20px;
+                gap: 0.8em;
+            }
+            .create-post-content h3 {
+                font-size: 1.8em;
+            }
+            .create-post-content input, .create-post-content textarea, .create-post-content select {
+                font-size: 0.95em;
+                padding: 0.8em;
+            }
+            .emoji-input-group button {
+                font-size: 1em;
+                padding: 0.4em 0.8em;
+            }
+            .welcome-section h2 {
+                font-size: 2em;
+            }
+            .welcome-section p {
+                font-size: 1em;
+            }
+            .welcome-section li {
+                padding: 0.8em 1.2em;
+                font-size: 0.9em;
+            }
+            .welcome-section li strong {
+                font-size: 1em;
+            }
+            .welcome-section .get-started-btn {
+                padding: 0.8em 1.8em;
+                font-size: 1.1em;
+            }
+        }
+
         @media (max-width: 480px) {
+            header {
+                padding: 1em 0.5em;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+            .header-tabs {
+                flex-direction: column;
+                gap: 0.5em;
+                margin-top: 1em;
+            }
+            .tab-btn {
+                padding: 0.6em 1em;
+                font-size: 0.9em;
+                max-width: 100%;
+            }
+            main {
+                padding: 0.5em;
+            }
+            .auth-form, .group-options, .chat-section, .contacts-section, .settings-section, .private-chat-section, .posts-section, .welcome-section {
+                padding: 1.5em;
+                margin: 0.5em auto;
+            }
+            .form-group {
+                margin-bottom: 1em;
+            }
+            .form-group label {
+                font-size: 1em;
+                margin-bottom: 0.5em;
+            }
+            input, button, textarea {
+                padding: 0.8em;
+                font-size: 0.9em;
+            }
+            button {
+                padding: 1em;
+                font-size: 1em;
+            }
+            .group-options button, .contacts-list button, .posts-section button {
+                padding: 0.8em;
+                margin: 0.5em 0;
+                font-size: 0.9em;
+            }
+            .group-item, .contact-item {
+                padding: 0.8em;
+                margin: 0.5em 0;
+                flex-direction: column; /* Stack avatar and info */
+                align-items: flex-start;
+            }
+            .group-avatar, .contact-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+                margin-right: 0;
+                margin-bottom: 0.5em;
+            }
+            .group-info, .contact-info {
+                text-align: center;
+            }
+            .group-name, .contact-name {
+                font-size: 1em;
+            }
+            .group-desc, .contact-status {
+                font-size: 0.8em;
+            }
+            .message {
+                padding: 0.8em 1em;
+                font-size: 0.85em;
+                margin: 0.8em 0;
+            }
+            .message .sender {
+                font-size: 0.8em;
+            }
+            .timestamp {
+                font-size: 0.6em;
+            }
+            footer {
+                padding: 0.8em;
+                gap: 0.5em;
+            }
+            #msg-input, #private-msg-input {
+                padding: 0.7em;
+                font-size: 0.85em;
+            }
+            #send-btn, #send-private-btn {
+                padding: 0.7em 1em;
+                font-size: 0.85em;
+            }
+            .chat-header h2, .private-chat-header h2 {
+                font-size: 1.2em;
+            }
+            .back-btn {
+                font-size: 1.5em;
+            }
+            .group-settings-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 1em;
+            }
+            .settings-menu {
+                width: 100%;
+                padding: 1.5em;
+            }
+            .settings-header h3 {
+                font-size: 1.5em;
+            }
+            .close-settings {
+                font-size: 1.5em;
+            }
+            .avatar-preview {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5em;
+            }
+            .user-id-display {
+                padding: 0.8em;
+                font-size: 0.8em;
+            }
+            .custom-alert-content {
+                padding: 20px;
+            }
+            #custom-alert-message {
+                font-size: 1em;
+            }
+            #custom-alert-ok-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .posts-section {
+                padding: 0.5em;
+            }
             .post-item {
                 padding: 1em;
             }
@@ -1146,19 +1386,36 @@
                 font-size: 0.8em;
             }
             .create-post-content {
-                padding: 20px;
+                padding: 15px;
+                gap: 0.6em;
             }
             .create-post-content h3 {
                 font-size: 1.5em;
+            }
+            .create-post-content input, .create-post-content textarea, .create-post-content select {
+                font-size: 0.85em;
+                padding: 0.7em;
+            }
+            .emoji-input-group button {
+                font-size: 0.9em;
+                padding: 0.3em 0.6em;
             }
             .welcome-section h2 {
                 font-size: 1.8em;
             }
             .welcome-section p {
-                font-size: 1em;
+                font-size: 0.9em;
             }
             .welcome-section li {
+                font-size: 0.8em;
+                padding: 0.7em 1em;
+            }
+            .welcome-section li strong {
                 font-size: 0.9em;
+            }
+            .welcome-section .get-started-btn {
+                padding: 0.7em 1.5em;
+                font-size: 1em;
             }
         }
     </style>
@@ -1172,7 +1429,8 @@
     <header>
         <h1>ThunderChat</h1>
         <div class="header-tabs">
-            <button id="welcome-tab" class="tab-btn active">Welcome</button> <button id="groups-tab" class="tab-btn">Groups</button>
+            <button id="welcome-tab" class="tab-btn active">Welcome</button> 
+            <button id="groups-tab" class="tab-btn">Groups</button>
             <button id="contacts-tab" class="tab-btn">Contacts</button>
             <button id="posts-tab" class="tab-btn">Posts</button>
             <button id="settings-tab" class="tab-btn">Settings</button>
@@ -1212,7 +1470,8 @@
             </div>
         </div>
 
-        <div id="welcome-section" class="welcome-section"> <h2>Welcome to ThunderChat! ⚡</h2>
+        <div id="welcome-section" class="welcome-section"> 
+            <h2>Welcome to ThunderChat! ⚡</h2>
             <p>Your all-in-one platform for seamless communication and community engagement. Connect with friends, family, and new people through secure group chats, private messages, and engaging community posts.</p>
             <h3>Key Features:</h3>
             <ul>
