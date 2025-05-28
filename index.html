@@ -1646,7 +1646,6 @@
     <header>
         <h1>ThunderChat</h1>
         <div class="header-tabs">
-            <button id="welcome-tab" class="tab-btn active">Welcome</button> 
             <button id="groups-tab" class="tab-btn">Groups</button>
             <button id="contacts-tab" class="tab-btn">Contacts</button>
             <button id="posts-tab" class="tab-btn">Posts</button>
@@ -1685,19 +1684,6 @@
                 <button id="register-btn">Register</button>
                 <div id="toggle-to-login" class="toggle-form">Already have an account? Login</div>
             </div>
-        </div>
-
-        <div id="welcome-section" class="welcome-section"> 
-            <h2>Welcome to ThunderChat! ⚡</h2>
-            <p>Your all-in-one platform for seamless communication and community engagement. Connect with friends, family, and new people through secure group chats, private messages, and engaging community posts.</p>
-            <h3>Key Features:</h3>
-            <ul>
-                <li><strong>Groups:</strong> Create or join private and public groups to chat with multiple people.</li>
-                <li><strong>Contacts:</strong> Easily add and manage your contacts for one-on-one private conversations.</li>
-                <li><strong>Posts:</strong> Share images and text with the community, like and comment on others' posts, and discover new content in "New" and "Trending" feeds.</li>
-                <li><strong>Settings:</strong> Customize your profile, update your status, change your avatar, and switch between light and dark themes.</li>
-            </ul>
-            <button id="get-started-btn" class="get-started-btn">Get Started!</button>
         </div>
 
         <div id="group-options" class="group-options">
@@ -1965,7 +1951,7 @@
         const authSection = document.getElementById('auth-section');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
-        const welcomeSection = document.getElementById('welcome-section');
+        // const welcomeSection = document.getElementById('welcome-section'); // Removed
         const groupOptions = document.getElementById('group-options');
         const chatSection = document.getElementById('chat-section');
         const contactsSection = document.getElementById('contacts-section');
@@ -1983,7 +1969,7 @@
         const contactsList = document.getElementById('contacts-list');
         const postsContainer = document.getElementById('posts-container'); 
         const userPostsList = document.getElementById('user-posts-list');
-        const welcomeTab = document.getElementById('welcome-tab');
+        // const welcomeTab = document.getElementById('welcome-tab'); // Removed
         const groupsTab = document.getElementById('groups-tab');
         const contactsTab = document.getElementById('contacts-tab');
         const postsTab = document.getElementById('posts-tab'); 
@@ -2033,7 +2019,7 @@
         const emojiInput = document.getElementById('emoji-input');
         const addEmojiBtn = document.getElementById('add-emoji-btn');
 
-        const getStartedBtn = document.getElementById('get-started-btn');
+        // const getStartedBtn = document.getElementById('get-started-btn'); // Removed
 
         // Posts Studio elements
         const postsStudioBtn = document.getElementById('posts-studio-btn');
@@ -2075,7 +2061,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadingScreen.style.display = 'none';
             loadUserTheme(); // Load theme as soon as possible
-            showSection('welcome-section'); // Show welcome section by default
+            // The onAuthStateChanged listener will handle the initial section display
         });
 
         // Custom Alert Modal functions
@@ -2221,7 +2207,6 @@
                     hideLoading();
                     
                     authSection.style.display = 'none';
-                    welcomeSection.style.display = 'none'; // Hide welcome section after login
                     groupOptions.style.display = 'flex'; // Show groups by default after login
                     groupsTab.classList.add('active'); // Set groups tab as active
                     usernameDisplay.textContent = currentUser.username;
@@ -2241,10 +2226,8 @@
                 }
             } else {
                 hideLoading();
-                authSection.style.display = 'flex'; // Show auth section
                 loginForm.style.display = 'block';
                 registerForm.style.display = 'none';
-                welcomeSection.style.display = 'none'; // Hide welcome section on logout
                 groupOptions.style.display = 'none';
                 chatSection.style.display = 'none';
                 contactsSection.style.display = 'none';
@@ -2260,14 +2243,15 @@
                 allPosts = []; // Clear community posts on logout
                 userPosts = []; // Clear user's own posts on logout
                 applyTheme('light'); // Revert to default theme on logout
-                showSection('welcome-section'); // Show welcome section again on logout
+                showSection('auth-section'); // Show auth section by default when logged out
             }
         });
 
 
         // Tab switching
         function showSection(sectionId) {
-            const sections = [welcomeSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, postsStudioSection, settingsSection];
+            // Removed welcomeSection from this array
+            const sections = [authSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, postsStudioSection, settingsSection];
             sections.forEach(section => {
                 if (section.id === sectionId) {
                     section.style.display = 'flex';
@@ -2277,67 +2261,24 @@
             });
 
             // Update active tab button
-            const tabs = [welcomeTab, groupsTab, contactsTab, postsTab, settingsTab];
+            const tabs = [groupsTab, contactsTab, postsTab, settingsTab]; // Removed welcomeTab
             tabs.forEach(tab => {
-                if (tab.id.includes(sectionId.replace('-section', ''))) { // Simple mapping
+                if (tab.id.includes(sectionId.replace('-section', ''))) {
                     tab.classList.add('active');
                 } else if (tab.id.includes('groups') && sectionId === 'group-options') {
-                    tab.classList.add('active');
-                } else if (tab.id.includes('welcome') && sectionId === 'welcome-section') { // Handle welcome tab
                     tab.classList.add('active');
                 } else {
                     tab.classList.remove('active');
                 }
             });
+            // If auth-section is shown, no tab should be active
+            if (sectionId === 'auth-section') {
+                tabs.forEach(tab => tab.classList.remove('active'));
+            }
         }
 
-        welcomeTab.addEventListener('click', () => { // New Welcome Tab Listener
-            showSection('welcome-section');
-        });
-
-        getStartedBtn.addEventListener('click', () => { // Get Started button on Welcome page
-            if (currentUser) {
-                showSection('group-options');
-            } else {
-                showSection('auth-section');
-            }
-        });
-
-        groupsTab.addEventListener('click', () => {
-            if (!currentUser) { showAlert("Please log in to access groups."); return; }
-            showSection('group-options');
-        });
-
-        contactsTab.addEventListener('click', () => {
-            if (!currentUser) { showAlert("Please log in to access contacts."); return; }
-            showSection('contacts-section');
-            loadUserContacts(); // Reload contacts when tab is clicked
-        });
-
-        postsTab.addEventListener('click', () => { 
-            if (!currentUser) { showAlert("Please log in to access posts."); return; }
-            showSection('posts-section');
-            loadPosts(); // Load community posts when tab is clicked
-        });
-
-        settingsTab.addEventListener('click', () => {
-            if (!currentUser) { showAlert("Please log in to access settings."); return; }
-            showSection('settings-section');
-            loadUserProfile();
-        });
-
-        // New: Posts Studio button in settings
-        postsStudioBtn.addEventListener('click', () => {
-            if (!currentUser) { showAlert("Please log in to access Posts Studio."); return; }
-            showSection('posts-studio-section');
-            loadUserPostsForStudio();
-        });
-
-        // New: Back button from Posts Studio to Settings
-        backToSettingsBtn.addEventListener('click', () => {
-            showSection('settings-section');
-            loadUserProfile(); // Reload profile just in case
-        });
+        // Removed welcomeTab.addEventListener('click')
+        // Removed getStartedBtn.addEventListener('click')
 
 
         // Group settings
