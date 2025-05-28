@@ -1951,7 +1951,6 @@
         const authSection = document.getElementById('auth-section');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
-        // const welcomeSection = document.getElementById('welcome-section'); // Removed
         const groupOptions = document.getElementById('group-options');
         const chatSection = document.getElementById('chat-section');
         const contactsSection = document.getElementById('contacts-section');
@@ -1969,7 +1968,6 @@
         const contactsList = document.getElementById('contacts-list');
         const postsContainer = document.getElementById('posts-container'); 
         const userPostsList = document.getElementById('user-posts-list');
-        // const welcomeTab = document.getElementById('welcome-tab'); // Removed
         const groupsTab = document.getElementById('groups-tab');
         const contactsTab = document.getElementById('contacts-tab');
         const postsTab = document.getElementById('posts-tab'); 
@@ -2018,8 +2016,6 @@
         const postTemplateSelect = document.getElementById('post-template-select');
         const emojiInput = document.getElementById('emoji-input');
         const addEmojiBtn = document.getElementById('add-emoji-btn');
-
-        // const getStartedBtn = document.getElementById('get-started-btn'); // Removed
 
         // Posts Studio elements
         const postsStudioBtn = document.getElementById('posts-studio-btn');
@@ -2207,8 +2203,7 @@
                     hideLoading();
                     
                     authSection.style.display = 'none';
-                    groupOptions.style.display = 'flex'; // Show groups by default after login
-                    groupsTab.classList.add('active'); // Set groups tab as active
+                    showSection('group-options'); // Show groups by default after login
                     usernameDisplay.textContent = currentUser.username;
                     
                     // Initialize sections after login
@@ -2250,7 +2245,6 @@
 
         // Tab switching
         function showSection(sectionId) {
-            // Removed welcomeSection from this array
             const sections = [authSection, groupOptions, chatSection, contactsSection, privateChatSection, postsSection, postsStudioSection, settingsSection];
             sections.forEach(section => {
                 if (section.id === sectionId) {
@@ -2261,24 +2255,36 @@
             });
 
             // Update active tab button
-            const tabs = [groupsTab, contactsTab, postsTab, settingsTab]; // Removed welcomeTab
+            const tabs = [groupsTab, contactsTab, postsTab, settingsTab];
             tabs.forEach(tab => {
-                if (tab.id.includes(sectionId.replace('-section', ''))) {
+                // Determine which tab should be active based on the sectionId
+                if (sectionId === 'group-options' && tab.id === 'groups-tab') {
                     tab.classList.add('active');
-                } else if (tab.id.includes('groups') && sectionId === 'group-options') {
+                } else if (sectionId === 'contacts-section' && tab.id === 'contacts-tab') {
                     tab.classList.add('active');
-                } else {
+                } else if (sectionId === 'posts-section' && tab.id === 'posts-tab') {
+                    tab.classList.add('active');
+                } else if (sectionId === 'settings-section' && tab.id === 'settings-tab') {
+                    tab.classList.add('active');
+                } else if (sectionId === 'posts-studio-section' && tab.id === 'settings-tab') {
+                    // Posts Studio is accessed from Settings, so Settings tab should remain active
+                    tab.classList.add('active');
+                }
+                else {
                     tab.classList.remove('active');
                 }
             });
-            // If auth-section is shown, no tab should be active
-            if (sectionId === 'auth-section') {
+            // If auth-section or private-chat-section is shown, no main header tab should be active
+            if (sectionId === 'auth-section' || sectionId === 'private-chat-section' || sectionId === 'chat-section') {
                 tabs.forEach(tab => tab.classList.remove('active'));
             }
         }
 
-        // Removed welcomeTab.addEventListener('click')
-        // Removed getStartedBtn.addEventListener('click')
+        // Add event listeners for main navigation tabs
+        groupsTab.addEventListener('click', () => showSection('group-options'));
+        contactsTab.addEventListener('click', () => showSection('contacts-section'));
+        postsTab.addEventListener('click', () => showSection('posts-section'));
+        settingsTab.addEventListener('click', () => showSection('settings-section'));
 
 
         // Group settings
@@ -2928,7 +2934,7 @@
                     break;
                 case 'question':
                     postImageUrlInput.value = 'https://placehold.co/600x300/e0f7fa/00838f?text=Question';
-                    postDescriptionInput.value = 'Question of the Day: What\'s your favorite book and why? 🤔';
+                    postDescriptionInput.value = 'Question of the Day: What\'s your favorite book and why? �';
                     break;
                 case 'sale':
                     postImageUrlInput.value = 'https://placehold.co/600x300/ffcc80/263238?text=Item+for+Sale';
@@ -3223,6 +3229,16 @@
         });
 
         // --- Posts Studio Functionality ---
+
+        // Add event listener for Posts Studio button
+        postsStudioBtn.addEventListener('click', () => {
+            showSection('posts-studio-section');
+        });
+
+        // Add event listener for back to settings button in Posts Studio
+        backToSettingsBtn.addEventListener('click', () => {
+            showSection('settings-section');
+        });
 
         // Load User's Posts for Studio
         function loadUserPostsForStudio() {
@@ -3585,3 +3601,4 @@
     </script>
 </body>
 </html>
+�
