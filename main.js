@@ -247,3 +247,456 @@ function resetApp() {
   groupNameInput.value = "";
   authMessage.textContent = "";
 }
+// ====== NEW CALLING SYSTEM CODE ======
+
+// DOM Elements for Call UI
+const startVoiceCallBtn = document.getElementById('start-voice-call-btn');
+const startVideoCallBtn = document.getElementById('start-video-call-btn');
+const callScreen = document.getElementById('call-screen');
+const localVideo = document.getElementById('local-video');
+const remoteVideo = document.getElementById('remote-video');
+const callStatus = document.getElementById('call-status');
+const remoteUserDisplay = document.getElementById('remote-user-display');
+const toggleMicBtn = document.getElementById('toggle-mic-btn');
+const toggleVideoBtn = document.getElementById('toggle-video-btn');
+const hangupBtn = document.getElementById('hangup-btn');
+
+// WebRTC Global Variables
+let peerConnection = null;
+let localStream = null;
+let currentCallId = null; // ID of the active call in Firebase
+let callType = null; // 'voice' or 'video'
+let callRef = null; // Firebase reference to the current call
+let callEndedListener = null; // Listener for call ending
+let isMicMuted = false;
+let isVideoOff = false;
+
+// WebRTC Configuration (using Google's STUN server for NAT traversal)
+const rtcConfig = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+    ]
+};
+
+// Helper to get local media stream
+async function getLocalStream(video = true) {
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: video,
+            audio: true
+        });
+        localVideo.srcObject = localStream;
+        localVideo.style.display = video ? 'block' : 'none'; // Show local video only if video call
+        toggleVideoBtn.style.display = video ? 'flex' : 'none'; // Show video toggle only if video call
+        toggleMicBtn.classList.remove('off'); // Reset mic button state
+        toggleVideoBtn.classList.remove('off'); // Reset video button state
+        isMicMuted = false;
+        isVideoOff = false;
+        console.log("Local stream obtained.");
+        return localStream;
+    } catch (error) {
+        console.error("Error getting user media:", error);
+        showAlert("Media Error", "Could not access microphone or camera. Please check permissions.");
+        return null;
+    }
+}
+
+// Helper to stop local media stream
+function stopLocalStream() {
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+        localVideo.srcObject = null;
+        console.log("Local stream stopped.");
+    }
+}
+
+// Function to create RTCPeerConnection
+function createPeerConnection() {
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+    peerConnection = new RTCPeerConnection(rtcConfig);
+    console.log("RTCPeerConnection created.");
+
+    // Add local stream tracks to peer connection
+    if (localStream) {
+        localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+            console.log(`Added local track: ${track.kind}`);
+        });
+    }
+
+    // Handle ICE candidates
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            console.log("Sending ICE candidate:", event.candidate);
+            if (currentCallId && callRef) {
+                push(child(callRef, 'candidates/' + currentUser.uid), event.candidate.toJSON());
+            }
+        }
+    };
+
+    // Handle remote tracks
+    peerConnection.ontrack = (event) => {
+        console.log("Received remote track:", event.streams[0]);
+        if (remoteVideo.srcObject !== event.streams[0]) {
+            remoteVideo.srcObject = event.streams[0];
+            remoteVideo.style.display = 'block';
+            callStatus.textContent = 'Connected!';
+            console.log("Remote stream connected.");
+        }
+    };
+
+    // Handle connection state changes
+    peerConnection.onconnectionstatechange = () => {
+        console.log("Peer connection state:", peerConnection.connectionState);
+        if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
+            showAlert("Call Ended", "The call has been disconnected.");
+            hangupCall();
+        } else if (peerConnection.connectionState === 'connected') {
+            callStatus.textContent = 'Connected!';
+        }
+    };
+
+    peerConnection.oniceconnectionstatechange = () => {
+        console.log("ICE connection state:", peerConnection.iceConnectionState);
+        if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
+            // Consider re-attempting connection or showing warning
+        }
+    };
+
+    return peerConnection;
+}
+
+// Function to start an outgoing call
+async function startOutgoingCall(targetUsername, type) {
+    if (!currentUser || !currentUser.uid) {
+        showAlert("Error", "You must be logged in to make a call.");
+        return;
+    }
+
+    if (currentCallId) {
+        showAlert("Error", "You are already in a call.");
+        return;
+    }
+
+    showLoading("Initiating call...");
+    callType = type;
+
+    try {
+        const usersSnapshot = await get(ref(db, 'users'));
+        let targetUser = null;
+        usersSnapshot.forEach(childSnapshot => {
+            if (childSnapshot.val().username.toLowerCase() === targetUsername.toLowerCase()) {
+                targetUser = { uid: childSnapshot.key, ...childSnapshot.val() };
+            }
+        });
+
+        if (!targetUser) {
+            hideLoading();
+            showAlert("User Not Found", `User "${targetUsername}" does not exist.`);
+            return;
+        }
+
+        if (targetUser.uid === currentUser.uid) {
+            hideLoading();
+            showAlert("Self-Call", "You cannot call yourself.");
+            return;
+        }
+
+        // 1. Get local stream
+        if (!await getLocalStream(type === 'video')) {
+            hideLoading();
+            return; // Failed to get stream
+        }
+
+        // 2. Create RTCPeerConnection
+        createPeerConnection();
+
+        // 3. Create offer
+        const offer = await peerConnection.createOffer({
+            offerToReceiveVideo: type === 'video',
+            offerToReceiveAudio: true
+        });
+        await peerConnection.setLocalDescription(offer);
+        console.log("Created and set local offer.");
+
+        // 4. Store call info in Firebase
+        const newCallRef = push(ref(db, 'calls'), {
+            callerId: currentUser.uid,
+            callerUsername: currentUser.username,
+            calleeId: targetUser.uid,
+            calleeUsername: targetUser.username,
+            offer: {
+                type: offer.type,
+                sdp: offer.sdp,
+            },
+            type: type, // 'voice' or 'video'
+            timestamp: Date.now(),
+            status: 'ringing'
+        });
+        currentCallId = newCallRef.key;
+        callRef = newCallRef;
+        console.log("Call created in Firebase:", currentCallId);
+
+        // Listen for answer
+        onValue(callRef, async (snapshot) => {
+            const callData = snapshot.val();
+            if (!callData) return;
+
+            if (callData.status === 'answered' && callData.answer && peerConnection.remoteDescription?.type !== 'answer') {
+                console.log("Received answer:", callData.answer);
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.answer));
+                callStatus.textContent = 'Connecting...';
+                hideLoading();
+                showSection('call-screen'); // Show call screen
+            } else if (callData.status === 'rejected') {
+                hideLoading();
+                showAlert("Call Rejected", `${callData.calleeUsername} rejected your call.`);
+                hangupCall();
+            } else if (callData.status === 'no-answer') {
+                hideLoading();
+                showAlert("No Answer", `${callData.calleeUsername} did not answer.`);
+                hangupCall();
+            } else if (callData.status === 'ended' && callData.endedBy !== currentUser.uid) {
+                 hideLoading();
+                 showAlert("Call Ended", `${callData.endedByUsername || 'The other party'} ended the call.`);
+                 hangupCall();
+            }
+        }, { onlyOnce: false }); // Keep listener open for ongoing call status
+
+        // Listen for ICE candidates from remote
+        onChildAdded(child(callRef, 'candidates/' + targetUser.uid), (snapshot) => {
+            const candidate = new RTCIceCandidate(snapshot.val());
+            console.log("Adding remote ICE candidate:", candidate);
+            peerConnection.addIceCandidate(candidate);
+        });
+
+        // Set call UI
+        remoteUserDisplay.textContent = `Calling ${targetUser.username}...`;
+        callStatus.textContent = 'Ringing...';
+
+        // Set a timeout for no answer
+        setTimeout(async () => {
+            const currentCallSnapshot = await get(callRef);
+            if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
+                update(callRef, { status: 'no-answer', endedBy: 'system' });
+            }
+        }, 30000); // 30 seconds for no answer
+
+        hideLoading();
+        showSection('call-screen'); // Show call screen for outgoing call
+    } catch (error) {
+        console.error("Error starting outgoing call:", error);
+        hideLoading();
+        showAlert("Call Error", "Failed to start call: " + error.message);
+        hangupCall();
+    }
+}
+
+// Function to listen for incoming calls
+function listenForIncomingCalls() {
+    if (!currentUser || !currentUser.uid) {
+        console.warn("Not logged in, cannot listen for calls.");
+        return;
+    }
+
+    const callsRef = ref(db, 'calls');
+    // Listen for new calls where this user is the callee and status is 'ringing'
+    onChildAdded(callsRef, async (snapshot) => {
+        const callData = snapshot.val();
+        const callId = snapshot.key;
+
+        if (callData.calleeId === currentUser.uid && callData.status === 'ringing') {
+            console.log("Incoming call detected:", callData);
+
+            if (currentCallId) {
+                // If already in a call or busy, reject new incoming call automatically
+                console.log("Already in a call, rejecting new incoming call.");
+                update(ref(db, `calls/${callId}`), { status: 'rejected', endedBy: currentUser.uid });
+                return;
+            }
+
+            currentCallId = callId;
+            callRef = ref(db, `calls/${callId}`);
+            callType = callData.type;
+
+            // Show incoming call prompt
+            const answerCall = await showPrompt(
+                "Incoming Call",
+                `Incoming ${callData.type} call from ${callData.callerUsername}. Do you want to answer?`,
+                false, // No input needed
+                "Answer",
+                "Reject"
+            );
+
+            if (answerCall) {
+                showLoading("Answering call...");
+                try {
+                    // 1. Get local stream
+                    if (!await getLocalStream(callType === 'video')) {
+                        update(callRef, { status: 'rejected', endedBy: currentUser.uid }); // Reject if stream fails
+                        hideLoading();
+                        hangupCall();
+                        return;
+                    }
+
+                    // 2. Create RTCPeerConnection
+                    createPeerConnection();
+
+                    // 3. Set remote offer
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
+                    console.log("Set remote offer.");
+
+                    // 4. Create answer
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    console.log("Created and set local answer.");
+
+                    // 5. Update call in Firebase with answer and status
+                    await update(callRef, {
+                        answer: {
+                            type: answer.type,
+                            sdp: answer.sdp,
+                        },
+                        status: 'answered'
+                    });
+                    console.log("Call answered and updated in Firebase.");
+
+                    // Listen for ICE candidates from remote (caller)
+                    onChildAdded(child(callRef, 'candidates/' + callData.callerId), (snapshot) => {
+                        const candidate = new RTCIceCandidate(snapshot.val());
+                        console.log("Adding remote ICE candidate:", candidate);
+                        peerConnection.addIceCandidate(candidate);
+                    });
+
+                    // Listen for the caller ending the call
+                    callEndedListener = onValue(callRef, (snap) => {
+                        const updatedCallData = snap.val();
+                        if (!updatedCallData || updatedCallData.status === 'ended' || updatedCallData.status === 'no-answer' || updatedCallData.status === 'rejected') {
+                            if (updatedCallData && updatedCallData.endedBy !== currentUser.uid) {
+                                showAlert("Call Ended", `${updatedCallData.endedByUsername || 'The other party'} ended the call.`);
+                            }
+                            hangupCall();
+                        }
+                    }, { onlyOnce: false }); // Keep listener open
+
+                    remoteUserDisplay.textContent = `Connected with ${callData.callerUsername}`;
+                    callStatus.textContent = 'Connecting...'; // Will change to 'Connected!' on track event
+                    hideLoading();
+                    showSection('call-screen');
+                } catch (error) {
+                    console.error("Error answering call:", error);
+                    hideLoading();
+                    showAlert("Call Error", "Failed to answer call: " + error.message);
+                    update(callRef, { status: 'rejected', endedBy: currentUser.uid });
+                    hangupCall();
+                }
+            } else {
+                // User rejected the call
+                console.log("Call rejected by user.");
+                update(callRef, { status: 'rejected', endedBy: currentUser.uid });
+                hangupCall(); // Clean up local state
+            }
+        }
+    });
+    console.log("Listening for incoming calls...");
+}
+
+// Function to hang up the current call
+async function hangupCall() {
+    if (callRef && currentCallId) {
+        console.log("Hanging up call:", currentCallId);
+        await update(callRef, { status: 'ended', endedBy: currentUser.uid, endedByUsername: currentUser.username });
+        // Ensure the onValue listener is detached to avoid re-triggering hangup
+        if (callEndedListener) {
+            off(callRef, 'value', callEndedListener); // Detach the listener
+            callEndedListener = null;
+        }
+    }
+
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+        console.log("PeerConnection closed.");
+    }
+
+    stopLocalStream();
+    remoteVideo.srcObject = null;
+    remoteVideo.style.display = 'none';
+    callStatus.textContent = '';
+    remoteUserDisplay.textContent = '';
+    currentCallId = null;
+    callRef = null;
+    callType = null;
+    isMicMuted = false;
+    isVideoOff = false;
+    toggleMicBtn.classList.remove('off');
+    toggleVideoBtn.classList.remove('off');
+    toggleVideoBtn.style.display = 'flex'; // Reset display for video toggle
+    showSection('group-section'); // Go back to group options
+    console.log("Call cleaned up.");
+}
+
+// Function to update call UI (e.g., mute/unmute icons)
+function updateCallUI() {
+    if (isMicMuted) {
+        toggleMicBtn.classList.add('off');
+    } else {
+        toggleMicBtn.classList.remove('off');
+    }
+
+    if (isVideoOff) {
+        toggleVideoBtn.classList.add('off');
+    } else {
+        toggleVideoBtn.classList.remove('off');
+    }
+}
+
+
+// Event Listeners for Call Buttons
+startVoiceCallBtn.addEventListener('click', async () => {
+    const targetUsername = await showPrompt("Start Voice Call", "Enter username to call:");
+    if (targetUsername) {
+        startOutgoingCall(targetUsername, 'voice');
+    }
+});
+
+startVideoCallBtn.addEventListener('click', async () => {
+    const targetUsername = await showPrompt("Start Video Call", "Enter username to call:");
+    if (targetUsername) {
+        startOutgoingCall(targetUsername, 'video');
+    }
+});
+
+toggleMicBtn.addEventListener('click', () => {
+    if (localStream) {
+        localStream.getAudioTracks().forEach(track => {
+            track.enabled = !track.enabled;
+            isMicMuted = !track.enabled;
+            updateCallUI();
+            console.log(`Mic ${isMicMuted ? 'muted' : 'unmuted'}`);
+        });
+    }
+});
+
+toggleVideoBtn.addEventListener('click', () => {
+    if (localStream && callType === 'video') { // Only toggle video if it's a video call
+        localStream.getVideoTracks().forEach(track => {
+            track.enabled = !track.enabled;
+            isVideoOff = !track.enabled;
+            // Hide local video element if video is off
+            localVideo.style.opacity = isVideoOff ? '0' : '1';
+            updateCallUI();
+            console.log(`Video ${isVideoOff ? 'off' : 'on'}`);
+        });
+    }
+});
+
+hangupBtn.addEventListener('click', hangupCall);
