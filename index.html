@@ -3603,6 +3603,25 @@
         function hideLoading() {
             loadingScreen.style.display = 'none';
         }
+                // --- START OF NEW CODE FOR CALLS BUTTON ---
+
+        // Get a reference to the new Calls button
+        const callsTab = document.getElementById('calls-tab');
+
+        // Add event listener for the Calls button
+        // This will redirect the entire page to calls.html
+        callsTab.addEventListener('click', () => {
+            window.location.href = 'calls.html'; 
+        });
+
+        // Optionally, if you want the "Calls" tab to appear active when on calls.html
+        // (This would require calls.html to set a flag or for index.html to check URL)
+        // For a simple redirect, this isn't strictly necessary, but good for completeness
+        // if you ever switch to a more complex SPA routing.
+        // For now, it will just redirect.
+
+        // --- END OF NEW CODE FOR CALLS BUTTON ---
+
     </script>
 </body>
 </html>
