@@ -700,3 +700,80 @@ toggleVideoBtn.addEventListener('click', () => {
 });
 
 hangupBtn.addEventListener('click', hangupCall);
+// ... (rest of your main.js code above this function) ...
+
+// Render contacts list
+function renderContactsList() {
+    if (userContacts.length === 0) {
+        contactsList.innerHTML = '<div class="no-contacts">You don\'t have any contacts yet</div>';
+        return;
+    }
+    
+    contactsList.innerHTML = userContacts.map(contact => `
+        <div class="contact-item" data-contact="${contact.id}">
+            <div class="contact-avatar">
+                ${contact.avatarUrl ? 
+                    `<img src="${contact.avatarUrl}" alt="${contact.username}" onerror="this.onerror=null;this.src='https://placehold.co/60x60/00bcd4/ffffff?text=${contact.username?.charAt(0).toUpperCase() || 'U'}'" />` : 
+                    `<div>${contact.username?.charAt(0).toUpperCase() || 'U'}</div>`}
+            </div>
+            <div class="contact-info">
+                <div class="contact-name">${contact.username || 'Unknown User'}</div>
+                <div class="contact-status">${contact.status || 'No status'}</div>
+            </div>
+            <!-- NEW CALL BUTTONS -->
+            <div class="call-buttons-container">
+                <button class="call-btn voice-call-btn" data-target-username="${contact.username}" title="Voice Call">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </button>
+                <button class="call-btn video-call-btn" data-target-username="${contact.username}" title="Video Call">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video"><path d="M22 8.5V12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.5L10 2l12 6.5Z"/><path d="M2 12v3.5A2.5 2.5 0 0 0 4.5 18h15A2.5 2.5 0 0 0 22 15.5V12"/></svg>
+                </button>
+            </div>
+            <!-- END NEW CALL BUTTONS -->
+        </div>
+    `).join('');
+
+    // Apply styles for fallback avatars (initials)
+    document.querySelectorAll('.contact-avatar div').forEach(div => {
+        div.style.backgroundColor = 'var(--color-cyan-primary)'; /* Use the primary cyan */
+        div.style.color = 'white';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        div.style.fontSize = '1.8em'; /* Larger initials */
+    });
+    
+    // Add click event to contacts
+    document.querySelectorAll('.contact-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Only enter chat if the click wasn't on a call button
+            if (!e.target.closest('.call-btn')) { // Check if click was on any call button
+                const contactId = item.getAttribute('data-contact');
+                const contact = userContacts.find(c => c.id === contactId);
+                if (contact) {
+                    enterPrivateChat(contact);
+                }
+            }
+        });
+    });
+
+    // Add event listeners for call buttons within contact items
+    document.querySelectorAll('.contact-item .voice-call-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent contact-item click from triggering
+            const targetUsername = e.currentTarget.getAttribute('data-target-username');
+            window.startOutgoingCall(targetUsername, 'voice');
+        });
+    });
+
+    document.querySelectorAll('.contact-item .video-call-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent contact-item click from triggering
+            const targetUsername = e.currentTarget.getAttribute('data-target-username');
+            window.startOutgoingCall(targetUsername, 'video');
+        });
+    });
+}
+
