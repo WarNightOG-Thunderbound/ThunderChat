@@ -97,23 +97,23 @@ const rtcConfig = {
 function showLoading(message = 'Loading...') {
     loadingScreen.querySelector('div:last-child').textContent = message;
     loadingScreen.classList.remove('hidden');
-    console.log(`Loading: ${message}`); // Debugging
+    console.log(`[LOADING] Showing: ${message}`); // Debugging
 }
 
 function hideLoading() {
     loadingScreen.classList.add('hidden');
-    console.log('Loading screen hidden.'); // Debugging
+    console.log('[LOADING] Hidden.'); // Debugging
 }
 
 function showAlert(message, duration = 3000) {
     customAlertMessage.textContent = message;
     customAlertModal.classList.add('show-modal');
     customAlertModal.classList.remove('hidden');
-    console.log(`Alert shown: ${message}`); // Debugging
+    console.log(`[ALERT] Shown: ${message}`); // Debugging
     setTimeout(() => {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
-        console.log(`Alert hidden: ${message}`); // Debugging
+        console.log(`[ALERT] Hidden: ${message}`); // Debugging
     }, duration);
 }
 
@@ -123,7 +123,7 @@ function showSection(sectionId) {
     sections.forEach(section => {
         if (section.id === sectionId) {
             section.classList.remove('hidden');
-            console.log(`Showing section: ${sectionId}`); // Debugging
+            console.log(`[UI] Showing section: ${sectionId}`); // Debugging
         } else {
             section.classList.add('hidden');
         }
@@ -137,6 +137,7 @@ toggleAuthModeBtn.addEventListener('click', () => {
     authSubmitBtn.textContent = isRegisterMode ? 'Register' : 'Login';
     toggleAuthModeBtn.textContent = isRegisterMode ? 'Already have an account? Login' : 'Don\'t have an account? Register';
     authMessage.textContent = ''; // Clear previous messages
+    console.log(`[AUTH] Toggled to ${isRegisterMode ? 'Register' : 'Login'} mode.`); // Debugging
 });
 
 authSubmitBtn.addEventListener('click', async () => {
@@ -163,14 +164,16 @@ authSubmitBtn.addEventListener('click', async () => {
                 memorableId: memorableId // Store the memorable ID
             });
             authMessage.textContent = 'Registration successful! Logging in...';
+            console.log(`[AUTH] User registered: ${user.uid}`); // Debugging
         } else {
             await signInWithEmailAndPassword(auth, email, password);
             authMessage.textContent = 'Login successful!';
+            console.log(`[AUTH] User logged in.`); // Debugging
         }
         authEmailInput.value = '';
         authPasswordInput.value = '';
     } catch (error) {
-        console.error("Auth error:", error);
+        console.error("[AUTH ERROR]", error);
         authMessage.textContent = `Error: ${error.message}`;
     } finally {
         hideLoading();
@@ -181,9 +184,10 @@ logoutBtn.addEventListener('click', async () => {
     showLoading('Logging out...');
     try {
         await signOut(auth);
+        console.log('[AUTH] User signed out.'); // Debugging
         // onAuthStateChanged will handle UI reset
     } catch (error) {
-        console.error("Logout error:", error);
+        console.error("[AUTH ERROR] Logout failed:", error);
         showAlert(`Logout failed: ${error.message}`);
     } finally {
         hideLoading();
@@ -204,12 +208,13 @@ onAuthStateChanged(auth, async (user) => {
         const snapshot = await get(child(ref(db), `users/${user.uid}`));
         if (snapshot.exists()) {
             currentUser = { uid: user.uid, ...snapshot.val() };
+            console.log(`[AUTH] User data loaded for ${currentUser.username}.`); // Debugging
             hideLoading();
             showSection('calls-contacts-section');
             loadUserContacts();
             listenForIncomingCalls(); // Start listening for calls once authenticated
         } else {
-            // This might happen if a user registers but their DB entry fails
+            console.error("[AUTH ERROR] User data not found in DB after login."); // Debugging
             hideLoading();
             showAlert('User data not found. Please try again or contact support.');
             signOut(auth); // Force logout
@@ -221,16 +226,20 @@ onAuthStateChanged(auth, async (user) => {
         if (incomingCallListener) {
             off(ref(db, 'calls'), 'child_added', incomingCallListener);
             incomingCallListener = null;
-            console.log('Incoming call listener detached.'); // Debugging
+            console.log('[AUTH] Incoming call listener detached on logout.'); // Debugging
         }
         showSection('auth-section');
         hideLoading(); // Ensure loading is hidden after showing auth section
+        console.log('[AUTH] Showing authentication section.'); // Debugging
     }
 });
 
 // --- Contacts Functionality ---
 async function loadUserContacts() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.warn("[CONTACTS] No current user, cannot load contacts."); // Debugging
+        return;
+    }
 
     showLoading('Loading contacts...');
     try {
@@ -249,13 +258,15 @@ async function loadUserContacts() {
                     });
                 }
             }
+            console.log(`[CONTACTS] Loaded ${userContacts.length} contacts.`); // Debugging
             renderContactsList();
         } else {
             userContacts = [];
+            console.log('[CONTACTS] No contacts found for current user.'); // Debugging
             renderContactsList();
         }
     } catch (error) {
-        console.error("Error loading contacts:", error);
+        console.error("[CONTACTS ERROR] Error loading contacts:", error);
         showAlert("Failed to load contacts.");
         userContacts = [];
         renderContactsList();
@@ -280,10 +291,10 @@ function renderContactsList() {
             <div class="contact-info">
                 <div class="contact-name">${contact.username || 'Unknown User'}</div>
             </div>
-            <button class="call-icon" data-contact-id="${contact.id}" data-call-type="voice">
+            <button class="call-icon" data-contact-id="${contact.id}" data-call-type="voice" title="Voice Call">
                 <i class="fas fa-phone"></i>
             </button>
-            <button class="call-icon ml-2" data-contact-id="${contact.id}" data-call-type="video">
+            <button class="call-icon ml-2" data-contact-id="${contact.id}" data-call-type="video" title="Video Call">
                 <i class="fas fa-video"></i>
             </button>
         </div>
@@ -296,10 +307,12 @@ function renderContactsList() {
             const type = e.currentTarget.getAttribute('data-call-type');
             const contact = userContacts.find(c => c.id === contactId);
             if (contact) {
+                console.log(`[CALL] Initiating ${type} call to ${contact.username} (${contact.id}).`); // Debugging
                 startOutgoingCall(contact, type);
             }
         });
     });
+    console.log('[CONTACTS] Contacts list rendered.'); // Debugging
 }
 
 // --- WebRTC Call Functionality ---
@@ -318,10 +331,10 @@ async function getLocalStream(video = true) {
         toggleVideoBtn.classList.remove('off'); // Reset video button state
         isMicMuted = false;
         isVideoOff = false;
-        console.log("Local stream obtained.");
+        console.log("[WEBRTC] Local stream obtained.");
         return localStream;
     } catch (error) {
-        console.error("Error getting user media:", error);
+        console.error("[WEBRTC ERROR] Error getting user media:", error);
         showAlert("Media Error", "Could not access microphone or camera. Please check permissions.");
         return null;
     }
@@ -333,7 +346,7 @@ function stopLocalStream() {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
         localVideo.srcObject = null;
-        console.log("Local stream stopped.");
+        console.log("[WEBRTC] Local stream stopped.");
     }
 }
 
@@ -342,22 +355,23 @@ function createPeerConnection() {
     if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
+        console.log("[WEBRTC] Existing PeerConnection closed."); // Debugging
     }
     peerConnection = new RTCPeerConnection(rtcConfig);
-    console.log("RTCPeerConnection created.");
+    console.log("[WEBRTC] RTCPeerConnection created.");
 
     // Add local stream tracks to peer connection
     if (localStream) {
         localStream.getTracks().forEach(track => {
             peerConnection.addTrack(track, localStream);
-            console.log(`Added local track: ${track.kind}`);
+            console.log(`[WEBRTC] Added local track: ${track.kind}`);
         });
     }
 
     // Handle ICE candidates
     peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-            console.log("Sending ICE candidate:", event.candidate);
+            console.log("[WEBRTC] Sending ICE candidate:", event.candidate);
             if (currentCallId && callRef) {
                 push(child(callRef, 'candidates/' + currentUser.uid), event.candidate.toJSON());
             }
@@ -366,18 +380,18 @@ function createPeerConnection() {
 
     // Handle remote tracks
     peerConnection.ontrack = (event) => {
-        console.log("Received remote track:", event.streams[0]);
+        console.log("[WEBRTC] Received remote track:", event.streams[0]);
         if (remoteVideo.srcObject !== event.streams[0]) {
             remoteVideo.srcObject = event.streams[0];
             remoteVideo.style.display = 'block';
             callStatus.textContent = 'Connected!';
-            console.log("Remote stream connected.");
+            console.log("[WEBRTC] Remote stream connected.");
         }
     };
 
     // Handle connection state changes
     peerConnection.onconnectionstatechange = () => {
-        console.log("Peer connection state:", peerConnection.connectionState);
+        console.log("[WEBRTC] Peer connection state:", peerConnection.connectionState);
         if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
             showAlert("Call Ended", "The call has been disconnected.");
             hangupCall();
@@ -387,9 +401,10 @@ function createPeerConnection() {
     };
 
     peerConnection.oniceconnectionstatechange = () => {
-        console.log("ICE connection state:", peerConnection.iceConnectionState);
+        console.log("[WEBRTC] ICE connection state:", peerConnection.iceConnectionState);
         if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
             // Consider re-attempting connection or showing warning
+            console.warn("[WEBRTC] ICE connection failed or disconnected."); // Debugging
         }
     };
 
@@ -427,7 +442,7 @@ async function startOutgoingCall(targetContact, type) {
             offerToReceiveAudio: true
         });
         await peerConnection.setLocalDescription(offer);
-        console.log("Created and set local offer.");
+        console.log("[CALL] Created and set local offer.");
 
         // 4. Store call info in Firebase
         const newCallRef = push(ref(db, 'calls'), {
@@ -445,19 +460,19 @@ async function startOutgoingCall(targetContact, type) {
         });
         currentCallId = newCallRef.key;
         callRef = newCallRef;
-        console.log("Call created in Firebase:", currentCallId);
+        console.log("[CALL] Call created in Firebase:", currentCallId);
 
         // Listen for answer
         callEndedListener = onValue(callRef, async (snapshot) => {
             const callData = snapshot.val();
             if (!callData) {
-                console.log("Call data no longer exists, call might have ended or rejected.");
+                console.log("[CALL] Call data no longer exists in Firebase. Ending call."); // Debugging
                 hangupCall(); // Ensure cleanup if call node is removed
                 return;
             }
 
             if (callData.status === 'answered' && callData.answer && peerConnection.remoteDescription?.type !== 'answer') {
-                console.log("Received answer:", callData.answer);
+                console.log("[CALL] Received answer:", callData.answer);
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.answer));
                 callStatus.textContent = 'Connected!';
                 hideLoading();
@@ -480,7 +495,7 @@ async function startOutgoingCall(targetContact, type) {
         // Listen for ICE candidates from remote
         onChildAdded(child(callRef, 'candidates/' + targetContact.id), (snapshot) => {
             const candidate = new RTCIceCandidate(snapshot.val());
-            console.log("Adding remote ICE candidate:", candidate);
+            console.log("[CALL] Adding remote ICE candidate:", candidate);
             peerConnection.addIceCandidate(candidate);
         });
 
@@ -492,15 +507,15 @@ async function startOutgoingCall(targetContact, type) {
         setTimeout(async () => {
             const currentCallSnapshot = await get(callRef);
             if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
-                console.log("Outgoing call timed out (no answer)."); // Debugging
-                update(callRef, { status: 'no-answer', endedBy: 'system' });
+                console.log("[CALL] Outgoing call timed out (no answer)."); // Debugging
+                await update(callRef, { status: 'no-answer', endedBy: 'system' });
             }
         }, 30000); // 30 seconds for no answer
 
         hideLoading();
         showSection('call-screen'); // Show call screen for outgoing call
     } catch (error) {
-        console.error("Error starting outgoing call:", error);
+        console.error("[CALL ERROR] Error starting outgoing call:", error);
         hideLoading();
         showAlert("Call Error", "Failed to start call: " + error.message);
         hangupCall();
@@ -510,7 +525,7 @@ async function startOutgoingCall(targetContact, type) {
 // Function to listen for incoming calls
 function listenForIncomingCalls() {
     if (!currentUser || !currentUser.uid) {
-        console.warn("Not logged in, cannot listen for calls.");
+        console.warn("[LISTENER] Not logged in, cannot listen for calls.");
         return;
     }
 
@@ -518,21 +533,21 @@ function listenForIncomingCalls() {
     // Detach any existing listener to prevent duplicates
     if (incomingCallListener) {
         off(callsRef, 'child_added', incomingCallListener);
-        console.log('Existing incoming call listener detached before re-attaching.'); // Debugging
+        console.log('[LISTENER] Existing incoming call listener detached before re-attaching.'); // Debugging
     }
 
     // Listen for new calls where this user is the callee and status is 'ringing'
     incomingCallListener = onChildAdded(callsRef, async (snapshot) => {
         const callData = snapshot.val();
         const callId = snapshot.key;
-        console.log(`onChildAdded fired for callId: ${callId}, data:`, callData); // Debugging
+        console.log(`[LISTENER] onChildAdded fired for callId: ${callId}, data:`, callData); // Debugging
 
         if (callData.calleeId === currentUser.uid && callData.status === 'ringing') {
-            console.log("Incoming call detected for current user:", callData); // Debugging
+            console.log("[LISTENER] Incoming call detected for current user:", callData); // Debugging
 
             if (currentCallId) {
                 // If already in a call or busy, reject new incoming call automatically
-                console.log("Already in a call, rejecting new incoming call:", callId); // Debugging
+                console.log("[LISTENER] Already in a call, rejecting new incoming call:", callId); // Debugging
                 await update(ref(db, `calls/${callId}`), { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username });
                 return;
             }
@@ -543,13 +558,13 @@ function listenForIncomingCalls() {
 
             // Start vibration
             if ('vibrate' in navigator) {
-                console.log("Starting vibration for incoming call."); // Debugging
+                console.log("[VIBRATION] Starting vibration for incoming call."); // Debugging
                 // Vibrate pattern: vibrate 500ms, pause 200ms, vibrate 500ms, pause 200ms...
                 vibrationInterval = setInterval(() => {
                     navigator.vibrate([500, 200]);
                 }, 700); // Repeat every 700ms (500 + 200)
             } else {
-                console.warn("Vibration API not supported on this device."); // Debugging
+                console.warn("[VIBRATION] Vibration API not supported on this device."); // Debugging
             }
 
             // Show incoming call prompt using custom alert
@@ -566,7 +581,7 @@ function listenForIncomingCalls() {
             `;
             customAlertModal.classList.add('show-modal');
             customAlertModal.classList.remove('hidden');
-            console.log("Incoming call modal shown."); // Debugging
+            console.log("[MODAL] Incoming call modal shown."); // Debugging
 
             const answerCallBtn = document.getElementById('answer-call-btn');
             const rejectCallBtn = document.getElementById('reject-call-btn');
@@ -575,7 +590,7 @@ function listenForIncomingCalls() {
             incomingCallTimeoutId = setTimeout(async () => {
                 const currentCallSnapshot = await get(callRef);
                 if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
-                    console.log("Incoming call timed out (no answer)."); // Debugging
+                    console.log("[CALL TIMEOUT] Incoming call timed out (no answer)."); // Debugging
                     await update(callRef, { status: 'no-answer', endedBy: 'system' });
                     hangupCall(); // This will also stop vibration and reset modal
                     showAlert("Call Missed", `Call from ${callData.callerUsername} was not answered.`);
@@ -589,11 +604,11 @@ function listenForIncomingCalls() {
                     clearInterval(vibrationInterval);
                     if ('vibrate' in navigator) navigator.vibrate(0); // Stop vibration
                     vibrationInterval = null;
-                    console.log("Vibration stopped on answer."); // Debugging
+                    console.log("[VIBRATION] Stopped on answer."); // Debugging
                 }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
-                console.log("Incoming call modal hidden on answer."); // Debugging
+                console.log("[MODAL] Incoming call modal hidden on answer."); // Debugging
                 showLoading("Answering call...");
                 try {
                     // 1. Get local stream
@@ -609,12 +624,12 @@ function listenForIncomingCalls() {
 
                     // 3. Set remote offer
                     await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
-                    console.log("Set remote offer.");
+                    console.log("[WEBRTC] Set remote offer.");
 
                     // 4. Create answer
                     const answer = await peerConnection.createAnswer();
                     await peerConnection.setLocalDescription(answer);
-                    console.log("Created and set local answer.");
+                    console.log("[WEBRTC] Created and set local answer.");
 
                     // 5. Update call in Firebase with answer and status
                     await update(callRef, {
@@ -624,12 +639,12 @@ function listenForIncomingCalls() {
                         },
                         status: 'answered'
                     });
-                    console.log("Call answered and updated in Firebase.");
+                    console.log("[CALL] Call answered and updated in Firebase.");
 
                     // Listen for ICE candidates from remote (caller)
                     onChildAdded(child(callRef, 'candidates/' + callData.callerId), (snapshot) => {
                         const candidate = new RTCIceCandidate(snapshot.val());
-                        console.log("Adding remote ICE candidate:", candidate);
+                        console.log("[WEBRTC] Adding remote ICE candidate:", candidate);
                         peerConnection.addIceCandidate(candidate);
                     });
 
@@ -637,7 +652,7 @@ function listenForIncomingCalls() {
                     callEndedListener = onValue(callRef, (snap) => {
                         const updatedCallData = snap.val();
                         if (!updatedCallData) {
-                            console.log("Call node removed, ending call locally.");
+                            console.log("[CALL] Call node removed, ending call locally.");
                             hangupCall(); // Ensure cleanup if call node is removed
                             return;
                         }
@@ -654,7 +669,7 @@ function listenForIncomingCalls() {
                     hideLoading();
                     showSection('call-screen');
                 } catch (error) {
-                    console.error("Error answering call:", error);
+                    console.error("[CALL ERROR] Error answering call:", error);
                     hideLoading();
                     showAlert("Call Error", "Failed to answer call: " + error.message);
                     await update(callRef, { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username }); // Ensure Firebase status is updated
@@ -670,19 +685,19 @@ function listenForIncomingCalls() {
                     clearInterval(vibrationInterval);
                     if ('vibrate' in navigator) navigator.vibrate(0); // Stop vibration
                     vibrationInterval = null;
-                    console.log("Vibration stopped on reject."); // Debugging
+                    console.log("[VIBRATION] Stopped on reject."); // Debugging
                 }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
-                console.log("Incoming call modal hidden on reject."); // Debugging
-                console.log("Call rejected by user.");
+                console.log("[MODAL] Incoming call modal hidden on reject."); // Debugging
+                console.log("[CALL] Call rejected by user.");
                 await update(callRef, { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username });
                 hangupCall(); // Clean up local state
                 restoreAlertModalContent(); // Restore original alert modal content
             };
         }
     });
-    console.log("Listening for incoming calls..."); // Debugging
+    console.log("[LISTENER] Listening for incoming calls..."); // Debugging
 }
 
 // Function to restore the default alert modal content
@@ -702,34 +717,34 @@ function restoreAlertModalContent() {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
     });
-    console.log("Alert modal content restored."); // Debugging
+    console.log("[MODAL] Alert modal content restored."); // Debugging
 }
 
 
 // Function to hang up the current call
 async function hangupCall() {
-    console.log("Attempting to hang up call. currentCallId:", currentCallId); // Debugging
+    console.log("[HANGUP] Attempting to hang up call. currentCallId:", currentCallId); // Debugging
     if (callRef && currentCallId) {
         // Only update Firebase if the call hasn't already been marked as ended by the other party
         const currentCallSnapshot = await get(callRef);
         if (currentCallSnapshot.exists() && currentCallSnapshot.val().status !== 'ended' && currentCallSnapshot.val().status !== 'no-answer' && currentCallSnapshot.val().status !== 'rejected') {
-            console.log("Updating Firebase call status to ended."); // Debugging
+            console.log("[HANGUP] Updating Firebase call status to ended."); // Debugging
             await update(callRef, { status: 'ended', endedBy: currentUser.uid, endedByUsername: currentUser.username });
         } else {
-            console.log("Firebase call status already updated or call node removed, skipping update."); // Debugging
+            console.log("[HANGUP] Firebase call status already updated or call node removed, skipping update."); // Debugging
         }
         // Ensure the onValue listener is detached to avoid re-triggering hangup
         if (callEndedListener) {
             off(callRef, 'value', callEndedListener); // Detach the listener
             callEndedListener = null;
-            console.log("Call ended listener detached."); // Debugging
+            console.log("[HANGUP] Call ended listener detached."); // Debugging
         }
     }
 
     if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
-        console.log("PeerConnection closed.");
+        console.log("[HANGUP] PeerConnection closed.");
     }
 
     stopLocalStream();
@@ -746,20 +761,20 @@ async function hangupCall() {
     toggleVideoBtn.classList.remove('off');
     toggleVideoBtn.style.display = 'flex'; // Reset display for video toggle
     showSection('calls-contacts-section'); // Go back to contacts list
-    console.log("Call cleaned up and returned to contacts section."); // Debugging
+    console.log("[HANGUP] Call cleaned up and returned to contacts section."); // Debugging
 
     // Stop vibration if active
     if (vibrationInterval) {
         clearInterval(vibrationInterval);
         if ('vibrate' in navigator) navigator.vibrate(0); // Stop any ongoing vibration
         vibrationInterval = null;
-        console.log("Vibration stopped."); // Debugging
+        console.log("[HANGUP] Vibration stopped."); // Debugging
     }
     // Clear incoming call timeout if active
     if (incomingCallTimeoutId) {
         clearTimeout(incomingCallTimeoutId);
         incomingCallTimeoutId = null;
-        console.log("Incoming call timeout cleared."); // Debugging
+        console.log("[HANGUP] Incoming call timeout cleared."); // Debugging
     }
     // Ensure the alert modal is hidden and reset if it was showing
     customAlertModal.classList.remove('show-modal');
@@ -782,6 +797,7 @@ function updateCallUI() {
         toggleVideoBtn.classList.remove('off');
         localVideo.style.opacity = '1';
     }
+    console.log(`[UI] Mic muted: ${isMicMuted}, Video off: ${isVideoOff}`); // Debugging
 }
 
 // Event Listeners for Call Controls
@@ -791,7 +807,7 @@ toggleMicBtn.addEventListener('click', () => {
             track.enabled = !track.enabled;
             isMicMuted = !track.enabled;
             updateCallUI();
-            console.log(`Mic ${isMicMuted ? 'muted' : 'unmuted'}`);
+            console.log(`[CONTROL] Mic ${isMicMuted ? 'muted' : 'unmuted'}`);
         });
     }
 });
@@ -802,7 +818,7 @@ toggleVideoBtn.addEventListener('click', () => {
             track.enabled = !track.enabled;
             isVideoOff = !track.enabled;
             updateCallUI();
-            console.log(`Video ${isVideoOff ? 'off' : 'on'}`);
+            console.log(`[CONTROL] Video ${isVideoOff ? 'off' : 'on'}`);
         });
     }
 });
@@ -821,9 +837,11 @@ document.addEventListener('DOMContentLoaded', () => {
     customAlertOkBtn.addEventListener('click', () => {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
+        console.log("[MODAL] Default OK button clicked."); // Debugging
     });
     closeAlertBtn.addEventListener('click', () => {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
+        console.log("[MODAL] Default Close button clicked."); // Debugging
     });
 });
