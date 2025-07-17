@@ -124,10 +124,8 @@ function showSection(sectionId) {
         if (section.id === sectionId) {
             section.classList.remove('hidden');
             // Ensure display style is set correctly if Tailwind's hidden overrides it
-            if (section.id === 'auth-section' || section.id === 'calls-contacts-section') {
+            if (section.id === 'auth-section' || section.id === 'calls-contacts-section' || section.id === 'call-screen') {
                 section.style.display = 'flex'; // These are flex containers
-            } else if (section.id === 'call-screen') {
-                section.style.display = 'flex'; // Call screen is also a flex container
             }
             console.log(`[UI] Showing section: ${sectionId}`); // Debugging
         } else {
@@ -327,10 +325,16 @@ function renderContactsList() {
 // Helper to get local media stream
 async function getLocalStream(video = true) {
     try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: video,
-            audio: true
-        });
+        // Enhanced audio constraints for echo cancellation, noise suppression, and auto gain control
+        const mediaConstraints = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            },
+            video: video
+        };
+        localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
         localVideo.srcObject = localStream;
         localVideo.style.display = video ? 'block' : 'none'; // Show local video only if video call
         toggleVideoBtn.style.display = video ? 'flex' : 'none'; // Show video toggle only if video call
@@ -338,11 +342,11 @@ async function getLocalStream(video = true) {
         toggleVideoBtn.classList.remove('off'); // Reset video button state
         isMicMuted = false;
         isVideoOff = false;
-        console.log("[WEBRTC] Local stream obtained.");
+        console.log("[WEBRTC] Local stream obtained with enhanced audio constraints.");
         return localStream;
     } catch (error) {
         console.error("[WEBRTC ERROR] Error getting user media:", error);
-        showAlert("Media Error", "Could not access microphone or camera. Please check permissions.");
+        showAlert("Media Error", "Could not access microphone or camera. Please check permissions. Error: " + error.message);
         return null;
     }
 }
@@ -737,35 +741,35 @@ function restoreAlertModalContent() {
 
 // Function to hang up the current call
 async function hangupCall() {
-    console.log("[HANGUP] Attempting to hang up call. currentCallId:", currentCallId); // Debugging
+    console.log("[HANGUP] Attempting to hang up call. currentCallId:", currentCallId);
     
     // Stop vibration and clear timeout first, regardless of Firebase state
     if (vibrationInterval) {
         clearInterval(vibrationInterval);
         if ('vibrate' in navigator) navigator.vibrate(0); // Stop any ongoing vibration
         vibrationInterval = null;
-        console.log("[HANGUP] Vibration stopped."); // Debugging
+        console.log("[HANGUP] Vibration stopped.");
     }
     if (incomingCallTimeoutId) {
         clearTimeout(incomingCallTimeoutId);
         incomingCallTimeoutId = null;
-        console.log("[HANGUP] Incoming call timeout cleared."); // Debugging
+        console.log("[HANGUP] Incoming call timeout cleared.");
     }
 
     if (callRef && currentCallId) {
         // Only update Firebase if the call hasn't already been marked as ended by the other party
         const currentCallSnapshot = await get(callRef);
         if (currentCallSnapshot.exists() && currentCallSnapshot.val().status !== 'ended' && currentCallSnapshot.val().status !== 'no-answer' && currentCallSnapshot.val().status !== 'rejected') {
-            console.log("[HANGUP] Updating Firebase call status to ended."); // Debugging
+            console.log("[HANGUP] Updating Firebase call status to ended.");
             await update(callRef, { status: 'ended', endedBy: currentUser.uid, endedByUsername: currentUser.username });
         } else {
-            console.log("[HANGUP] Firebase call status already updated or call node removed, skipping update."); // Debugging
+            console.log("[HANGUP] Firebase call status already updated or call node removed, skipping update.");
         }
         // Ensure the onValue listener is detached to avoid re-triggering hangup
         if (callEndedListener) {
             off(callRef, 'value', callEndedListener); // Detach the listener
             callEndedListener = null;
-            console.log("[HANGUP] Call ended listener detached."); // Debugging
+            console.log("[HANGUP] Call ended listener detached.");
         }
     }
 
@@ -791,7 +795,7 @@ async function hangupCall() {
     toggleVideoBtn.classList.remove('off');
     toggleVideoBtn.style.display = 'flex'; // Reset display for video toggle
     showSection('calls-contacts-section'); // Go back to contacts list
-    console.log("[HANGUP] Call cleaned up and returned to contacts section."); // Debugging
+    console.log("[HANGUP] Call cleaned up and returned to contacts section.");
 
     // Ensure the alert modal is hidden and reset if it was showing
     customAlertModal.classList.remove('show-modal');
