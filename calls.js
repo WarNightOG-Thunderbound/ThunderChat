@@ -97,19 +97,23 @@ const rtcConfig = {
 function showLoading(message = 'Loading...') {
     loadingScreen.querySelector('div:last-child').textContent = message;
     loadingScreen.classList.remove('hidden');
+    console.log(`Loading: ${message}`); // Debugging
 }
 
 function hideLoading() {
     loadingScreen.classList.add('hidden');
+    console.log('Loading screen hidden.'); // Debugging
 }
 
 function showAlert(message, duration = 3000) {
     customAlertMessage.textContent = message;
     customAlertModal.classList.add('show-modal');
     customAlertModal.classList.remove('hidden');
+    console.log(`Alert shown: ${message}`); // Debugging
     setTimeout(() => {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
+        console.log(`Alert hidden: ${message}`); // Debugging
     }, duration);
 }
 
@@ -119,6 +123,7 @@ function showSection(sectionId) {
     sections.forEach(section => {
         if (section.id === sectionId) {
             section.classList.remove('hidden');
+            console.log(`Showing section: ${sectionId}`); // Debugging
         } else {
             section.classList.add('hidden');
         }
@@ -216,8 +221,10 @@ onAuthStateChanged(auth, async (user) => {
         if (incomingCallListener) {
             off(ref(db, 'calls'), 'child_added', incomingCallListener);
             incomingCallListener = null;
+            console.log('Incoming call listener detached.'); // Debugging
         }
         showSection('auth-section');
+        hideLoading(); // Ensure loading is hidden after showing auth section
     }
 });
 
@@ -443,7 +450,11 @@ async function startOutgoingCall(targetContact, type) {
         // Listen for answer
         callEndedListener = onValue(callRef, async (snapshot) => {
             const callData = snapshot.val();
-            if (!callData) return;
+            if (!callData) {
+                console.log("Call data no longer exists, call might have ended or rejected.");
+                hangupCall(); // Ensure cleanup if call node is removed
+                return;
+            }
 
             if (callData.status === 'answered' && callData.answer && peerConnection.remoteDescription?.type !== 'answer') {
                 console.log("Received answer:", callData.answer);
@@ -477,10 +488,11 @@ async function startOutgoingCall(targetContact, type) {
         remoteUserDisplay.textContent = `Calling ${targetContact.username}...`;
         callStatus.textContent = 'Ringing...';
 
-        // Set a timeout for no answer
+        // Set a timeout for no answer for outgoing call
         setTimeout(async () => {
             const currentCallSnapshot = await get(callRef);
             if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
+                console.log("Outgoing call timed out (no answer)."); // Debugging
                 update(callRef, { status: 'no-answer', endedBy: 'system' });
             }
         }, 30000); // 30 seconds for no answer
@@ -506,20 +518,22 @@ function listenForIncomingCalls() {
     // Detach any existing listener to prevent duplicates
     if (incomingCallListener) {
         off(callsRef, 'child_added', incomingCallListener);
+        console.log('Existing incoming call listener detached before re-attaching.'); // Debugging
     }
 
     // Listen for new calls where this user is the callee and status is 'ringing'
     incomingCallListener = onChildAdded(callsRef, async (snapshot) => {
         const callData = snapshot.val();
         const callId = snapshot.key;
+        console.log(`onChildAdded fired for callId: ${callId}, data:`, callData); // Debugging
 
         if (callData.calleeId === currentUser.uid && callData.status === 'ringing') {
-            console.log("Incoming call detected:", callData);
+            console.log("Incoming call detected for current user:", callData); // Debugging
 
             if (currentCallId) {
                 // If already in a call or busy, reject new incoming call automatically
-                console.log("Already in a call, rejecting new incoming call.");
-                update(ref(db, `calls/${callId}`), { status: 'rejected', endedBy: currentUser.uid });
+                console.log("Already in a call, rejecting new incoming call:", callId); // Debugging
+                await update(ref(db, `calls/${callId}`), { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username });
                 return;
             }
 
@@ -528,11 +542,14 @@ function listenForIncomingCalls() {
             callType = callData.type;
 
             // Start vibration
-            if (navigator.vibrate) {
+            if ('vibrate' in navigator) {
+                console.log("Starting vibration for incoming call."); // Debugging
                 // Vibrate pattern: vibrate 500ms, pause 200ms, vibrate 500ms, pause 200ms...
                 vibrationInterval = setInterval(() => {
                     navigator.vibrate([500, 200]);
                 }, 700); // Repeat every 700ms (500 + 200)
+            } else {
+                console.warn("Vibration API not supported on this device."); // Debugging
             }
 
             // Show incoming call prompt using custom alert
@@ -549,6 +566,7 @@ function listenForIncomingCalls() {
             `;
             customAlertModal.classList.add('show-modal');
             customAlertModal.classList.remove('hidden');
+            console.log("Incoming call modal shown."); // Debugging
 
             const answerCallBtn = document.getElementById('answer-call-btn');
             const rejectCallBtn = document.getElementById('reject-call-btn');
@@ -557,22 +575,25 @@ function listenForIncomingCalls() {
             incomingCallTimeoutId = setTimeout(async () => {
                 const currentCallSnapshot = await get(callRef);
                 if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
-                    console.log("Incoming call timed out.");
+                    console.log("Incoming call timed out (no answer)."); // Debugging
                     await update(callRef, { status: 'no-answer', endedBy: 'system' });
-                    hangupCall(); // This will also stop vibration
+                    hangupCall(); // This will also stop vibration and reset modal
                     showAlert("Call Missed", `Call from ${callData.callerUsername} was not answered.`);
                 }
-                restoreAlertModalContent(); // Ensure modal is reset
+                restoreAlertModalContent(); // Ensure modal is reset even if timed out
             }, 30000); // 30 seconds
 
             answerCallBtn.onclick = async () => {
                 clearTimeout(incomingCallTimeoutId); // Clear timeout on answer
                 if (vibrationInterval) {
                     clearInterval(vibrationInterval);
-                    navigator.vibrate(0); // Stop vibration
+                    if ('vibrate' in navigator) navigator.vibrate(0); // Stop vibration
+                    vibrationInterval = null;
+                    console.log("Vibration stopped on answer."); // Debugging
                 }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
+                console.log("Incoming call modal hidden on answer."); // Debugging
                 showLoading("Answering call...");
                 try {
                     // 1. Get local stream
@@ -615,8 +636,13 @@ function listenForIncomingCalls() {
                     // Listen for the caller ending the call
                     callEndedListener = onValue(callRef, (snap) => {
                         const updatedCallData = snap.val();
-                        if (!updatedCallData || updatedCallData.status === 'ended' || updatedCallData.status === 'no-answer' || updatedCallData.status === 'rejected') {
-                            if (updatedCallData && updatedCallData.endedBy !== currentUser.uid) {
+                        if (!updatedCallData) {
+                            console.log("Call node removed, ending call locally.");
+                            hangupCall(); // Ensure cleanup if call node is removed
+                            return;
+                        }
+                        if (updatedCallData.status === 'ended' || updatedCallData.status === 'no-answer' || updatedCallData.status === 'rejected') {
+                            if (updatedCallData.endedBy !== currentUser.uid) {
                                 showAlert("Call Ended", `${updatedCallData.endedByUsername || 'The other party'} ended the call.`);
                             }
                             hangupCall();
@@ -631,11 +657,10 @@ function listenForIncomingCalls() {
                     console.error("Error answering call:", error);
                     hideLoading();
                     showAlert("Call Error", "Failed to answer call: " + error.message);
-                    update(callRef, { status: 'rejected', endedBy: currentUser.uid });
+                    await update(callRef, { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username }); // Ensure Firebase status is updated
                     hangupCall();
                 } finally {
-                    // Restore original alert modal content
-                    restoreAlertModalContent();
+                    restoreAlertModalContent(); // Restore original alert modal content
                 }
             };
 
@@ -643,19 +668,21 @@ function listenForIncomingCalls() {
                 clearTimeout(incomingCallTimeoutId); // Clear timeout on reject
                 if (vibrationInterval) {
                     clearInterval(vibrationInterval);
-                    navigator.vibrate(0); // Stop vibration
+                    if ('vibrate' in navigator) navigator.vibrate(0); // Stop vibration
+                    vibrationInterval = null;
+                    console.log("Vibration stopped on reject."); // Debugging
                 }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
+                console.log("Incoming call modal hidden on reject."); // Debugging
                 console.log("Call rejected by user.");
                 await update(callRef, { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username });
                 hangupCall(); // Clean up local state
-                // Restore original alert modal content
-                restoreAlertModalContent();
+                restoreAlertModalContent(); // Restore original alert modal content
             };
         }
     });
-    console.log("Listening for incoming calls...");
+    console.log("Listening for incoming calls..."); // Debugging
 }
 
 // Function to restore the default alert modal content
@@ -675,22 +702,27 @@ function restoreAlertModalContent() {
         customAlertModal.classList.remove('show-modal');
         customAlertModal.classList.add('hidden');
     });
+    console.log("Alert modal content restored."); // Debugging
 }
 
 
 // Function to hang up the current call
 async function hangupCall() {
+    console.log("Attempting to hang up call. currentCallId:", currentCallId); // Debugging
     if (callRef && currentCallId) {
-        console.log("Hanging up call:", currentCallId);
         // Only update Firebase if the call hasn't already been marked as ended by the other party
         const currentCallSnapshot = await get(callRef);
-        if (currentCallSnapshot.exists() && currentCallSnapshot.val().status !== 'ended') {
+        if (currentCallSnapshot.exists() && currentCallSnapshot.val().status !== 'ended' && currentCallSnapshot.val().status !== 'no-answer' && currentCallSnapshot.val().status !== 'rejected') {
+            console.log("Updating Firebase call status to ended."); // Debugging
             await update(callRef, { status: 'ended', endedBy: currentUser.uid, endedByUsername: currentUser.username });
+        } else {
+            console.log("Firebase call status already updated or call node removed, skipping update."); // Debugging
         }
         // Ensure the onValue listener is detached to avoid re-triggering hangup
         if (callEndedListener) {
             off(callRef, 'value', callEndedListener); // Detach the listener
             callEndedListener = null;
+            console.log("Call ended listener detached."); // Debugging
         }
     }
 
@@ -714,19 +746,25 @@ async function hangupCall() {
     toggleVideoBtn.classList.remove('off');
     toggleVideoBtn.style.display = 'flex'; // Reset display for video toggle
     showSection('calls-contacts-section'); // Go back to contacts list
-    console.log("Call cleaned up.");
+    console.log("Call cleaned up and returned to contacts section."); // Debugging
 
     // Stop vibration if active
     if (vibrationInterval) {
         clearInterval(vibrationInterval);
-        navigator.vibrate(0); // Stop any ongoing vibration
+        if ('vibrate' in navigator) navigator.vibrate(0); // Stop any ongoing vibration
         vibrationInterval = null;
+        console.log("Vibration stopped."); // Debugging
     }
     // Clear incoming call timeout if active
     if (incomingCallTimeoutId) {
         clearTimeout(incomingCallTimeoutId);
         incomingCallTimeoutId = null;
+        console.log("Incoming call timeout cleared."); // Debugging
     }
+    // Ensure the alert modal is hidden and reset if it was showing
+    customAlertModal.classList.remove('show-modal');
+    customAlertModal.classList.add('hidden');
+    restoreAlertModalContent();
 }
 
 // Function to update call UI (e.g., mute/unmute icons)
@@ -773,15 +811,19 @@ hangupBtn.addEventListener('click', hangupCall);
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
-    hideLoading(); // Hide loading screen initially, auth listener will show/hide as needed
+    // Initially show loading screen, onAuthStateChanged will handle showing auth/contacts
+    showLoading('Initializing...');
+    // No need to hideLoading here, onAuthStateChanged will do it.
 });
 
-// Default alert modal button listeners
-customAlertOkBtn.addEventListener('click', () => {
-    customAlertModal.classList.remove('show-modal');
-    customAlertModal.classList.add('hidden');
-});
-closeAlertBtn.addEventListener('click', () => {
-    customAlertModal.classList.remove('show-modal');
-    customAlertModal.classList.add('hidden');
+// Default alert modal button listeners (ensure they are attached once)
+document.addEventListener('DOMContentLoaded', () => {
+    customAlertOkBtn.addEventListener('click', () => {
+        customAlertModal.classList.remove('show-modal');
+        customAlertModal.classList.add('hidden');
+    });
+    closeAlertBtn.addEventListener('click', () => {
+        customAlertModal.classList.remove('show-modal');
+        customAlertModal.classList.add('hidden');
+    });
 });
