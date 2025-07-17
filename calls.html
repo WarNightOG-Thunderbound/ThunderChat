@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThunderChat Calls</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS for Calls Page -->
+    <link rel="stylesheet" href="calls.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 font-inter antialiased flex flex-col min-h-screen transition-colors duration-300">
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center z-[9999] transition-colors duration-300">
+        <div class="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500 dark:border-blue-400"></div>
+        <div class="text-blue-500 dark:text-blue-400 text-2xl font-bold mt-4">Loading Calls...</div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9998] hidden">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-sm w-full text-center relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
+            <button id="close-alert-btn" class="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-3xl font-bold">&times;</button>
+            <p id="custom-alert-message" class="text-gray-800 dark:text-gray-100 text-lg mb-6"></p>
+            <button id="custom-alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200">OK</button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="flex flex-col flex-grow w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden my-4">
+
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 shadow-md flex items-center justify-between">
+            <h1 class="text-2xl font-bold">ThunderChat Calls</h1>
+            <button id="logout-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-200 text-sm">Logout</button>
+        </header>
+
+        <!-- Auth Section -->
+        <section id="auth-section" class="flex flex-col items-center justify-center flex-grow p-6 hidden">
+            <div class="bg-white dark:bg-gray-700 p-8 rounded-xl shadow-lg w-full max-w-sm text-center">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6" id="auth-title">Login</h2>
+                <div class="mb-4">
+                    <input type="email" id="auth-email" placeholder="Email" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                </div>
+                <div class="mb-6">
+                    <input type="password" id="auth-password" placeholder="Password" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                </div>
+                <button id="auth-submit-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md transition-colors duration-200">Login</button>
+                <p class="mt-4 text-gray-600 dark:text-gray-300">
+                    <span id="toggle-auth-mode" class="text-blue-500 hover:underline cursor-pointer">Don't have an account? Register</span>
+                </p>
+                <p id="auth-message" class="text-red-500 text-sm mt-3"></p>
+            </div>
+        </section>
+
+        <!-- Contacts Section for Calls -->
+        <section id="calls-contacts-section" class="flex flex-col flex-grow p-4 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Your Contacts</h2>
+            <div id="contacts-list" class="flex flex-col gap-3 overflow-y-auto flex-grow">
+                <!-- Contacts will be loaded here -->
+                <div class="text-gray-500 dark:text-gray-400 text-center py-8">No contacts found.</div>
+            </div>
+        </section>
+
+        <!-- Call Screen -->
+        <section id="call-screen" class="flex flex-col items-center justify-center flex-grow bg-gray-900 text-white p-4 hidden">
+            <div class="relative w-full h-full flex items-center justify-center">
+                <!-- Remote Video Stream -->
+                <video id="remote-video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover rounded-lg"></video>
+                <!-- Local Video Stream -->
+                <video id="local-video" autoplay playsinline muted class="absolute bottom-4 right-4 w-28 h-28 md:w-36 md:h-36 object-cover rounded-lg shadow-lg border-2 border-white transition-opacity duration-300"></video>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <p id="remote-user-display" class="text-xl font-semibold mb-2">Connecting...</p>
+                <p id="call-status" class="text-lg text-gray-300">Waiting for answer...</p>
+            </div>
+
+            <!-- Call Controls -->
+            <div class="flex justify-center gap-6 mt-6 p-4 bg-gray-800 bg-opacity-70 rounded-full shadow-lg">
+                <button id="toggle-mic-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-microphone text-xl"></i>
+                </button>
+                <button id="toggle-video-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-video text-xl"></i>
+                </button>
+                <button id="hangup-btn" class="control-btn bg-red-600 hover:bg-red-700 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-phone-slash text-xl"></i>
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Custom JavaScript for Calls -->
+    <script type="module" src="calls.js"></script>
+</body>
+</html>
