@@ -1,0 +1,80 @@
+/* calls.css - Styling for the Calls Page */
+
+/* Global styles for Inter font and smooth transitions */
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom button styles for call controls */
+.control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px; /* Fixed width for circular buttons */
+    height: 60px; /* Fixed height for circular buttons */
+    border-radius: 9999px; /* Tailwind's rounded-full */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.control-btn:hover {
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.control-btn:active {
+    transform: translateY(0); /* Press effect on click */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.control-btn.off {
+    background-color: #4a5568; /* Gray-700 in Tailwind */
+    color: #a0aec0; /* Gray-400 in Tailwind */
+}
+
+.control-btn.off:hover {
+    background-color: #2d3748; /* Gray-800 in Tailwind */
+}
+
+/* Specific styles for the contact item in the calls list */
+.contact-item {
+    @apply flex items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm cursor-pointer transition-all duration-200 ease-in-out;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-md;
+}
+
+.contact-item:active {
+    @apply transform scale-98;
+}
+
+.contact-avatar {
+    @apply w-12 h-12 rounded-full flex items-center justify-center bg-blue-500 text-white font-bold text-xl mr-3 overflow-hidden flex-shrink-0;
+}
+
+.contact-avatar img {
+    @apply w-full h-full object-cover;
+}
+
+.contact-info {
+    @apply flex-grow;
+}
+
+.contact-name {
+    @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
+}
+
+.call-icon {
+    @apply text-blue-500 dark:text-blue-400 text-xl ml-auto p-2 rounded-full hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors duration-200;
+}
+
+/* Custom modal animation */
+#custom-alert-modal.show-modal .custom-modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Ensure video elements fill their container */
+#remote-video, #local-video {
+    width: 100%;
+    height: 100%;
+}
