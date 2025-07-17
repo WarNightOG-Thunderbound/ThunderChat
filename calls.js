@@ -79,6 +79,8 @@ let callEndedListener = null; // Listener for call ending
 let isMicMuted = false;
 let isVideoOff = false;
 let incomingCallListener = null; // Listener for incoming calls
+let vibrationInterval = null; // For continuous vibration
+let incomingCallTimeoutId = null; // For incoming call timeout
 
 // WebRTC Configuration (using Google's STUN server for NAT traversal)
 const rtcConfig = {
@@ -525,6 +527,14 @@ function listenForIncomingCalls() {
             callRef = ref(db, `calls/${callId}`);
             callType = callData.type;
 
+            // Start vibration
+            if (navigator.vibrate) {
+                // Vibrate pattern: vibrate 500ms, pause 200ms, vibrate 500ms, pause 200ms...
+                vibrationInterval = setInterval(() => {
+                    navigator.vibrate([500, 200]);
+                }, 700); // Repeat every 700ms (500 + 200)
+            }
+
             // Show incoming call prompt using custom alert
             const promptMessage = `Incoming ${callData.type} call from ${callData.callerUsername}. Do you want to answer?`;
             
@@ -543,7 +553,24 @@ function listenForIncomingCalls() {
             const answerCallBtn = document.getElementById('answer-call-btn');
             const rejectCallBtn = document.getElementById('reject-call-btn');
 
+            // Set a timeout for incoming call (30 seconds)
+            incomingCallTimeoutId = setTimeout(async () => {
+                const currentCallSnapshot = await get(callRef);
+                if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
+                    console.log("Incoming call timed out.");
+                    await update(callRef, { status: 'no-answer', endedBy: 'system' });
+                    hangupCall(); // This will also stop vibration
+                    showAlert("Call Missed", `Call from ${callData.callerUsername} was not answered.`);
+                }
+                restoreAlertModalContent(); // Ensure modal is reset
+            }, 30000); // 30 seconds
+
             answerCallBtn.onclick = async () => {
+                clearTimeout(incomingCallTimeoutId); // Clear timeout on answer
+                if (vibrationInterval) {
+                    clearInterval(vibrationInterval);
+                    navigator.vibrate(0); // Stop vibration
+                }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
                 showLoading("Answering call...");
@@ -613,6 +640,11 @@ function listenForIncomingCalls() {
             };
 
             rejectCallBtn.onclick = async () => {
+                clearTimeout(incomingCallTimeoutId); // Clear timeout on reject
+                if (vibrationInterval) {
+                    clearInterval(vibrationInterval);
+                    navigator.vibrate(0); // Stop vibration
+                }
                 customAlertModal.classList.remove('show-modal');
                 customAlertModal.classList.add('hidden');
                 console.log("Call rejected by user.");
@@ -683,6 +715,18 @@ async function hangupCall() {
     toggleVideoBtn.style.display = 'flex'; // Reset display for video toggle
     showSection('calls-contacts-section'); // Go back to contacts list
     console.log("Call cleaned up.");
+
+    // Stop vibration if active
+    if (vibrationInterval) {
+        clearInterval(vibrationInterval);
+        navigator.vibrate(0); // Stop any ongoing vibration
+        vibrationInterval = null;
+    }
+    // Clear incoming call timeout if active
+    if (incomingCallTimeoutId) {
+        clearTimeout(incomingCallTimeoutId);
+        incomingCallTimeoutId = null;
+    }
 }
 
 // Function to update call UI (e.g., mute/unmute icons)
