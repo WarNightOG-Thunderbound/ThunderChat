@@ -123,9 +123,16 @@ function showSection(sectionId) {
     sections.forEach(section => {
         if (section.id === sectionId) {
             section.classList.remove('hidden');
+            // Ensure display style is set correctly if Tailwind's hidden overrides it
+            if (section.id === 'auth-section' || section.id === 'calls-contacts-section') {
+                section.style.display = 'flex'; // These are flex containers
+            } else if (section.id === 'call-screen') {
+                section.style.display = 'flex'; // Call screen is also a flex container
+            }
             console.log(`[UI] Showing section: ${sectionId}`); // Debugging
         } else {
             section.classList.add('hidden');
+            section.style.display = 'none'; // Explicitly hide
         }
     });
 }
@@ -420,6 +427,7 @@ async function startOutgoingCall(targetContact, type) {
 
     if (currentCallId) {
         showAlert("Error", "You are already in a call.");
+        console.warn("[CALL] Already in a call, cannot start a new one."); // Debugging
         return;
     }
 
@@ -430,6 +438,7 @@ async function startOutgoingCall(targetContact, type) {
         // 1. Get local stream
         if (!await getLocalStream(type === 'video')) {
             hideLoading();
+            console.error("[CALL] Failed to get local stream."); // Debugging
             return; // Failed to get stream
         }
 
@@ -460,19 +469,21 @@ async function startOutgoingCall(targetContact, type) {
         });
         currentCallId = newCallRef.key;
         callRef = newCallRef;
-        console.log("[CALL] Call created in Firebase:", currentCallId);
+        console.log("[CALL] Call created in Firebase with ID:", currentCallId); // Debugging
 
-        // Listen for answer
+        // Listen for answer/status changes on the outgoing call
         callEndedListener = onValue(callRef, async (snapshot) => {
             const callData = snapshot.val();
+            console.log(`[CALL LISTENER - OUTGOING] Call ID: ${currentCallId}, Data:`, callData); // Debugging
+
             if (!callData) {
-                console.log("[CALL] Call data no longer exists in Firebase. Ending call."); // Debugging
+                console.log("[CALL LISTENER - OUTGOING] Call data no longer exists in Firebase. Ending call locally."); // Debugging
                 hangupCall(); // Ensure cleanup if call node is removed
                 return;
             }
 
             if (callData.status === 'answered' && callData.answer && peerConnection.remoteDescription?.type !== 'answer') {
-                console.log("[CALL] Received answer:", callData.answer);
+                console.log("[CALL LISTENER - OUTGOING] Received answer:", callData.answer);
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.answer));
                 callStatus.textContent = 'Connected!';
                 hideLoading();
@@ -507,7 +518,7 @@ async function startOutgoingCall(targetContact, type) {
         setTimeout(async () => {
             const currentCallSnapshot = await get(callRef);
             if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
-                console.log("[CALL] Outgoing call timed out (no answer)."); // Debugging
+                console.log("[CALL TIMEOUT - OUTGOING] Outgoing call timed out (no answer). Updating Firebase."); // Debugging
                 await update(callRef, { status: 'no-answer', endedBy: 'system' });
             }
         }, 30000); // 30 seconds for no answer
@@ -518,7 +529,7 @@ async function startOutgoingCall(targetContact, type) {
         console.error("[CALL ERROR] Error starting outgoing call:", error);
         hideLoading();
         showAlert("Call Error", "Failed to start call: " + error.message);
-        hangupCall();
+        hangupCall(); // Ensure cleanup on error
     }
 }
 
@@ -542,19 +553,22 @@ function listenForIncomingCalls() {
         const callId = snapshot.key;
         console.log(`[LISTENER] onChildAdded fired for callId: ${callId}, data:`, callData); // Debugging
 
+        // Important: Check if this call is actually for the current user and is ringing
         if (callData.calleeId === currentUser.uid && callData.status === 'ringing') {
             console.log("[LISTENER] Incoming call detected for current user:", callData); // Debugging
 
             if (currentCallId) {
                 // If already in a call or busy, reject new incoming call automatically
-                console.log("[LISTENER] Already in a call, rejecting new incoming call:", callId); // Debugging
+                console.log("[LISTENER] Already in a call or processing another, rejecting new incoming call:", callId); // Debugging
                 await update(ref(db, `calls/${callId}`), { status: 'rejected', endedBy: currentUser.uid, endedByUsername: currentUser.username });
                 return;
             }
 
+            // Set currentCallId and callRef for the incoming call
             currentCallId = callId;
             callRef = ref(db, `calls/${callId}`);
             callType = callData.type;
+            console.log(`[CALL STATE] currentCallId set to: ${currentCallId}`); // Debugging
 
             // Start vibration
             if ('vibrate' in navigator) {
@@ -590,7 +604,7 @@ function listenForIncomingCalls() {
             incomingCallTimeoutId = setTimeout(async () => {
                 const currentCallSnapshot = await get(callRef);
                 if (currentCallSnapshot.exists() && currentCallSnapshot.val().status === 'ringing') {
-                    console.log("[CALL TIMEOUT] Incoming call timed out (no answer)."); // Debugging
+                    console.log("[CALL TIMEOUT - INCOMING] Incoming call timed out (no answer). Updating Firebase."); // Debugging
                     await update(callRef, { status: 'no-answer', endedBy: 'system' });
                     hangupCall(); // This will also stop vibration and reset modal
                     showAlert("Call Missed", `Call from ${callData.callerUsername} was not answered.`);
@@ -652,7 +666,7 @@ function listenForIncomingCalls() {
                     callEndedListener = onValue(callRef, (snap) => {
                         const updatedCallData = snap.val();
                         if (!updatedCallData) {
-                            console.log("[CALL] Call node removed, ending call locally.");
+                            console.log("[CALL LISTENER - INCOMING] Call node removed, ending call locally.");
                             hangupCall(); // Ensure cleanup if call node is removed
                             return;
                         }
@@ -724,6 +738,20 @@ function restoreAlertModalContent() {
 // Function to hang up the current call
 async function hangupCall() {
     console.log("[HANGUP] Attempting to hang up call. currentCallId:", currentCallId); // Debugging
+    
+    // Stop vibration and clear timeout first, regardless of Firebase state
+    if (vibrationInterval) {
+        clearInterval(vibrationInterval);
+        if ('vibrate' in navigator) navigator.vibrate(0); // Stop any ongoing vibration
+        vibrationInterval = null;
+        console.log("[HANGUP] Vibration stopped."); // Debugging
+    }
+    if (incomingCallTimeoutId) {
+        clearTimeout(incomingCallTimeoutId);
+        incomingCallTimeoutId = null;
+        console.log("[HANGUP] Incoming call timeout cleared."); // Debugging
+    }
+
     if (callRef && currentCallId) {
         // Only update Firebase if the call hasn't already been marked as ended by the other party
         const currentCallSnapshot = await get(callRef);
@@ -752,6 +780,8 @@ async function hangupCall() {
     remoteVideo.style.display = 'none';
     callStatus.textContent = '';
     remoteUserDisplay.textContent = '';
+    
+    // Reset currentCallId and callRef AFTER all cleanup
     currentCallId = null;
     callRef = null;
     callType = null;
@@ -763,19 +793,6 @@ async function hangupCall() {
     showSection('calls-contacts-section'); // Go back to contacts list
     console.log("[HANGUP] Call cleaned up and returned to contacts section."); // Debugging
 
-    // Stop vibration if active
-    if (vibrationInterval) {
-        clearInterval(vibrationInterval);
-        if ('vibrate' in navigator) navigator.vibrate(0); // Stop any ongoing vibration
-        vibrationInterval = null;
-        console.log("[HANGUP] Vibration stopped."); // Debugging
-    }
-    // Clear incoming call timeout if active
-    if (incomingCallTimeoutId) {
-        clearTimeout(incomingCallTimeoutId);
-        incomingCallTimeoutId = null;
-        console.log("[HANGUP] Incoming call timeout cleared."); // Debugging
-    }
     // Ensure the alert modal is hidden and reset if it was showing
     customAlertModal.classList.remove('show-modal');
     customAlertModal.classList.add('hidden');
