@@ -1,10 +1,14 @@
-/* calls.css - Styling for the Calls Page */
+/* calls.css - Styling for the Calls Page (Enhanced) */
 
 /* Global styles for Inter font and smooth transitions */
 body {
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Ensure full viewport height and width for proper centering and responsiveness */
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Custom button styles for call controls */
@@ -12,25 +16,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px; /* Fixed width for circular buttons */
-    height: 60px; /* Fixed height for circular buttons */
+    width: 70px; /* Increased size for circular buttons */
+    height: 70px; /* Increased size for circular buttons */
     border-radius: 9999px; /* Tailwind's rounded-full */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 2px solid rgba(255, 255, 255, 0.2); /* Subtle white border */
 }
 
 .control-btn:hover {
-    transform: translateY(-2px); /* Lift effect on hover */
+    transform: translateY(-3px); /* More pronounced lift effect on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .control-btn:active {
     transform: translateY(0); /* Press effect on click */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .control-btn.off {
     background-color: #4a5568; /* Gray-700 in Tailwind */
     color: #a0aec0; /* Gray-400 in Tailwind */
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .control-btn.off:hover {
@@ -39,8 +46,10 @@ body {
 
 /* Specific styles for the contact item in the calls list */
 .contact-item {
-    @apply flex items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm cursor-pointer transition-all duration-200 ease-in-out;
-    @apply hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-md;
+    @apply flex items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer transition-all duration-200 ease-in-out;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-lg;
+    margin-bottom: 1rem; /* Added margin for better spacing */
+    border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
 }
 
 .contact-item:active {
@@ -48,7 +57,8 @@ body {
 }
 
 .contact-avatar {
-    @apply w-12 h-12 rounded-full flex items-center justify-center bg-blue-500 text-white font-bold text-xl mr-3 overflow-hidden flex-shrink-0;
+    @apply w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white font-bold text-2xl mr-4 overflow-hidden flex-shrink-0; /* Increased size */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* Shadow for avatar */
 }
 
 .contact-avatar img {
@@ -60,14 +70,21 @@ body {
 }
 
 .contact-name {
-    @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
+    @apply text-xl font-semibold text-gray-800 dark:text-gray-100; /* Increased font size */
 }
 
 .call-icon {
-    @apply text-blue-500 dark:text-blue-400 text-xl ml-auto p-2 rounded-full hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors duration-200;
+    @apply text-blue-500 dark:text-blue-400 text-2xl ml-auto p-3 rounded-full hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors duration-200; /* Increased size */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for icon buttons */
 }
 
 /* Custom modal animation */
+#custom-alert-modal .custom-modal-content {
+    transform: scale(0.8);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
 #custom-alert-modal.show-modal .custom-modal-content {
     transform: scale(1);
     opacity: 1;
@@ -77,4 +94,313 @@ body {
 #remote-video, #local-video {
     width: 100%;
     height: 100%;
+}
+
+/* Additional styling for overall layout and elements */
+#app-container {
+    @apply flex flex-col flex-grow w-full max-w-xl mx-auto bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden my-8; /* Larger max-width, more shadow, rounded corners */
+    min-height: 80vh; /* Ensure it takes up a good portion of the screen */
+}
+
+header {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-5 shadow-xl flex items-center justify-between rounded-t-2xl; /* Darker gradient, more padding, larger shadow */
+}
+
+header h1 {
+    @apply text-3xl font-extrabold; /* Larger, bolder title */
+}
+
+#logout-btn {
+    @apply bg-white bg-opacity-30 hover:bg-opacity-40 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 text-base; /* Larger button */
+}
+
+/* Auth Section Styling */
+#auth-section {
+    @apply flex flex-col items-center justify-center flex-grow p-8; /* More padding */
+}
+
+#auth-section > div { /* The auth form container */
+    @apply bg-white dark:bg-gray-700 p-10 rounded-2xl shadow-2xl w-full max-w-md text-center; /* More padding, larger shadow, more rounded */
+}
+
+#auth-section h2 {
+    @apply text-3xl font-bold text-gray-800 dark:text-white mb-8; /* Larger title */
+}
+
+#auth-section input {
+    @apply w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-lg; /* Larger inputs, more rounded */
+    margin-bottom: 1.5rem; /* Spacing between inputs */
+}
+
+#auth-section button {
+    @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors duration-200 text-xl; /* Larger, bolder button */
+}
+
+#auth-section p {
+    @apply mt-6 text-gray-600 dark:text-gray-300 text-base; /* Larger text */
+}
+
+#auth-section #toggle-auth-mode {
+    @apply text-blue-600 hover:underline cursor-pointer font-semibold; /* Bolder link */
+}
+
+/* Calls Contacts Section */
+#calls-contacts-section {
+    @apply flex flex-col flex-grow p-6; /* More padding */
+}
+
+#calls-contacts-section h2 {
+    @apply text-3xl font-bold text-gray-800 dark:text-white mb-6; /* Larger title */
+}
+
+#contacts-list {
+    @apply flex flex-col gap-4 overflow-y-auto flex-grow; /* Increased gap */
+}
+
+/* Call Screen Styling */
+#call-screen {
+    @apply flex flex-col items-center justify-center flex-grow bg-gray-900 text-white p-6; /* More padding, darker background */
+}
+
+#remote-video {
+    @apply rounded-xl shadow-xl; /* Rounded corners and shadow for main video */
+}
+
+#local-video {
+    @apply w-36 h-36 md:w-48 md:h-48 rounded-xl shadow-2xl border-4 border-white transition-opacity duration-300; /* Larger local video, more pronounced border/shadow */
+}
+
+#remote-user-display {
+    @apply text-3xl font-bold mb-3; /* Larger, bolder text */
+}
+
+#call-status {
+    @apply text-xl text-gray-300; /* Larger text */
+}
+
+#call-screen .flex.justify-center.gap-6 { /* Call controls container */
+    @apply mt-8 p-6 bg-gray-800 bg-opacity-80 rounded-full shadow-2xl; /* More padding, darker opacity, larger shadow */
+}
+
+/* Custom Alert Modal Styling */
+#custom-alert-modal .custom-modal-content {
+    @apply bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-2xl max-w-md w-full text-center relative; /* More padding, larger max-width, more rounded, larger shadow */
+}
+
+#custom-alert-modal #close-alert-btn {
+    @apply absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-4xl font-bold; /* Larger close button */
+}
+
+#custom-alert-modal #custom-alert-message {
+    @apply text-gray-800 dark:text-gray-100 text-2xl mb-8; /* Larger message text */
+}
+
+#custom-alert-modal #custom-alert-ok-btn,
+#custom-alert-modal #answer-call-btn,
+#custom-alert-modal #reject-call-btn {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all duration-200 text-xl; /* Larger, bolder buttons */
+}
+
+#custom-alert-modal #reject-call-btn {
+    @apply bg-red-600 hover:bg-red-700;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #app-container {
+        @apply my-0 rounded-none min-h-screen; /* Full height on smaller screens */
+    }
+
+    header {
+        @apply p-4;
+    }
+
+    header h1 {
+        @apply text-2xl;
+    }
+
+    #logout-btn {
+        @apply py-1 px-3 text-sm;
+    }
+
+    #auth-section {
+        @apply p-6;
+    }
+
+    #auth-section > div {
+        @apply p-8 rounded-xl;
+    }
+
+    #auth-section h2 {
+        @apply text-2xl mb-6;
+    }
+
+    #auth-section input {
+        @apply p-3 text-base;
+        margin-bottom: 1rem;
+    }
+
+    #auth-section button {
+        @apply py-3 text-lg;
+    }
+
+    #auth-section p {
+        @apply mt-3 text-sm;
+    }
+
+    #calls-contacts-section {
+        @apply p-4;
+    }
+
+    #calls-contacts-section h2 {
+        @apply text-2xl mb-4;
+    }
+
+    .contact-item {
+        @apply p-3 rounded-lg;
+        margin-bottom: 0.75rem;
+    }
+
+    .contact-avatar {
+        @apply w-14 h-14 text-xl mr-3;
+    }
+
+    .contact-name {
+        @apply text-lg;
+    }
+
+    .call-icon {
+        @apply text-xl p-2;
+    }
+
+    #call-screen {
+        @apply p-4;
+    }
+
+    #local-video {
+        @apply w-28 h-28 md:w-36 md:h-36 border-2;
+    }
+
+    #remote-user-display {
+        @apply text-2xl mb-2;
+    }
+
+    #call-status {
+        @apply text-lg;
+    }
+
+    #call-screen .flex.justify-center.gap-6 {
+        @apply mt-6 p-4;
+    }
+
+    .control-btn {
+        @apply w-14 h-14;
+    }
+
+    #custom-alert-modal .custom-modal-content {
+        @apply p-8 rounded-xl;
+    }
+
+    #custom-alert-modal #close-alert-btn {
+        @apply text-3xl top-3 right-3;
+    }
+
+    #custom-alert-modal #custom-alert-message {
+        @apply text-xl mb-6;
+    }
+
+    #custom-alert-modal #custom-alert-ok-btn,
+    #custom-alert-modal #answer-call-btn,
+    #custom-alert-modal #reject-call-btn {
+        @apply py-3 px-6 text-lg;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        @apply p-3;
+    }
+    header h1 {
+        @apply text-xl;
+    }
+    #logout-btn {
+        @apply py-1 px-2 text-xs;
+    }
+
+    #auth-section {
+        @apply p-4;
+    }
+    #auth-section > div {
+        @apply p-6 rounded-lg;
+    }
+    #auth-section h2 {
+        @apply text-xl mb-4;
+    }
+    #auth-section input {
+        @apply p-2 text-sm;
+        margin-bottom: 1rem;
+    }
+    #auth-section button {
+        @apply py-2 text-base;
+    }
+    #auth-section p {
+        @apply text-sm mt-3;
+    }
+
+    #calls-contacts-section {
+        @apply p-3;
+    }
+    #calls-contacts-section h2 {
+        @apply text-xl mb-3;
+    }
+    .contact-item {
+        @apply p-2 rounded-md;
+        margin-bottom: 0.5rem;
+    }
+    .contact-avatar {
+        @apply w-12 h-12 text-lg mr-2;
+    }
+    .contact-name {
+        @apply text-base;
+    }
+    .call-icon {
+        @apply text-lg p-1;
+    }
+
+    #call-screen {
+        @apply p-3;
+    }
+    #local-video {
+        @apply w-24 h-24 border-2;
+    }
+    #remote-user-display {
+        @apply text-xl mb-1;
+    }
+    #call-status {
+        @apply text-base;
+    }
+    #call-screen .flex.justify-center.gap-6 {
+        @apply mt-4 p-3;
+    }
+    .control-btn {
+        @apply w-12 h-12;
+    }
+    .control-btn i {
+        @apply text-lg;
+    }
+
+    #custom-alert-modal .custom-modal-content {
+        @apply p-6 rounded-lg;
+    }
+    #custom-alert-modal #close-alert-btn {
+        @apply text-2xl top-2 right-2;
+    }
+    #custom-alert-modal #custom-alert-message {
+        @apply text-lg mb-4;
+    }
+    #custom-alert-modal #custom-alert-ok-btn,
+    #custom-alert-modal #answer-call-btn,
+    #custom-alert-modal #reject-call-btn {
+        @apply py-2 px-4 text-base;
+    }
 }
