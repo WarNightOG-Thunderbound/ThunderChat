@@ -3,220 +3,101 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ThunderChat Calls - Premium Communication</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ThunderChat Calls</title>
+    <!-- Proper Tailwind CSS import -->
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Custom CSS for Calls Page -->
     <link rel="stylesheet" href="calls.css">
-    <!-- Favicon -->
-    <link rel="icon" href="https://warnightog-thunderbound.github.io/ThunderChat/favicon.ico">
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 font-inter antialiased flex flex-col min-h-screen transition-colors duration-300">
 
-    <!-- Loading Screen with Progress -->
+    <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center z-[9999] transition-colors duration-300">
-        <div class="relative w-24 h-24 mb-4">
-            <div class="absolute inset-0 rounded-full border-4 border-blue-500/30"></div>
-            <div id="loading-progress" class="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center">
-                <i class="fas fa-phone-alt text-blue-500 text-2xl"></i>
-            </div>
-        </div>
-        <div id="loading-message" class="text-blue-500 dark:text-blue-400 text-xl font-bold mt-4">Initializing Calls...</div>
-        <div id="loading-submessage" class="text-gray-500 dark:text-gray-400 text-sm mt-2"></div>
-        <div class="w-64 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
-            <div id="loading-bar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
-        </div>
+        <div class="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500 dark:border-blue-400"></div>
+        <div class="text-blue-500 dark:text-blue-400 text-2xl font-bold mt-4">Loading Calls...</div>
     </div>
-
-    <!-- Debug Panel (Toggleable) -->
-    <div id="debug-panel" class="fixed bottom-4 right-4 bg-gray-800 bg-opacity-90 text-white p-3 rounded-lg shadow-xl z-[9997] max-w-xs max-h-64 overflow-auto hidden">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="font-bold">Debug Console</h3>
-            <button id="toggle-debug" class="text-gray-300 hover:text-white">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div id="debug-content" class="text-xs font-mono space-y-1"></div>
-    </div>
-    <button id="show-debug-btn" class="fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg z-[9996] hover:bg-blue-700 transition-all">
-        <i class="fas fa-bug"></i>
-    </button>
 
     <!-- Custom Alert Modal -->
-    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9998] hidden backdrop-blur-sm">
-        <div class="custom-modal-content bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
-            <button id="close-alert-btn" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-3xl font-bold transition-colors">&times;</button>
-            <div class="mb-6">
-                <i id="alert-icon" class="fas fa-info-circle text-4xl text-blue-500 mb-4"></i>
-                <p id="custom-alert-message" class="text-gray-800 dark:text-gray-100 text-xl font-medium"></p>
-            </div>
-            <div id="alert-buttons" class="flex justify-center gap-4">
-                <button id="custom-alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Call Quality Indicator -->
-    <div id="call-quality-indicator" class="fixed top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 z-[9995] hidden">
-        <span id="quality-status" class="font-medium">Connection Quality:</span>
-        <div id="quality-level" class="flex gap-1">
-            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9998] hidden">
+        <div class="custom-modal-content bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-sm w-full text-center relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
+            <button id="close-alert-btn" class="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-3xl font-bold">&times;</button>
+            <p id="custom-alert-message" class="text-gray-800 dark:text-gray-100 text-lg mb-6"></p>
+            <button id="custom-alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200">OK</button>
         </div>
     </div>
 
     <!-- Main App Container -->
-    <div id="app-container" class="flex flex-col flex-grow w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden my-4 transition-all duration-300 border border-gray-200 dark:border-gray-700">
+    <div id="app-container" class="flex flex-col flex-grow w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden my-4">
 
         <!-- Header -->
-        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 shadow-lg flex items-center justify-between">
+        <header class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 shadow-md flex items-center justify-between">
             <!-- Back Button -->
-            <a href="https://warnightog-thunderbound.github.io/ThunderChat/" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i>
-                <span class="hidden sm:inline">Back to Groups</span>
+            <a href="https://warnightog-thunderbound.github.io/ThunderChat/" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-200 text-sm flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Groups
             </a>
-            <h1 class="text-2xl font-bold text-center flex-1 px-4">ThunderChat <span class="text-blue-200">Calls</span></h1>
-            <button id="logout-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center gap-2">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="hidden sm:inline">Logout</span>
-            </button>
+            <h1 class="text-2xl font-bold">ThunderChat Calls</h1>
+            <button id="logout-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-200 text-sm">Logout</button>
         </header>
 
         <!-- Auth Section -->
         <section id="auth-section" class="flex flex-col items-center justify-center flex-grow p-6 hidden">
-            <div class="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border border-gray-100 dark:border-gray-600">
+            <div class="bg-white dark:bg-gray-700 p-8 rounded-xl shadow-lg w-full max-w-sm text-center">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6" id="auth-title">Login</h2>
+                <div class="mb-4">
+                    <input type="email" id="auth-email" placeholder="Email" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                </div>
                 <div class="mb-6">
-                    <i class="fas fa-phone-alt text-5xl text-blue-500 mb-4"></i>
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2" id="auth-title">Login</h2>
-                    <p class="text-gray-600 dark:text-gray-300">Connect with your contacts securely</p>
+                    <input type="password" id="auth-password" placeholder="Password" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                 </div>
-                <div class="space-y-4">
-                    <div>
-                        <input type="email" id="auth-email" placeholder="Email" class="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                    </div>
-                    <div>
-                        <input type="password" id="auth-password" placeholder="Password" class="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                    </div>
-                    <button id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-95">
-                        <span id="auth-btn-text">Login</span>
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                </div>
-                <div class="mt-6 space-y-3">
-                    <p id="auth-message" class="text-red-500 text-sm"></p>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        <span id="toggle-auth-mode" class="text-blue-500 hover:underline cursor-pointer font-medium">Don't have an account? Register</span>
-                    </p>
-                </div>
+                <button id="auth-submit-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md transition-colors duration-200">Login</button>
+                <p class="mt-4 text-gray-600 dark:text-gray-300">
+                    <span id="toggle-auth-mode" class="text-blue-500 hover:underline cursor-pointer">Don't have an account? Register</span>
+                </p>
+                <p id="auth-message" class="text-red-500 text-sm mt-3"></p>
             </div>
         </section>
 
         <!-- Contacts Section for Calls -->
         <section id="calls-contacts-section" class="flex flex-col flex-grow p-4 hidden">
-            <div class="flex items-center justify-between mb-4 px-2">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Your Contacts</h2>
-                <button id="refresh-contacts-btn" class="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-full transition-colors">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-            <div id="contacts-search" class="mb-4 px-2">
-                <input type="text" placeholder="Search contacts..." class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-            </div>
-            <div id="contacts-list" class="flex flex-col gap-3 overflow-y-auto flex-grow px-2">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Your Contacts</h2>
+            <div id="contacts-list" class="flex flex-col gap-3 overflow-y-auto flex-grow">
                 <!-- Contacts will be loaded here -->
-                <div class="text-gray-500 dark:text-gray-400 text-center py-12 flex flex-col items-center">
-                    <i class="fas fa-users text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                    <p class="text-lg">No contacts found</p>
-                    <p class="text-sm mt-2">Add contacts in the main ThunderChat app</p>
-                </div>
+                <div class="text-gray-500 dark:text-gray-400 text-center py-8">No contacts found. Add contacts in the main ThunderChat app to see them here.</div>
             </div>
         </section>
 
         <!-- Call Screen -->
-        <section id="call-screen" class="flex flex-col items-center justify-center flex-grow bg-gray-900 text-white p-4 hidden relative">
-            <!-- Video Container -->
-            <div class="relative w-full h-full flex items-center justify-center rounded-xl overflow-hidden">
+        <section id="call-screen" class="flex flex-col items-center justify-center flex-grow bg-gray-900 text-white p-4 hidden">
+            <div class="relative w-full h-full flex items-center justify-center">
                 <!-- Remote Video Stream -->
-                <video id="remote-video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover bg-gray-800"></video>
-                
-                <!-- Video Overlay Info -->
-                <div id="video-overlay" class="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/50 to-transparent z-[2] flex justify-between items-center">
-                    <div>
-                        <p id="remote-user-display" class="text-xl font-semibold">Connecting...</p>
-                        <p id="call-status" class="text-sm text-gray-300">Establishing connection...</p>
-                    </div>
-                    <div id="call-timer" class="text-white font-mono">00:00</div>
-                </div>
-                
+                <video id="remote-video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover rounded-lg"></video>
                 <!-- Local Video Stream -->
-                <video id="local-video" autoplay playsinline muted class="absolute bottom-4 right-4 w-32 h-32 md:w-40 md:h-40 object-cover rounded-xl shadow-xl border-2 border-white transition-all duration-300 z-[3] hover:scale-110 cursor-pointer"></video>
+                <video id="local-video" autoplay playsinline muted class="absolute bottom-4 right-4 w-28 h-28 md:w-36 md:h-36 object-cover rounded-lg shadow-lg border-2 border-white transition-opacity duration-300"></video>
             </div>
             
+            <div class="mt-4 text-center">
+                <p id="remote-user-display" class="text-xl font-semibold mb-2">Connecting...</p>
+                <p id="call-status" class="text-lg text-gray-300">Waiting for answer...</p>
+            </div>
+
             <!-- Call Controls -->
-            <div class="flex justify-center gap-4 mt-4 p-4 bg-gray-800/70 backdrop-blur-md rounded-full shadow-xl z-[4]">
-                <button id="toggle-mic-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white">
-                    <i class="fas fa-microphone"></i>
+            <div class="flex justify-center gap-6 mt-6 p-4 bg-gray-800 bg-opacity-70 rounded-full shadow-lg">
+                <button id="toggle-mic-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-microphone text-xl"></i>
                 </button>
-                <button id="toggle-video-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white">
-                    <i class="fas fa-video"></i>
+                <button id="toggle-video-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-video text-xl"></i>
                 </button>
-                <button id="toggle-speaker-btn" class="control-btn bg-gray-700 hover:bg-gray-600 text-white">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-                <button id="hangup-btn" class="control-btn bg-red-600 hover:bg-red-700 text-white">
-                    <i class="fas fa-phone-slash"></i>
-                </button>
-            </div>
-
-            <!-- Call Stats (Debug) -->
-            <div id="call-stats" class="absolute top-4 left-4 bg-black/50 text-white text-xs p-2 rounded-lg z-[5] hidden">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>Connection:</div>
-                    <div id="stats-connection">-</div>
-                    <div>Audio:</div>
-                    <div id="stats-audio">-</div>
-                    <div>Video:</div>
-                    <div id="stats-video">-</div>
-                    <div>Packets:</div>
-                    <div id="stats-packets">-</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Incoming Call Screen -->
-        <section id="incoming-call-screen" class="flex flex-col items-center justify-center flex-grow bg-gradient-to-br from-blue-900 to-indigo-900 text-white p-6 hidden">
-            <div class="text-center mb-8">
-                <div class="relative mx-auto w-32 h-32 mb-6">
-                    <div class="absolute inset-0 rounded-full bg-blue-500/20 animate-ping"></div>
-                    <div class="absolute inset-2 rounded-full bg-blue-500/30 animate-pulse"></div>
-                    <div class="relative z-10 w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-4xl">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                </div>
-                <h2 id="incoming-call-title" class="text-3xl font-bold mb-2">Incoming Call</h2>
-                <p id="incoming-caller-name" class="text-xl mb-1">John Doe</p>
-                <p id="incoming-call-type" class="text-blue-300">Video Call</p>
-            </div>
-            
-            <div class="flex gap-6">
-                <button id="reject-call-btn" class="control-btn bg-red-600 hover:bg-red-700 text-white">
-                    <i class="fas fa-phone-slash"></i>
-                </button>
-                <button id="answer-call-btn" class="control-btn bg-green-600 hover:bg-green-700 text-white">
-                    <i class="fas fa-phone"></i>
+                <button id="hangup-btn" class="control-btn bg-red-600 hover:bg-red-700 text-white p-4 rounded-full transition-colors duration-200">
+                    <i class="fas fa-phone-slash text-xl"></i>
                 </button>
             </div>
         </section>
+
     </div>
 
     <!-- Custom JavaScript for Calls -->
