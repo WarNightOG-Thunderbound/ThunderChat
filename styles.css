@@ -1567,6 +1567,7 @@ body.dark-theme {
     .user-post-actions .pin-btn.pinned {
         background-color: var(--primary-color-dark);
         color: var(--text-primary-dark);
+        border-color: var(--primary-color-dark);
     }
     .user-post-actions .pin-btn, .user-post-actions .share-btn {
         background-color: var(--background-dark);
