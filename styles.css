@@ -2,56 +2,60 @@
 
 /* Global Reset & Base Styles */
 :root {
-    /* New Color Palette - Clean & Modern */
-    --primary-color: #0A84FF; /* iOS Blue */
-    --primary-color-dark: #005A9C; /* Deeper Blue for hover/active */
-    --secondary-accent: #34C759; /* Green for success/positive actions */
-    --danger-color: #FF3B30; /* Red for errors/destructive actions */
+    /* New Color Palette - Vibrant & Clean */
+    --primary-color: #5E5CE6; /* A modern, calming blue-violet */
+    --primary-color-dark: #4B4AC2; /* Deeper for interactions */
+    --primary-color-light: #8E8BE6; /* Lighter variant for subtle accents */
+    --secondary-accent: #32D74B; /* Bright Green for success/positive */
+    --danger-color: #FF453A; /* Bold Red for errors/destructive */
+    --warning-color: #FFD60A; /* Yellow for warnings */
 
     /* Backgrounds */
-    --background-light: #F2F2F7; /* Light mode general background */
-    --background-dark: #000000; /* Dark mode general background (pure black for OLEDs) */
+    --background-light: #F9F9F9; /* Very light subtle grey */
+    --background-dark: #1C1C1E; /* Deep charcoal for dark mode */
     
     /* Surfaces (Cards, Modals, Inputs) */
-    --surface-light: #FFFFFF; /* Light mode element background */
-    --surface-dark: #1C1C1E; /* Dark mode element background */
+    --surface-light: #FFFFFF; /* Pure white for elements */
+    --surface-dark: #2C2C2E; /* Slightly lighter charcoal for elements */
     
     /* Text Colors */
-    --text-primary-light: #000000; /* Primary text in light mode */
-    --text-primary-dark: #FFFFFF; /* Primary text in dark mode */
-    --text-secondary-light: #6A6A6A; /* Secondary text in light mode (timestamp, status) */
-    --text-secondary-dark: #8E8E93; /* Secondary text in dark mode */
-    
-    /* Borders & Dividers */
-    --border-light: #E5E5EA; /* Light mode subtle borders */
-    --border-dark: #3A3A3C; /* Dark mode subtle borders */
+    --text-primary-light: #2C2C2E; /* Dark grey for primary text */
+    --text-primary-dark: #FFFFFF; /* Pure white for primary text */
+    --text-secondary-light: #8E8E93; /* Medium grey for secondary text */
+    --text-secondary-dark: #B0B0B0; /* Light grey for secondary text */
+    --text-tertiary-light: #C0C0C0; /* Very light grey for subtle elements */
+    --text-tertiary-dark: #6A6A6A; /* Darker grey for subtle elements in dark mode */
 
-    /* Shadows */
+    /* Borders & Dividers */
+    --border-light: #E0E0E0; /* Light subtle borders */
+    --border-dark: #3A3A3C; /* Dark subtle borders */
+
+    /* Shadows - More pronounced but soft */
     --shadow-light: rgba(0, 0, 0, 0.08); /* Subtle shadow for light mode */
-    --shadow-dark: rgba(0, 0, 0, 0.4); /* More pronounced shadow for dark mode */
+    --shadow-dark: rgba(0, 0, 0, 0.35); /* More pronounced shadow for dark mode */
 
     /* Message Bubble Specifics */
-    --message-sent-bg-light: #0A84FF; /* Sent message bubble light mode */
+    --message-sent-bg-light: var(--primary-color);
     --message-sent-text-light: #FFFFFF;
-    --message-received-bg-light: #E5E5EA; /* Received message bubble light mode */
-    --message-received-text-light: #000000;
+    --message-received-bg-light: var(--border-light);
+    --message-received-text-light: var(--text-primary-light);
 
-    --message-sent-bg-dark: #0A84FF; /* Sent message bubble dark mode */
+    --message-sent-bg-dark: var(--primary-color);
     --message-sent-text-dark: #FFFFFF;
-    --message-received-bg-dark: #2C2C2E; /* Received message bubble dark mode */
-    --message-received-text-dark: #FFFFFF;
+    --message-received-bg-dark: var(--surface-dark);
+    --message-received-text-dark: var(--text-primary-dark);
 
-    /* Typography - iOS System Font Stack for Native Feel */
-    --font-family-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    --font-size-base: 17px; /* Default body font size */
-    --font-size-large-title: 34px; /* For main app titles */
-    --font-size-title1: 28px; /* For section headers */
-    --font-size-title2: 22px; /* For sub-headers */
+    /* Typography - Modern San-Serif with iOS/Android Fallbacks */
+    --font-family-system: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --font-size-base: 16px; /* Slightly smaller for density */
+    --font-size-large-title: 36px; /* Larger, bolder for main titles */
+    --font-size-title1: 28px;
+    --font-size-title2: 22px;
     --font-size-headline: 17px; /* Bold for important text */
-    --font-size-body: 17px; /* Standard body text */
-    --font-size-subheadline: 15px; /* Smaller text for labels */
-    --font-size-footnote: 13px; /* Very small text (timestamps) */
-    --font-size-caption1: 12px; /* Even smaller */
+    --font-size-body: 16px; /* Standard body text */
+    --font-size-subheadline: 14px; /* Smaller text for labels */
+    --font-size-footnote: 12px; /* Very small text (timestamps) */
+    --font-size-caption1: 11px; /* Even smaller */
 
     /* Spacing - Consistent & Scalable */
     --spacing-xxs: 4px;
@@ -61,17 +65,1170 @@
     --spacing-lg: 20px;
     --spacing-xl: 24px;
     --spacing-xxl: 32px;
+    --spacing-xxxl: 48px;
 
     /* Border Radius - Uniform Roundness */
     --border-radius-sm: 8px;
     --border-radius-md: 12px;
-    --border-radius-lg: 16px;
+    --border-radius-lg: 18px; /* More pronounced roundness */
+    --border-radius-xl: 24px;
     --border-radius-pill: 9999px; /* For pill-shaped elements */
 
     /* Transition Durations for Smoothness */
-    --transition-duration-fast: 0.15s;
+    --transition-duration-fast: 0.2s;
     --transition-duration-normal: 0.3s;
     --transition-duration-slow: 0.5s;
+
+    /* Animation Timing Functions */
+    --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* Base Styles for HTML and Body */
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent default scrolling */
+    font-family: var(--font-family-system);
+    font-size: var(--font-size-base);
+    line-height: 1.5; /* Improved readability */
+    color: var(--text-primary-light);
+    background-color: var(--background-light);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-duration-normal) var(--ease-in-out-quad), color var(--transition-duration-normal) var(--ease-in-out-quad);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+/* Main App Container - Central fixed canvas for the app */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    max-width: 500px; /* Optimal mobile app width */
+    margin: 0 auto;
+    background-color: var(--background-light);
+    position: relative;
+    overflow: hidden; /* Hide overflow during transitions */
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1); /* Subtle container shadow */
+}
+
+/* Hidden Utility Class */
+.hidden {
+    display: none !important;
+}
+
+/* Header (Top Bar) - Fixed and prominent */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-top: calc(var(--spacing-md) + env(safe-area-inset-top, 0px)); /* Account for status bar */
+    background-color: var(--surface-light);
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 2px 10px var(--shadow-light); /* More pronounced shadow for depth */
+    z-index: 100;
+    flex-shrink: 0;
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.header .title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: var(--font-size-title2);
+    font-weight: 600; /* Semi-bold */
+    color: var(--text-primary-light);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.header .left-action, .header .right-action {
+    display: flex;
+    align-items: center;
+    min-width: 44px; /* Standard touch target */
+    justify-content: center;
+}
+
+.header button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.6em; /* Larger icons */
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-duration-fast), color var(--transition-duration-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header button:hover {
+    background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.1);
+}
+
+.header button:active {
+    background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.2);
+    transform: scale(0.95);
+}
+
+/* Main Content Area - Sections will live here */
+.main-sections-container {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden; /* Crucial for section transitions */
+}
+
+/* Individual Sections - Full Screen & Animated */
+.app-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-light);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg); /* Generous padding */
+    padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto; /* Allow scrolling within each section */
+    -webkit-overflow-scrolling: touch;
+    transition: transform var(--transition-duration-normal) var(--ease-out-quad), opacity var(--transition-duration-normal) var(--ease-out-quad), background-color var(--transition-duration-normal);
+    transform: translateX(100%); /* Start off-screen to the right */
+    opacity: 0;
+    z-index: 1;
+}
+
+.app-section.active {
+    transform: translateX(0%);
+    opacity: 1;
+    z-index: 10;
+}
+
+/* Auth Section */
+#auth-section {
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xxl);
+}
+
+#login-form, #register-form {
+    width: 100%;
+    max-width: 380px;
+    background-color: var(--surface-light);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-xl); /* More rounded forms */
+    box-shadow: 0 8px 30px var(--shadow-light); /* Deeper shadow */
+    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+/* General Section Headings */
+.section-heading {
+    font-size: var(--font-size-large-title);
+    font-weight: 700; /* Extra bold */
+    color: var(--text-primary-light);
+    margin-bottom: var(--spacing-xxl);
+    text-align: center;
+    letter-spacing: -1px;
+}
+.sub-heading {
+    font-size: var(--font-size-title1);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-primary-light);
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-subheadline);
+    font-weight: 500;
+    color: var(--text-secondary-light);
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: 0.2px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-light);
+    background-color: var(--background-light); /* Lighter background for inputs */
+    color: var(--text-primary-light);
+    font-size: var(--font-size-body);
+    outline: none;
+    -webkit-appearance: none;
+    transition: border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal), background-color var(--transition-duration-normal);
+}
+
+input[type="text"]::placeholder, input[type="email"]::placeholder, input[type="password"]::placeholder, textarea::placeholder, select::placeholder {
+    color: var(--text-secondary-light);
+    opacity: 0.8;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb, 94, 92, 230), 0.25); /* More prominent focus ring */
+    background-color: var(--surface-light); /* Slightly change background on focus */
+}
+
+/* Buttons - Modern & Interactive */
+button {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius-pill); /* Pill-shaped buttons */
+    font-size: var(--font-size-headline);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    transition: background-color var(--transition-duration-fast) var(--ease-out-quad), transform var(--transition-duration-fast) var(--ease-out-quad), opacity var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+button.primary {
+    background-color: var(--primary-color);
+    color: var(--text-primary-dark);
+    box-shadow: 0 4px 15px rgba(var(--primary-color-rgb, 94, 92, 230), 0.3); /* Soft, colored shadow */
+}
+
+button.primary:hover {
+    background-color: var(--primary-color-dark);
+}
+
+button.primary:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 94, 92, 230), 0.4);
+}
+
+button.secondary {
+    background-color: var(--surface-light);
+    color: var(--primary-color);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+button.secondary:hover {
+    background-color: var(--background-light);
+    border-color: var(--primary-color-light);
+}
+
+button.secondary:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+    background-color: var(--border-light);
+    box-shadow: 0 1px 4px var(--shadow-light);
+}
+
+button.danger {
+    background-color: var(--danger-color);
+    color: var(--text-primary-dark);
+    box-shadow: 0 4px 15px rgba(var(--danger-color-rgb, 255, 69, 58), 0.3);
+}
+
+button.danger:hover {
+    background-color: #CC3730; /* Darken red */
+}
+
+button.danger:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+    box-shadow: 0 2px 8px rgba(var(--danger-color-rgb, 255, 69, 58), 0.4);
+}
+
+/* Link/Toggle Forms */
+.toggle-form {
+    font-size: var(--font-size-body);
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    cursor: pointer;
+    transition: color var(--transition-duration-fast);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.toggle-form:hover {
+    color: var(--primary-color-dark);
+}
+
+/* Main Navigation (Footer Tabs) - Fixed and prominent */
+.main-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--surface-light);
+    border-top: 1px solid var(--border-light);
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 10px var(--shadow-light); /* Top shadow for depth */
+    z-index: 100;
+    flex-shrink: 0;
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.nav-tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-secondary-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: var(--font-size-caption1); /* Smaller text for tabs */
+    font-weight: 500;
+    padding: var(--spacing-xs);
+    cursor: pointer;
+    transition: color var(--transition-duration-fast), transform var(--transition-duration-fast);
+}
+
+.nav-tab-btn i {
+    font-size: 1.5em; /* Larger icons */
+    margin-bottom: var(--spacing-xxs);
+}
+
+.nav-tab-btn.active {
+    color: var(--primary-color);
+    transform: translateY(-2px); /* Subtle lift */
+}
+
+.nav-tab-btn:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+
+/* Lists (Groups, Contacts, Posts) */
+.list-container {
+    padding-top: var(--spacing-md);
+    width: 100%;
+}
+
+.list-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding: 0 var(--spacing-xs); /* Align with list items */
+}
+.list-header-actions .section-heading {
+    margin-bottom: 0;
+    text-align: left;
+    font-size: var(--font-size-title2);
+    letter-spacing: -0.5px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--surface-light);
+    border-radius: var(--border-radius-lg); /* More rounded list items */
+    margin-bottom: var(--spacing-sm); /* Space between items */
+    box-shadow: 0 1px 5px var(--shadow-light); /* Subtle shadow for items */
+    cursor: pointer;
+    transition: background-color var(--transition-duration-fast), transform var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+}
+
+.list-item:last-child {
+    margin-bottom: 0; /* No margin on last item */
+}
+
+.list-item:hover {
+    background-color: var(--background-light);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px var(--shadow-light);
+}
+
+.list-item:active {
+    background-color: var(--border-light);
+    transform: scale(0.99);
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+/* Avatars */
+.avatar {
+    width: 56px; /* Slightly larger avatars */
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary-color-light); /* Lighter primary for fallback */
+    color: var(--text-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--spacing-md);
+    font-weight: 600;
+    font-size: var(--font-size-headline);
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid var(--surface-light);
+    box-shadow: 0 1px 4px var(--shadow-light);
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.list-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.list-item-name {
+    font-size: var(--font-size-body);
+    font-weight: 500;
+    color: var(--text-primary-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.list-item-status {
+    font-size: var(--font-size-subheadline);
+    color: var(--text-secondary-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: var(--spacing-xxs);
+}
+
+.no-items-message {
+    text-align: center;
+    color: var(--text-secondary-light);
+    padding: var(--spacing-xxl);
+    font-size: var(--font-size-body);
+    font-style: italic;
+}
+
+
+/* Chat Section (Full Screen) */
+#chat-section, #private-chat-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: var(--background-light);
+    padding: 0;
+    transition: background-color var(--transition-duration-normal);
+}
+
+.chat-messages-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    padding-top: var(--spacing-lg); /* More padding at top */
+    padding-bottom: var(--spacing-xxl); /* Generous padding for last message */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Individual Message Styles */
+.message-bubble {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%; /* Slightly narrower for better look */
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-body);
+    line-height: 1.4;
+    word-wrap: break-word;
+    transition: transform var(--transition-duration-normal) var(--ease-out-quad), opacity var(--transition-duration-normal) var(--ease-out-quad);
+    transform: translateY(15px); /* Start further off for animation */
+    opacity: 0;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message-bubble.loaded {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.message-bubble .message-sender {
+    font-size: var(--font-size-footnote);
+    font-weight: 500;
+    margin-bottom: var(--spacing-xxs);
+    color: var(--text-secondary-light);
+}
+
+.message-bubble .message-text {
+    color: inherit;
+}
+
+.message-bubble .message-timestamp {
+    font-size: var(--font-size-caption1);
+    color: var(--text-secondary-light);
+    margin-top: var(--spacing-xxs);
+    align-self: flex-end;
+}
+
+/* Sent Messages */
+.message-bubble.sent {
+    align-self: flex-end;
+    background-color: var(--message-sent-bg-light);
+    color: var(--message-sent-text-light);
+    border-bottom-right-radius: var(--spacing-xs); /* Smaller "tail" */
+}
+.message-bubble.sent::after {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    right: -8px; /* Tail positioning */
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-left-color: var(--message-sent-bg-light);
+    border-bottom-color: var(--message-sent-bg-light);
+    border-bottom-right-radius: 4px;
+}
+
+/* Received Messages */
+.message-bubble.received {
+    align-self: flex-start;
+    background-color: var(--message-received-bg-light);
+    color: var(--message-received-text-light);
+    border-bottom-left-radius: var(--spacing-xs);
+}
+.message-bubble.received::after {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    left: -8px; /* Tail positioning */
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: var(--message-received-bg-light);
+    border-bottom-color: var(--message-received-bg-light);
+    border-bottom-left-radius: 4px;
+}
+
+
+/* Chat Input Area (Fixed Bottom) */
+.chat-input-area {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
+    background-color: var(--surface-light);
+    border-top: 1px solid var(--border-light);
+    box-shadow: 0 -2px 10px var(--shadow-light);
+    z-index: 100;
+    flex-shrink: 0;
+    gap: var(--spacing-sm);
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.chat-input-area input {
+    flex-grow: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-pill);
+    margin-bottom: 0;
+    font-size: var(--font-size-body);
+    background-color: var(--background-light);
+    border-color: var(--border-light);
+}
+
+.chat-input-area button {
+    flex-shrink: 0;
+    width: auto;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius-pill);
+    margin-bottom: 0;
+    font-size: var(--font-size-body);
+    font-weight: 500;
+}
+
+/* Settings & Profile */
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: var(--spacing-xxl) 0 var(--spacing-xl) 0;
+}
+
+.profile-avatar-preview {
+    width: 120px; /* Larger profile avatar */
+    height: 120px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--text-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-large-title);
+    font-weight: 700;
+    overflow: hidden;
+    border: 4px solid var(--surface-light);
+    box-shadow: 0 4px 15px var(--shadow-light);
+    margin-bottom: var(--spacing-md);
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.user-id-display {
+    background-color: var(--surface-light);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-lg) 0;
+    font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+    word-break: break-all;
+    text-align: left;
+    width: 100%;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary-light);
+    font-size: var(--font-size-subheadline);
+    box-shadow: 0 1px 3px var(--shadow-light);
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), color var(--transition-duration-normal);
+}
+
+.user-id-display strong {
+    display: block;
+    font-size: var(--font-size-body);
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary-light);
+}
+
+.theme-switcher {
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-xxl);
+}
+.theme-options {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    width: 100%;
+}
+.theme-options button {
+    flex: 1;
+    margin-bottom: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-subheadline);
+    border-radius: var(--border-radius-pill);
+    font-weight: 500;
+}
+.theme-options button.active {
+    background-color: var(--primary-color);
+    color: var(--text-primary-dark);
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 94, 92, 230), 0.2);
+}
+
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: background-color var(--transition-duration-normal);
+}
+
+.loading-spinner {
+    width: 70px; /* Larger spinner */
+    height: 70px;
+    border: 7px solid var(--border-light);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-lg);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: var(--primary-color);
+    font-size: var(--font-size-title2);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Custom Alert/Prompt Modal */
+.custom-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Darker overlay */
+    backdrop-filter: blur(8px); /* More blur */
+    -webkit-backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity var(--transition-duration-normal) var(--ease-out-quad);
+}
+.custom-modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.custom-modal-content {
+    background-color: var(--surface-light);
+    padding: var(--spacing-xl); /* More padding */
+    border-radius: var(--border-radius-xl);
+    max-width: 350px;
+    width: 90%;
+    box-shadow: 0 8px 30px var(--shadow-dark); /* Deeper shadow for modals */
+    text-align: center;
+    transition: transform var(--transition-duration-normal) var(--ease-out-quad), opacity var(--transition-duration-normal) var(--ease-out-quad), background-color var(--transition-duration-normal);
+    transform: scale(0.85); /* Start even smaller */
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.custom-modal-content.show-modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.custom-modal-content .modal-title {
+    font-size: var(--font-size-headline);
+    font-weight: 600;
+    color: var(--text-primary-light);
+    margin-bottom: var(--spacing-xs);
+}
+
+.custom-modal-content .modal-message {
+    font-size: var(--font-size-body);
+    color: var(--text-secondary-light);
+    margin-bottom: var(--spacing-sm);
+}
+
+.custom-modal-content .modal-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-light);
+    background-color: var(--background-light);
+    color: var(--text-primary-light);
+    font-size: var(--font-size-body);
+    outline: none;
+    margin-bottom: 0;
+}
+
+.custom-modal-content .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.custom-modal-content .modal-actions button {
+    width: 100%;
+    margin-bottom: 0;
+    padding: var(--spacing-md) var(--spacing-lg); /* Slightly larger buttons */
+    font-size: var(--font-size-body);
+    border-radius: var(--border-radius-md);
+    box-shadow: none;
+}
+.custom-modal-content .modal-actions button.cancel-btn {
+    background-color: var(--background-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary-light);
+}
+.custom-modal-content .modal-actions button.cancel-btn:hover {
+    background-color: var(--border-light);
+    color: var(--text-primary-light);
+}
+
+/* Posts Section */
+.post-categories {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+.post-categories button {
+    flex-grow: 1;
+    max-width: 160px;
+    margin-bottom: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-subheadline);
+    border-radius: var(--border-radius-pill);
+    font-weight: 500;
+}
+.post-categories button.active {
+    background-color: var(--primary-color);
+    color: var(--text-primary-dark);
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 94, 92, 230), 0.2);
+}
+
+.post-item {
+    background-color: var(--surface-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 15px var(--shadow-light); /* More prominent post shadow */
+    margin-bottom: var(--spacing-xl); /* More space between posts */
+    padding: var(--spacing-lg);
+    width: 100%;
+    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+.post-avatar {
+    width: 48px; /* Slightly larger post avatars */
+    height: 48px;
+    font-size: 1.3em;
+    margin-right: var(--spacing-sm);
+    border-color: var(--surface-light); /* Matches background */
+}
+.post-username {
+    font-weight: 500;
+    font-size: var(--font-size-body);
+    color: var(--text-primary-light);
+}
+.post-timestamp {
+    font-size: var(--font-size-footnote);
+    color: var(--text-secondary-light);
+    margin-left: auto;
+}
+.post-image {
+    width: 100%;
+    height: auto;
+    max-height: 300px; /* Taller images */
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--border-light);
+    display: block;
+}
+.post-description {
+    font-size: var(--font-size-body);
+    line-height: 1.6; /* Improved readability */
+    color: var(--text-primary-light);
+    word-wrap: break-word;
+    margin-bottom: var(--spacing-md);
+}
+.show-more-less-btn {
+    width: auto;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: var(--font-size-subheadline);
+    font-weight: 500;
+    cursor: pointer;
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    margin: -10px 0 var(--spacing-sm) auto;
+    display: block;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-duration-fast);
+}
+.show-more-less-btn:hover {
+    background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.05);
+}
+.show-more-less-btn:active {
+    background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.1);
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-light);
+    margin-top: var(--spacing-md);
+}
+.like-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary-light);
+    font-size: var(--font-size-body);
+    cursor: pointer;
+    transition: color var(--transition-duration-fast), transform var(--transition-duration-fast);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+.like-btn i {
+    font-size: 1.3em;
+}
+.like-btn.liked {
+    color: var(--danger-color);
+}
+.like-btn:active {
+    transform: scale(0.95);
+}
+.like-count {
+    font-weight: 500;
+    color: var(--text-primary-light);
+    font-size: var(--font-size-body);
+}
+
+.comment-section {
+    border-top: 1px solid var(--border-light);
+    padding-top: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+.comment-input-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+.comment-input-group input {
+    flex-grow: 1;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-pill);
+    font-size: var(--font-size-body);
+    background-color: var(--background-light);
+    border-color: var(--border-light);
+}
+.comment-input-group button {
+    flex-shrink: 0;
+    width: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-pill);
+    margin-bottom: 0;
+    font-size: var(--font-size-body);
+    font-weight: 500;
+}
+.comment-list {
+    max-height: 180px; /* Taller comment section */
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+.comment-item {
+    background-color: var(--background-light);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-subheadline);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.05);
+}
+.comment-item .comment-author {
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-right: var(--spacing-xs);
+}
+.comment-item .comment-text {
+    color: var(--text-primary-light);
+    word-wrap: break-word;
+}
+.comment-item .comment-timestamp {
+    font-size: var(--font-size-caption1);
+    color: var(--text-secondary-light);
+    text-align: right;
+    margin-top: var(--spacing-xxs);
+}
+
+/* Create/Edit Post Modal */
+.post-modal-content {
+    background-color: var(--surface-light);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-xl);
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 8px 30px var(--shadow-dark);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+.post-modal-content .modal-title {
+    font-size: var(--font-size-title2);
+    font-weight: 600;
+    color: var(--text-primary-light);
+    margin-bottom: var(--spacing-sm);
+}
+.post-modal-content .emoji-input-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+.post-modal-content .emoji-input-group input {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+.post-modal-content .emoji-input-group button {
+    width: auto;
+    margin-bottom: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-body);
+    border-radius: var(--border-radius-md);
+}
+.post-modal-content .template-selector select {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-body);
+    background-color: var(--background-light);
+    border-color: var(--border-light);
+}
+
+/* Posts Studio */
+.posts-studio-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    justify-content: center;
+}
+.posts-studio-controls input, .posts-studio-controls select {
+    flex: 1;
+    min-width: 160px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-body);
+}
+.posts-studio-analytics {
+    background-color: var(--surface-light);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary-light);
+}
+.posts-studio-analytics p {
+    margin: var(--spacing-xxs) 0;
+    font-size: var(--font-size-body);
+    font-weight: 500;
+}
+.posts-studio-analytics span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+.user-post-item {
+    background-color: var(--surface-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 15px var(--shadow-light);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-lg);
+    width: 100%;
+    position: relative;
+    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+.user-post-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-light);
+    margin-top: var(--spacing-md);
+}
+.user-post-actions button {
+    width: auto;
+    margin-bottom: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-subheadline);
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+}
+.user-post-actions .edit-btn {
+    background-color: var(--primary-color);
+    color: var(--text-primary-dark);
+}
+.user-post-actions .delete-btn {
+    background-color: var(--danger-color);
+    color: var(--text-primary-dark);
+}
+.user-post-actions .pin-btn, .user-post-actions .share-btn {
+    background-color: var(--background-light);
+    color: var(--text-primary-light);
+    border: 1px solid var(--border-light);
+}
+.user-post-actions .pin-btn.pinned {
+    background-color: var(--primary-color-dark);
+    color: var(--text-primary-dark);
+    border-color: var(--primary-color-dark);
+}
+.user-post-actions .pin-btn:hover, .user-post-actions .share-btn:hover {
+    background-color: var(--border-light);
+}
+
+/* Welcome Section */
+.welcome-section {
+    text-align: center;
+    justify-content: center;
+    padding-top: var(--spacing-xxxl);
+    padding-bottom: var(--spacing-xxxl);
+}
+.welcome-section .section-heading {
+    font-size: var(--font-size-large-title);
+    margin-bottom: var(--spacing-lg);
+}
+.welcome-section p {
+    font-size: var(--font-size-body);
+    color: var(--text-secondary-light);
+    margin-bottom: var(--spacing-xl);
+}
+.welcome-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-xl) 0;
+    text-align: left;
+    width: 100%;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.welcome-section li {
+    background-color: var(--surface-light);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    box-shadow: 0 2px 8px var(--shadow-light);
+    border: 1px solid var(--border-light);
+    font-size: var(--font-size-body);
+    color: var(--text-primary-light);
+    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal);
+}
+.welcome-section li strong {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+.welcome-section .get-started-btn {
+    margin-top: var(--spacing-xxl);
 }
 
 /* Dark Theme Overrides */
@@ -82,22 +1239,22 @@ body.dark-theme {
     .header {
         background-color: var(--surface-dark);
         border-color: var(--border-dark);
-        box-shadow: 0 1px 0 var(--shadow-dark);
+        box-shadow: 0 2px 10px var(--shadow-dark);
     }
     .header .title {
         color: var(--text-primary-dark);
     }
     .header button {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
     .header button:hover {
-        background-color: rgba(10, 132, 255, 0.1);
+        background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.15);
     }
     .back-btn {
         color: var(--text-secondary-dark);
     }
     .back-btn:hover {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(255, 255, 255, 0.08);
         color: var(--text-primary-dark);
     }
 
@@ -112,7 +1269,7 @@ body.dark-theme {
         color: var(--text-secondary-dark);
     }
     input[type="text"], input[type="email"], input[type="password"], textarea, select {
-        background-color: var(--surface-dark);
+        background-color: var(--background-dark);
         border-color: var(--border-dark);
         color: var(--text-primary-dark);
     }
@@ -120,140 +1277,141 @@ body.dark-theme {
         color: var(--text-secondary-dark);
     }
     input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+        border-color: var(--primary-color-light);
+        box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb, 94, 92, 230), 0.25);
         background-color: var(--surface-dark);
     }
 
     /* Buttons */
     button.primary {
         background-color: var(--primary-color);
-        color: var(--button-primary-text-dark);
-        box-shadow: 0 2px 8px var(--shadow-dark);
+        color: var(--text-primary-dark);
+        box-shadow: 0 4px 15px var(--shadow-dark);
     }
     button.primary:hover {
         background-color: var(--primary-color-dark);
     }
     button.secondary {
         background-color: var(--surface-dark);
-        color: var(--primary-color);
+        color: var(--primary-color-light);
         border-color: var(--border-dark);
         box-shadow: 0 2px 8px var(--shadow-dark);
     }
     button.secondary:hover {
-        background-color: rgba(10, 132, 255, 0.1);
+        background-color: rgba(var(--primary-color-rgb, 94, 92, 230), 0.15);
     }
     button.danger {
         background-color: var(--danger-color);
-        box-shadow: 0 2px 8px var(--shadow-dark);
+        box-shadow: 0 4px 15px var(--shadow-dark);
     }
 
     .toggle-form {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
     .toggle-form:hover {
-        color: var(--primary-color-dark);
+        color: var(--primary-color);
     }
 
     /* Messages */
-    .message-input-area {
+    .chat-input-area {
         background-color: var(--surface-dark);
         border-color: var(--border-dark);
-        box-shadow: 0 -1px 0 var(--shadow-dark);
+        box-shadow: 0 -2px 10px var(--shadow-dark);
     }
-    .message-input-area input {
+    .chat-input-area input {
         background-color: var(--background-dark);
         border-color: var(--border-dark);
         color: var(--text-primary-dark);
     }
 
-    .message.sent {
+    .message-bubble {
+        box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    }
+    .message-bubble.sent {
         background-color: var(--message-sent-bg-dark);
         color: var(--message-sent-text-dark);
     }
-    .message.sent .sender, .message.sent .text, .message.sent .timestamp {
-        color: var(--message-sent-text-dark);
+    .message-bubble.sent::after {
+        border-left-color: var(--message-sent-bg-dark);
+        border-bottom-color: var(--message-sent-bg-dark);
     }
-    .message.received {
+    .message-bubble.received {
         background-color: var(--message-received-bg-dark);
         color: var(--message-received-text-dark);
     }
-    .message.received .sender {
-        color: var(--primary-color);
+    .message-bubble.received::after {
+        border-right-color: var(--message-received-bg-dark);
+        border-bottom-color: var(--message-received-bg-dark);
     }
-    .message.received .text, .message.received .timestamp {
+    .message-bubble .message-sender {
+        color: var(--text-secondary-dark);
+    }
+    .message-bubble .message-text, .message-bubble .message-timestamp {
         color: var(--message-received-text-dark);
     }
 
     /* Lists */
-    .groups-list, .contacts-container, .posts-container, .user-posts-list {
+    .list-item {
         background-color: var(--surface-dark);
-        box-shadow: 0 2px 10px var(--shadow-dark);
+        box-shadow: 0 1px 5px var(--shadow-dark);
     }
-    .list-header {
-        color: var(--text-primary-dark);
-        border-color: var(--border-dark);
-    }
-    .group-item, .contact-item, .post-item {
-        border-color: var(--border-dark);
-    }
-    .group-item:hover, .contact-item:hover, .post-item:hover {
+    .list-item:hover {
         background-color: var(--background-dark);
+        box-shadow: 0 3px 8px var(--shadow-dark);
     }
-    .group-item:active, .contact-item:active, .post-item:active {
+    .list-item:active {
         background-color: var(--border-dark);
+        box-shadow: 0 1px 3px var(--shadow-dark);
+    }
+    .list-item-name {
+        color: var(--text-primary-dark);
+    }
+    .list-item-status {
+        color: var(--text-secondary-dark);
+    }
+    .no-items-message {
+        color: var(--text-secondary-dark);
     }
 
     /* Avatars */
-    .group-avatar, .contact-avatar, .profile-avatar, .post-avatar {
-        background-color: var(--primary-color); /* Fallback for initials */
-        border-color: var(--surface-dark); /* Border matches surface */
-        box-shadow: 0 1px 3px var(--shadow-dark);
-    }
-    .group-info, .contact-info {
-        color: var(--text-primary-dark);
-    }
-    .group-name, .contact-name {
-        color: var(--text-primary-dark);
-    }
-    .group-desc, .contact-status {
-        color: var(--text-secondary-dark);
-    }
-    .no-groups, .no-contacts, .no-posts, .no-user-posts {
-        color: var(--text-secondary-dark);
+    .avatar {
+        background-color: var(--primary-color);
+        border-color: var(--surface-dark);
+        box-shadow: 0 1px 4px var(--shadow-dark);
     }
     
     /* Settings Menu */
-    .settings-menu {
-        background-color: var(--surface-dark);
-        box-shadow: -5px 0 15px var(--shadow-dark);
-    }
-    .settings-header {
-        border-color: var(--border-dark);
-    }
-    .settings-header h3 {
-        color: var(--text-primary-dark);
-    }
-    .close-settings {
-        color: var(--text-secondary-dark);
-    }
-    .close-settings:hover {
-        background-color: var(--background-dark);
-        color: var(--text-primary-dark);
-    }
-    .avatar-preview {
+    .profile-avatar-preview {
         background-color: var(--primary-color);
         border-color: var(--surface-dark);
-        box-shadow: 0 2px 10px var(--shadow-dark);
+        box-shadow: 0 4px 15px var(--shadow-dark);
     }
     .user-id-display {
-        background-color: var(--background-dark);
+        background-color: var(--surface-dark);
         border-color: var(--border-dark);
         color: var(--text-primary-dark);
+        box-shadow: 0 1px 3px var(--shadow-dark);
     }
     .user-id-display strong {
         color: var(--text-primary-dark);
     }
+    .theme-options button.active {
+        background-color: var(--primary-color);
+        color: var(--text-primary-dark);
+        box-shadow: 0 2px 8px var(--shadow-dark);
+    }
+    .theme-options button.active:hover {
+        background-color: var(--primary-color-dark);
+    }
+    .theme-options button {
+        background-color: var(--background-dark);
+        color: var(--text-primary-dark);
+        border-color: var(--border-dark);
+    }
+    .theme-options button:hover {
+        background-color: var(--surface-dark);
+    }
+
     /* Loading Screen */
     .loading-screen {
         background-color: var(--background-dark);
@@ -263,31 +1421,42 @@ body.dark-theme {
         border-top-color: var(--primary-color);
     }
     .loading-text {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
 
     /* Custom Alert Modal */
-    .custom-alert-content {
-        background-color: var(--surface-dark);
-        box-shadow: 0 4px 15px var(--shadow-dark);
+    .custom-modal-overlay {
+        background-color: rgba(0, 0, 0, 0.6);
     }
-    .custom-alert-content h4 {
+    .custom-modal-content {
+        background-color: var(--surface-dark);
+        box-shadow: 0 8px 30px var(--shadow-dark);
+    }
+    .custom-modal-content .modal-title {
         color: var(--text-primary-dark);
     }
-    .custom-alert-content p {
+    .custom-modal-content .modal-message {
         color: var(--text-secondary-dark);
     }
-    .custom-alert-content .alert-input {
+    .custom-modal-content .modal-input {
         background-color: var(--background-dark);
         border-color: var(--border-dark);
+        color: var(--text-primary-dark);
+    }
+    .custom-modal-content .modal-actions button.cancel-btn {
+        background-color: var(--background-dark);
+        border-color: var(--border-dark);
+        color: var(--text-secondary-dark);
+    }
+    .custom-modal-content .modal-actions button.cancel-btn:hover {
+        background-color: var(--surface-dark);
         color: var(--text-primary-dark);
     }
 
     /* Posts */
     .post-item {
         background-color: var(--surface-dark);
-        box-shadow: 0 2px 10px var(--shadow-dark);
-        border-color: var(--border-dark);
+        box-shadow: 0 4px 15px var(--shadow-dark);
     }
     .post-header .post-username {
         color: var(--text-primary-dark);
@@ -320,7 +1489,7 @@ body.dark-theme {
     }
     .comment-input-group button {
         background-color: var(--primary-color);
-        color: var(--button-primary-text-dark);
+        color: var(--text-primary-dark);
     }
     .comment-item {
         background-color: var(--background-dark);
@@ -328,7 +1497,7 @@ body.dark-theme {
         color: var(--text-primary-dark);
     }
     .comment-item .comment-author {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
     .comment-item .comment-text {
         color: var(--text-primary-dark);
@@ -336,8 +1505,30 @@ body.dark-theme {
     .comment-item .comment-timestamp {
         color: var(--text-secondary-dark);
     }
+    /* Create/Edit Post Modal (Dark Theme) */
+    .post-modal-content {
+        background-color: var(--surface-dark);
+        box-shadow: 0 8px 30px var(--shadow-dark);
+    }
+    .post-modal-content .modal-title {
+        color: var(--text-primary-dark);
+    }
+    .post-modal-content .emoji-input-group input {
+        background-color: var(--background-dark);
+        border-color: var(--border-dark);
+        color: var(--text-primary-dark);
+    }
+    .post-modal-content .emoji-input-group button {
+        background-color: var(--primary-color);
+        color: var(--text-primary-dark);
+    }
+    .post-modal-content .template-selector select {
+        background-color: var(--background-dark);
+        border-color: var(--border-dark);
+        color: var(--text-primary-dark);
+    }
 
-    /* Posts Studio */
+    /* Posts Studio (Dark Theme) */
     .posts-studio-controls input,
     .posts-studio-controls select {
         background-color: var(--surface-dark);
@@ -351,12 +1542,11 @@ body.dark-theme {
         color: var(--text-primary-dark);
     }
     .posts-studio-analytics span {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
     .user-post-item {
         background-color: var(--surface-dark);
-        box-shadow: 0 2px 10px var(--shadow-dark);
-        border-color: var(--border-dark);
+        box-shadow: 0 4px 15px var(--shadow-dark);
     }
     .user-post-item .post-description {
         color: var(--text-primary-dark);
@@ -369,21 +1559,25 @@ body.dark-theme {
     .user-post-actions .pin-btn,
     .user-post-actions .share-btn {
         background-color: var(--primary-color);
-        color: var(--button-primary-text-dark);
+        color: var(--text-primary-dark);
     }
     .user-post-actions .delete-btn {
         background-color: var(--danger-color);
     }
     .user-post-actions .pin-btn.pinned {
         background-color: var(--primary-color-dark);
-        color: var(--button-primary-text-dark);
+        color: var(--text-primary-dark);
+    }
+    .user-post-actions .pin-btn, .user-post-actions .share-btn {
+        background-color: var(--background-dark);
+        color: var(--text-primary-dark);
+        border-color: var(--border-dark);
     }
     .user-post-actions .pin-btn:hover, .user-post-actions .share-btn:hover {
-        background-color: rgba(10, 132, 255, 0.1);
-        color: var(--primary-color);
+        background-color: var(--surface-dark);
     }
 
-    /* Welcome Section */
+    /* Welcome Section (Dark Theme) */
     .welcome-section li {
         background-color: var(--surface-dark);
         box-shadow: 0 2px 8px var(--shadow-dark);
@@ -391,1148 +1585,77 @@ body.dark-theme {
         color: var(--text-primary-dark);
     }
     .welcome-section li strong {
-        color: var(--primary-color);
+        color: var(--primary-color-light);
     }
 }
 
-/* Base Styles for HTML and Body */
-html, body {
-    height: 100%; /* Ensure html and body take full height */
-    width: 100%;
-    overflow: hidden; /* Prevent default scrolling, managed by sections */
-    font-family: var(--font-family-system);
-    font-size: var(--font-size-base);
-    line-height: 1.4;
-    color: var(--text-primary-light);
-    background-color: var(--background-light);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: background-color var(--transition-duration-normal), color var(--transition-duration-normal);
-}
-
-body {
-    display: flex;
-    flex-direction: column; /* Main layout is column: header, content, footer */
-    align-items: stretch; /* Stretch content to fill width */
-    justify-content: flex-start; /* Align content to the top */
-}
-
-/* Main App Container - Handles full-screen content switching */
-#app-container {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-    max-width: 600px; /* Max width for app feel on larger screens */
-    margin: 0 auto; /* Center the app container horizontally */
-    background-color: var(--background-light);
-    position: relative; /* For absolutely positioned sections */
-    overflow: hidden; /* Hide overflow during transitions */
-}
-
-/* Hidden Utility Class */
-.hidden {
-    display: none !important;
-}
-
-/* Header (Top Bar) */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-sm) var(--spacing-md);
-    padding-top: calc(var(--spacing-sm) + env(safe-area-inset-top, 0px)); /* Account for status bar */
-    background-color: var(--surface-light);
-    border-bottom: 1px solid var(--border-light);
-    box-shadow: 0 1px 0 var(--shadow-light); /* Subtle shadow for depth */
-    z-index: 100; /* Ensure header is above content */
-    flex-shrink: 0; /* Don't shrink the header */
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-.header .title {
-    flex-grow: 1;
-    text-align: center;
-    font-size: var(--font-size-h2);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary-light);
-    margin: 0;
-}
-
-.header .left-action, .header .right-action {
-    display: flex;
-    align-items: center;
-    min-width: 44px; /* Ensure sufficient tap target size */
-    justify-content: center;
-}
-
-/* Back Button - Consistent Icon */
-.back-btn {
-    background: none;
-    border: none;
-    color: var(--primary-color); /* Accent color for interactive elements */
-    font-size: 1.5em; /* Larger icon for tap target */
-    cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--border-radius-pill); /* Perfectly round */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-duration-fast), color var(--transition-duration-fast);
-    -webkit-tap-highlight-color: transparent; /* Remove default tap highlight */
-}
-
-.back-btn:hover {
-    background-color: rgba(var(--primary-color-rgb, 10, 132, 255), 0.1);
-}
-
-.back-btn:active {
-    background-color: rgba(var(--primary-color-rgb, 10, 132, 255), 0.2);
-    transform: scale(0.95); /* Subtle press effect */
-}
-
-/* Main Content Area - Sections will live here */
-.main-sections-container {
-    flex-grow: 1;
-    position: relative; /* For absolute positioning of sections */
-    overflow: hidden; /* Hide content that's not currently in view */
-}
-
-/* Individual Sections - Full Screen & Animated */
-.app-section {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-light);
-    display: flex;
-    flex-direction: column;
-    padding: var(--spacing-md);
-    padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px)); /* Account for home indicator */
-    overflow-y: auto; /* Allow scrolling within each section */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    transition: transform var(--transition-duration-normal) ease-out, opacity var(--transition-duration-normal) ease-out, background-color var(--transition-duration-normal);
-    transform: translateX(100%); /* Start off-screen to the right */
-    opacity: 0;
-    z-index: 1; /* Default z-index */
-}
-
-.app-section.active {
-    transform: translateX(0%); /* Slide into view */
-    opacity: 1;
-    z-index: 10; /* Bring active section to front */
-}
-
-/* Specific Section Adjustments */
-/* Auth Section */
-#auth-section {
-    justify-content: center;
-    align-items: center;
-    padding: var(--spacing-xl);
-}
-
-#login-form, #register-form {
-    width: 100%;
-    max-width: 360px; /* Constrain width on larger mobile devices */
-    background-color: var(--surface-light);
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 4px 15px var(--shadow-light);
-    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-/* General Section Headings */
-.section-heading {
-    font-size: var(--font-size-title1);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary-light);
-    margin-bottom: var(--spacing-xl);
-    text-align: center;
-}
-
-/* Form Elements */
-.form-group {
-    margin-bottom: var(--spacing-md);
-    width: 100%;
-}
-
-.form-group label {
-    display: block;
-    font-size: var(--font-size-subheadline);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-secondary-light);
-    margin-bottom: var(--spacing-xs);
-}
-
-input[type="text"], input[type="email"], input[type="password"], textarea, select {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--border-light);
-    background-color: var(--surface-light);
-    color: var(--text-primary-light);
-    font-size: var(--font-size-body);
-    outline: none;
-    -webkit-appearance: none; /* Remove default iOS styling */
-    transition: border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal), background-color var(--transition-duration-normal);
-}
-
-input[type="text"]::placeholder, input[type="email"]::placeholder, input[type="password"]::placeholder, textarea::placeholder, select::placeholder {
-    color: var(--text-secondary-light);
-    opacity: 0.7;
-}
-
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
-}
-
-/* Buttons */
-button {
-    width: 100%;
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-headline);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-duration-fast), transform var(--transition-duration-fast), opacity var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
-    -webkit-tap-highlight-color: transparent; /* Remove default tap highlight */
-}
-
-button.primary {
-    background-color: var(--primary-color);
-    color: var(--text-primary-dark);
-    box-shadow: 0 2px 8px var(--shadow-light);
-}
-
-button.primary:hover {
-    background-color: var(--primary-color-dark);
-}
-
-button.primary:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-    box-shadow: 0 1px 4px var(--shadow-light);
-}
-
-button.secondary {
-    background-color: var(--surface-light);
-    color: var(--primary-color);
-    border: 1px solid var(--border-light);
-    box-shadow: 0 1px 4px var(--shadow-light);
-}
-
-button.secondary:hover {
-    background-color: var(--background-light);
-}
-
-button.secondary:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-    background-color: var(--border-light);
-    box-shadow: 0 0px 2px var(--shadow-light);
-}
-
-button.danger {
-    background-color: var(--danger-color);
-    color: var(--text-primary-dark);
-    box-shadow: 0 2px 8px var(--shadow-light);
-}
-
-button.danger:hover {
-    background-color: darken(var(--danger-color), 10%);
-}
-
-button.danger:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-    box-shadow: 0 1px 4px var(--shadow-light);
-}
-
-/* Link/Toggle Forms */
-.toggle-form {
-    font-size: var(--font-size-body);
-    color: var(--primary-color);
-    text-align: center;
-    margin-top: var(--spacing-lg);
-    cursor: pointer;
-    transition: color var(--transition-duration-fast);
-    text-decoration: none;
-    font-weight: var(--font-weight-medium);
-}
-
-.toggle-form:hover {
-    color: var(--primary-color-dark);
-}
-
-/* Main Navigation (Footer Tabs) */
-.main-nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: var(--surface-light);
-    border-top: 1px solid var(--border-light);
-    padding: var(--spacing-xs) var(--spacing-md);
-    padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom, 0px)); /* Account for home indicator */
-    box-shadow: 0 -1px 0 var(--shadow-light);
-    z-index: 100;
-    flex-shrink: 0; /* Don't shrink the nav */
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-.nav-tab-btn {
-    flex: 1;
-    background: none;
-    border: none;
-    color: var(--text-secondary-light);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: var(--font-size-footnote);
-    font-weight: var(--font-weight-medium);
-    padding: var(--spacing-xs);
-    cursor: pointer;
-    transition: color var(--transition-duration-fast), transform var(--transition-duration-fast);
-}
-
-.nav-tab-btn i { /* For icon, assuming Font Awesome or similar */
-    font-size: 1.4em;
-    margin-bottom: var(--spacing-xxs);
-}
-
-.nav-tab-btn.active {
-    color: var(--primary-color);
-    transform: translateY(-2px); /* Subtle lift for active */
-}
-
-.nav-tab-btn:active {
-    transform: scale(0.95);
-    opacity: 0.8;
-}
-
-
-/* Lists (Groups, Contacts, Posts) */
-.list-container {
-    padding-top: var(--spacing-md); /* Space below optional section header */
-    width: 100%;
-}
-
-.list-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-md);
-}
-.list-header-actions .section-heading {
-    margin-bottom: 0;
-    text-align: left;
-    font-size: var(--font-size-title2);
-}
-
-.list-item {
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-xxs); /* Adjusted padding for list items */
-    border-bottom: 1px solid var(--border-light);
-    cursor: pointer;
-    transition: background-color var(--transition-duration-fast);
-    border-radius: var(--border-radius-sm); /* Subtle rounded corners */
-}
-
-.list-item:last-child {
-    border-bottom: none;
-}
-
-.list-item:hover {
-    background-color: var(--background-light);
-}
-
-.list-item:active {
-    background-color: var(--border-light);
-    transform: scale(0.99); /* Subtle press effect */
-}
-
-/* Avatars */
-.avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--primary-color); /* Default background for initials */
-    color: var(--text-primary-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: var(--spacing-md);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-headline);
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid var(--surface-light); /* Matches surface background */
-    box-shadow: 0 1px 3px var(--shadow-light);
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.list-item-info {
-    flex: 1;
-    min-width: 0; /* Allows text truncation */
-}
-
-.list-item-name {
-    font-size: var(--font-size-body);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.list-item-status {
-    font-size: var(--font-size-footnote);
-    color: var(--text-secondary-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: var(--spacing-xxs);
-}
-
-.no-items-message {
-    text-align: center;
-    color: var(--text-secondary-light);
-    padding: var(--spacing-lg);
-    font-size: var(--font-size-body);
-    font-style: italic;
-}
-
-
-/* Chat Section (Full Screen) */
-#chat-section, #private-chat-section {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    background-color: var(--background-light);
-    padding: 0; /* No padding on the main section, messages handle padding */
-    transition: background-color var(--transition-duration-normal);
-}
-
-.chat-messages-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: var(--spacing-md);
-    padding-bottom: var(--spacing-lg); /* Extra padding for last message */
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-}
-
-/* Individual Message Styles */
-.message-bubble {
-    display: flex;
-    flex-direction: column;
-    max-width: 85%; /* Slightly wider messages */
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-lg);
-    font-size: var(--font-size-body);
-    line-height: 1.4;
-    word-wrap: break-word;
-    transition: transform var(--transition-duration-normal) ease-out, opacity var(--transition-duration-normal) ease-out;
-    transform: translateY(10px); /* Start slightly off for animation */
-    opacity: 0;
-    position: relative; /* For the "tail" */
-}
-
-.message-bubble.loaded { /* Class added by JS after content is ready */
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.message-bubble .message-sender {
-    font-size: var(--font-size-footnote);
-    font-weight: var(--font-weight-medium);
-    margin-bottom: var(--spacing-xxs);
-    color: var(--text-secondary-light);
-}
-
-.message-bubble .message-text {
-    color: inherit; /* Inherit color from bubble background */
-}
-
-.message-bubble .message-timestamp {
-    font-size: var(--font-size-caption1);
-    color: var(--text-secondary-light);
-    margin-top: var(--spacing-xxs);
-    align-self: flex-end; /* Align timestamp to the right within the bubble */
-}
-
-/* Sent Messages */
-.message-bubble.sent {
-    align-self: flex-end;
-    background-color: var(--message-sent-bg-light);
-    color: var(--message-sent-text-light);
-    border-bottom-right-radius: var(--spacing-xxs); /* "Tail" effect */
-}
-/* Sent message tail */
-.message-bubble.sent::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: -7px; /* Adjust based on border-radius */
-    width: 0;
-    height: 0;
-    border: 7px solid transparent;
-    border-left-color: var(--message-sent-bg-light);
-    border-bottom-color: var(--message-sent-bg-light);
-    border-bottom-right-radius: 4px; /* Matches message bubble corner */
-}
-
-/* Received Messages */
-.message-bubble.received {
-    align-self: flex-start;
-    background-color: var(--message-received-bg-light);
-    color: var(--message-received-text-light);
-    border-bottom-left-radius: var(--spacing-xxs); /* "Tail" effect */
-}
-/* Received message tail */
-.message-bubble.received::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -7px; /* Adjust based on border-radius */
-    width: 0;
-    height: 0;
-    border: 7px solid transparent;
-    border-right-color: var(--message-received-bg-light);
-    border-bottom-color: var(--message-received-bg-light);
-    border-bottom-left-radius: 4px; /* Matches message bubble corner */
-}
-
-
-/* Chat Input Area (Fixed Bottom) */
-.chat-input-area {
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px)); /* Account for home indicator */
-    background-color: var(--surface-light);
-    border-top: 1px solid var(--border-light);
-    box-shadow: 0 -1px 0 var(--shadow-light);
-    z-index: 100;
-    flex-shrink: 0; /* Don't shrink the input area */
-    gap: var(--spacing-sm);
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-.chat-input-area input {
-    flex-grow: 1;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-pill); /* Pill shape */
-    margin-bottom: 0; /* Override default input margin */
-    font-size: var(--font-size-body);
-    background-color: var(--background-light); /* Lighter background for input */
-    border-color: var(--border-light);
-}
-
-.chat-input-area button {
-    flex-shrink: 0;
-    width: auto;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--border-radius-pill);
-    margin-bottom: 0;
-    font-size: var(--font-size-body);
-    font-weight: var(--font-weight-medium);
-}
-
-/* Settings & Profile */
-.avatar-upload {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: var(--spacing-xl) 0;
-}
-
-.profile-avatar-preview {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: var(--text-primary-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-large-title);
-    font-weight: var(--font-weight-bold);
-    overflow: hidden;
-    border: 3px solid var(--surface-light);
-    box-shadow: 0 2px 10px var(--shadow-light);
-    margin-bottom: var(--spacing-md);
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-
-.user-id-display {
-    background-color: var(--background-light);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    margin: var(--spacing-lg) 0;
-    font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; /* Monospace font for ID */
-    word-break: break-all;
-    text-align: left;
-    width: 100%;
-    border: 1px solid var(--border-light);
-    color: var(--text-primary-light);
-    font-size: var(--font-size-subheadline);
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal), color var(--transition-duration-normal);
-}
-
-.user-id-display strong {
-    display: block;
-    font-size: var(--font-size-body);
-    font-weight: var(--font-weight-medium);
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-primary-light);
-}
-
-.theme-switcher {
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
-}
-.theme-options {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-sm);
-    width: 100%;
-}
-.theme-options button {
-    flex: 1;
-    margin-bottom: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-subheadline);
-    border-radius: var(--border-radius-pill);
-}
-.theme-options button.active {
-    background-color: var(--primary-color);
-    color: var(--text-primary-dark);
-    border-color: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 10, 132, 255), 0.2);
-}
-
-
-/* Loading Screen */
-.loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-light);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* Ensure it's on top */
-    transition: background-color var(--transition-duration-normal);
-}
-
-.loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid var(--border-light);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: var(--spacing-lg);
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-    color: var(--primary-color);
-    font-size: var(--font-size-title2);
-    font-weight: var(--font-weight-medium);
-}
-
-/* Custom Alert/Prompt Modal */
-.custom-modal-overlay {
-    display: none; /* Controlled by JS */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black overlay */
-    backdrop-filter: blur(4px); /* Subtle blur effect */
-    -webkit-backdrop-filter: blur(4px); /* For Safari */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Above regular content, below loading screen */
-    transition: opacity var(--transition-duration-normal) ease-out;
-}
-
-.custom-modal-content {
-    background-color: var(--surface-light);
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    max-width: 320px; /* Standard modal width */
-    width: 90%;
-    box-shadow: 0 4px 20px var(--shadow-light);
-    text-align: center;
-    transition: transform var(--transition-duration-normal) ease-out, opacity var(--transition-duration-normal) ease-out, background-color var(--transition-duration-normal);
-    transform: scale(0.9); /* Start slightly smaller for animation */
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.custom-modal-content.show-modal {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.custom-modal-content .modal-title {
-    font-size: var(--font-size-headline);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary-light);
-    margin-bottom: var(--spacing-xs);
-}
-
-.custom-modal-content .modal-message {
-    font-size: var(--font-size-body);
-    color: var(--text-secondary-light);
-    margin-bottom: var(--spacing-sm);
-}
-
-.custom-modal-content .modal-input {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--border-light);
-    background-color: var(--background-light);
-    color: var(--text-primary-light);
-    font-size: var(--font-size-body);
-    outline: none;
-    margin-bottom: 0; /* Handled by gap */
-}
-
-.custom-modal-content .modal-actions {
-    display: flex;
-    flex-direction: column; /* Stack buttons by default on mobile */
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-sm);
-}
-
-.custom-modal-content .modal-actions button {
-    width: 100%;
-    margin-bottom: 0; /* Override default button margin */
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-body);
-    border-radius: var(--border-radius-md);
-    box-shadow: none; /* No extra shadow for modal buttons */
-}
-.custom-modal-content .modal-actions button.cancel-btn {
-    background-color: var(--surface-light);
-    border: 1px solid var(--border-light);
-    color: var(--primary-color);
-}
-.custom-modal-content .modal-actions button.cancel-btn:active {
-    background-color: var(--background-light);
-}
-
-/* Posts Section */
-.post-categories {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-.post-categories button {
-    flex-grow: 1;
-    max-width: 150px; /* Limit width */
-    margin-bottom: 0; /* Override default button margin */
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-subheadline);
-    border-radius: var(--border-radius-pill);
-    font-weight: var(--font-weight-medium);
-}
-.post-categories button.active {
-    background-color: var(--primary-color);
-    color: var(--text-primary-dark);
-    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 10, 132, 255), 0.2);
-}
-
-.post-item {
-    background-color: var(--surface-light);
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 2px 10px var(--shadow-light);
-    margin-bottom: var(--spacing-md);
-    padding: var(--spacing-md);
-    width: 100%;
-    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
-}
-.post-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
-    margin-right: var(--spacing-sm);
-}
-.post-username {
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-body);
-    color: var(--text-primary-light);
-}
-.post-timestamp {
-    font-size: var(--font-size-footnote);
-    color: var(--text-secondary-light);
-    margin-left: auto;
-}
-.post-image {
-    width: 100%;
-    height: auto;
-    max-height: 250px;
-    object-fit: cover;
-    border-radius: var(--border-radius-md);
-    margin-top: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-    border: 1px solid var(--border-light);
-    display: block; /* Remove extra space below image */
-}
-.post-description {
-    font-size: var(--font-size-body);
-    line-height: 1.5;
-    color: var(--text-primary-light);
-    word-wrap: break-word;
-    margin-bottom: var(--spacing-md);
-}
-.show-more-less-btn {
-    width: auto;
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    padding: var(--spacing-xxs) var(--spacing-xs);
-    margin: -10px 0 var(--spacing-sm) auto; /* Push to right, adjust vertical */
-    display: block;
-    border-radius: var(--border-radius-sm);
-    transition: background-color var(--transition-duration-fast);
-}
-.show-more-less-btn:hover {
-    background-color: rgba(var(--primary-color-rgb, 10, 132, 255), 0.05);
-}
-.show-more-less-btn:active {
-    background-color: rgba(var(--primary-color-rgb, 10, 132, 255), 0.1);
-}
-
-.post-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--border-light);
-    margin-top: var(--spacing-md);
-}
-.like-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary-light);
-    font-size: var(--font-size-body);
-    cursor: pointer;
-    transition: color var(--transition-duration-fast), transform var(--transition-duration-fast);
-    padding: var(--spacing-xxs) var(--spacing-xs);
-    border-radius: var(--border-radius-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-.like-btn i {
-    font-size: 1.2em;
-}
-.like-btn.liked {
-    color: var(--danger-color);
-}
-.like-btn:active {
-    transform: scale(0.95);
-}
-.like-count {
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary-light);
-    font-size: var(--font-size-small);
-}
-
-.comment-section {
-    border-top: 1px solid var(--border-light);
-    padding-top: var(--spacing-md);
-    margin-top: var(--spacing-md);
-}
-.comment-input-group {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-}
-.comment-input-group input {
-    flex-grow: 1;
-    padding: var(--spacing-sm);
-    border-radius: var(--border-radius-pill);
-    font-size: var(--font-size-body);
-    background-color: var(--background-light);
-    border-color: var(--border-light);
-}
-.comment-input-group button {
-    flex-shrink: 0;
-    width: auto;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-pill);
-    margin-bottom: 0;
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-}
-.comment-list {
-    max-height: 150px; /* Limit height for comment scrolling */
-    overflow-y: auto;
-    padding-right: var(--spacing-xs); /* Space for scrollbar */
-}
-.comment-item {
-    background-color: var(--background-light);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-xs);
-    font-size: var(--font-size-small);
-    border: 1px solid var(--border-light);
-}
-.comment-item .comment-author {
-    font-weight: var(--font-weight-medium);
-    color: var(--primary-color);
-    margin-right: var(--spacing-xs);
-}
-.comment-item .comment-text {
-    color: var(--text-primary-light);
-    word-wrap: break-word;
-}
-.comment-item .comment-timestamp {
-    font-size: var(--font-size-caption1);
-    color: var(--text-secondary-light);
-    text-align: right;
-    margin-top: var(--spacing-xxs);
-}
-
-/* Create/Edit Post Modal */
-.post-modal-content {
-    background-color: var(--surface-light);
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 4px 20px var(--shadow-light);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-.post-modal-content .modal-title {
-    font-size: var(--font-size-title2);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary-light);
-    margin-bottom: var(--spacing-sm);
-}
-.post-modal-content .emoji-input-group {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: center;
-}
-.post-modal-content .emoji-input-group input {
-    flex-grow: 1;
-    margin-bottom: 0;
-}
-.post-modal-content .emoji-input-group button {
-    width: auto;
-    margin-bottom: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-body);
-    border-radius: var(--border-radius-md);
-}
-.post-modal-content .template-selector select {
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-body);
-    background-color: var(--background-light);
-    border-color: var(--border-light);
-}
-
-/* Posts Studio */
-.posts-studio-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
-    justify-content: center;
-}
-.posts-studio-controls input, .posts-studio-controls select {
-    flex: 1;
-    min-width: 150px;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-body);
-}
-.posts-studio-analytics {
-    background-color: var(--surface-light);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
-    box-shadow: 0 2px 8px var(--shadow-light);
-    border: 1px solid var(--border-light);
-    color: var(--text-primary-light);
-}
-.posts-studio-analytics p {
-    margin: var(--spacing-xxs) 0;
-    font-size: var(--font-size-body);
-    font-weight: var(--font-weight-medium);
-}
-.posts-studio-analytics span {
-    color: var(--primary-color);
-    font-weight: var(--font-weight-bold);
-}
-.user-post-item {
-    background-color: var(--surface-light);
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 2px 10px var(--shadow-light);
-    margin-bottom: var(--spacing-md);
-    padding: var(--spacing-md);
-    width: 100%;
+/* Specific Contact Item Styles for Call Buttons */
+.contact-item {
+    padding-right: 90px; /* Make space for call buttons */
     position: relative;
-    transition: background-color var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
-}
-.user-post-actions {
-    display: flex;
-    justify-content: flex-end; /* Align actions to the right */
-    gap: var(--spacing-sm);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--border-light);
-    margin-top: var(--spacing-md);
-}
-.user-post-actions button {
-    width: auto; /* Buttons size to content */
-    margin-bottom: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-small);
-    border-radius: var(--border-radius-md);
-    font-weight: var(--font-weight-medium);
-}
-.user-post-actions .edit-btn {
-    background-color: var(--primary-color);
-    color: var(--text-primary-dark);
-}
-.user-post-actions .delete-btn {
-    background-color: var(--danger-color);
-    color: var(--text-primary-dark);
-}
-.user-post-actions .pin-btn, .user-post-actions .share-btn {
-    background-color: var(--background-light);
-    color: var(--text-primary-light);
-    border: 1px solid var(--border-light);
-}
-.user-post-actions .pin-btn.pinned {
-    background-color: var(--primary-color-dark);
-    color: var(--text-primary-dark);
-    border-color: var(--primary-color-dark);
-}
-.user-post-actions .pin-btn:hover, .user-post-actions .share-btn:hover {
-    background-color: var(--border-light);
 }
 
-/* Welcome Section */
-.welcome-section {
-    text-align: center;
-    justify-content: center; /* Center content vertically */
-    padding-top: var(--spacing-xxl); /* More space from top for large heading */
-    padding-bottom: var(--spacing-xxl);
+.call-buttons-container {
+    display: flex;
+    gap: var(--spacing-xs);
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-md);
+    transform: translateY(-50%); /* Vertically center */
 }
-.welcome-section .section-heading {
-    font-size: var(--font-size-large-title);
-    margin-bottom: var(--spacing-lg);
-}
-.welcome-section p {
-    font-size: var(--font-size-body);
-    color: var(--text-secondary-light);
-    margin-bottom: var(--spacing-xl);
-}
-.welcome-section ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--spacing-xl) 0;
-    text-align: left;
-    width: 100%;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.welcome-section li {
-    background-color: var(--surface-light);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-sm);
+
+.call-btn {
+    width: 40px; /* Good size for touch */
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    box-shadow: 0 1px 4px var(--shadow-light);
-    border: 1px solid var(--border-light);
-    font-size: var(--font-size-body);
-    color: var(--text-primary-light);
-    transition: background-color var(--transition-duration-normal), border-color var(--transition-duration-normal);
-}
-.welcome-section li strong {
-    color: var(--primary-color);
-    font-weight: var(--font-weight-medium);
-}
-.welcome-section .get-started-btn {
-    margin-top: var(--spacing-xl);
+    justify-content: center;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none; /* Ensure no default button border */
+    flex-shrink: 0;
 }
 
+.call-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.call-btn i { /* For Font Awesome or similar icons */
+    font-size: 1.2em;
+}
+
+.voice-call-btn {
+    background-color: var(--secondary-accent); /* Green */
+}
+
+.video-call-btn {
+    background-color: var(--primary-color); /* Primary Blue-Violet */
+}
 
 /* Responsive Adjustments (for larger screens, e.g., tablets/desktops in app view) */
 @media (min-width: 601px) {
     #app-container {
-        border-radius: var(--border-radius-lg);
-        box-shadow: 0 10px 30px var(--shadow-light);
-        height: 85vh; /* Fixed height for desktop app-like feel */
-        margin: var(--spacing-xxl) auto; /* Center on desktop */
+        border-radius: var(--border-radius-xl); /* More rounded app container */
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); /* Deeper shadow for desktop */
+        height: 90vh; /* Taller on desktop */
+        max-height: 900px; /* Max height for app container */
+        margin: var(--spacing-xxxl) auto;
     }
 
     .header {
-        padding-top: var(--spacing-sm); /* No status bar on desktop */
+        padding-top: var(--spacing-md); /* No status bar on desktop */
     }
 
     .app-section {
-        padding: var(--spacing-lg); /* Slightly more padding on larger screens */
-        padding-bottom: var(--spacing-lg); /* No home indicator on desktop */
+        padding: var(--spacing-xl); /* More padding on larger screens */
+        padding-bottom: var(--spacing-xl); /* No home indicator on desktop */
     }
 
     .chat-input-area {
-        padding-bottom: var(--spacing-sm); /* No home indicator on desktop */
+        padding-bottom: var(--spacing-md); /* No home indicator on desktop */
     }
 
     .custom-modal-content .modal-actions {
@@ -1540,97 +1663,13 @@ button.danger:active {
         justify-content: center;
     }
     .custom-modal-content .modal-actions button {
-        max-width: 120px; /* Constrain button width in modals */
+        max-width: 150px; /* Constrain button width in modals */
     }
-}
-/* Add to your styles.css */
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--surface-light);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-xs);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    position: relative; /* For absolute positioning of call buttons */
-}
-
-body.dark-theme .contact-item {
-    background: var(--surface-dark);
-    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.08);
-}
-
-.contact-item:hover {
-    background-color: var(--background-light); /* Lighter hover effect */
-}
-
-body.dark-theme .contact-item:hover {
-    background-color: #2c2c2e; /* Darker hover effect */
-}
-
-.contact-info {
-    flex-grow: 1; /* Allow info to take up space */
-    margin-right: var(--spacing-md); /* Space before buttons */
-}
-
-.call-buttons-container {
-    display: flex;
-    gap: var(--spacing-xs); /* Space between call buttons */
-    position: absolute; /* Position at top right */
-    top: var(--spacing-sm);
-    right: var(--spacing-md);
-}
-
-.call-btn {
-    width: 32px; /* Smaller button size */
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.call-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-}
-
-.voice-call-btn {
-    background-color: var(--secondary-accent); /* Green for voice call */
-}
-
-.video-call-btn {
-    background-color: var(--primary-color); /* Blue for video call */
-}
-
-/* Adjust contact-item padding to make room for buttons if needed */
-.contact-item {
-    padding-right: 90px; /* Adjust based on button size and gap */
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 480px) {
-    .call-buttons-container {
-        gap: var(--spacing-xxs);
-        top: var(--spacing-xs);
-        right: var(--spacing-xs);
+    .post-categories {
+        justify-content: center;
+        gap: var(--spacing-md);
     }
-
-    .call-btn {
-        width: 28px;
-        height: 28px;
-    }
-    .call-btn svg {
-        width: 16px;
-        height: 16px;
-    }
-    .contact-item {
-        padding-right: 75px; /* Adjust for smaller buttons */
+    .post-categories button {
+        max-width: 180px; /* Allow wider category buttons */
     }
 }
